@@ -6,7 +6,7 @@ import Coach from '@/components/sections/Coach';
 import Member from '@/components/sections/Member';
 import Galeri from '@/components/sections/Galeri';
 
-const IS_UNDER_MAINTENANCE = true;
+const IS_UNDER_MAINTENANCE = false;
 
 export default function Home() {
   
