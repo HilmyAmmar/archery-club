@@ -8,7 +8,7 @@ export default function Coach() {
       title: 'Lisensi Pelatih Level II',
       issuer: 'Komite Olimpiade Indonesia (KOI)',
       date: 'SERTIFIKAT · 2022',
-      img: '/bg-hero.jpg', // Ganti foto sertifikat asli nanti
+      img: '/bg-hero.jpg', 
     },
     {
       id: 2,
@@ -31,7 +31,6 @@ export default function Coach() {
   ];
 
   return (
-    // Background light slate/ice blue
     <section id="coach" className="relative flex flex-col items-center pt-28 pb-40 px-4 bg-[#f8fafc]">
       
       <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center">
@@ -53,7 +52,6 @@ export default function Coach() {
           
           <div className="flex flex-col md:flex-row">
             {/* Kiri: Foto Coach */}
-            {/* Tambahin overflow-hidden biar gradasinya gak bocor keluar div */}
             <div className="w-full md:w-[45%] relative min-h-[400px] md:min-h-full bg-gray-900 overflow-hidden">
               <div 
                 className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700"
@@ -63,7 +61,6 @@ export default function Coach() {
               {/* Gradasi gelap dasar biar Tag di pojok bawah tetep kebaca */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
               
-              {/* --- PERUBAHAN UTAMA: Efek Transisi / "Meleleh" ke Putih --- */}
               {/* 1. Efek pudar putih di BAWAH (hanya aktif di HP/Mobile saat fotonya ada di atas teks) */}
               <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent md:hidden"></div>
               
@@ -80,7 +77,6 @@ export default function Coach() {
             </div>
 
             {/* Kanan: Info Coach */}
-            {/* Tambahin z-10 biar teksnya aman di atas gradasi */}
             <div className="w-full md:w-[55%] p-8 md:p-12 flex flex-col text-left relative z-10 bg-transparent">
               <h3 className="text-3xl md:text-[2.5rem] font-black text-gray-900 leading-tight mb-2">Budi Santoso, S.Or</h3>
               <p className="text-blue-600 font-bold text-sm tracking-wide mb-8">Head Coach — FAST Archery Sport Team</p>
@@ -170,7 +166,7 @@ export default function Coach() {
 
       </div>
 
-      {/* SVG Curve at the bottom (Transisi ke dark blue #000b3d untuk section Member/Footer) */}
+      {/* SVG Curve at the bottom */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0 translate-y-[1px]">
         <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[60px] md:h-[100px] fill-[#000b3d]">
           <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,120.72,201,110.15c61.4-9.2,118.2-31,175-53.71Z"></path>

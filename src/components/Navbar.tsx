@@ -10,7 +10,6 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Navbar ganti background solid setelah scroll 20px
       if (window.scrollY > 20) {
         setIsScrolled(true);
       } else {
@@ -34,17 +33,15 @@ export default function Navbar() {
     <nav 
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-[#000b3d]/95 backdrop-blur-sm shadow-xl py-2' // Padding atas-bawah dikurangin
-          : 'bg-transparent pt-4 pb-1' // Padding awal juga dikurangin
+          ? 'bg-[#000b3d]/95 backdrop-blur-sm shadow-xl py-2' 
+          : 'bg-transparent pt-4 pb-1'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6">
-        {/* Tinggi container diturunin dari h-16 ke h-14 */}
         <div className="flex items-center justify-between h-14">
           
           {/* Logo Section */}
           <Link href="#home" className="flex items-center gap-2.5 group">
-            {/* Ukuran logo dikecilin dari w-12/h-12 ke w-10/h-10 */}
             <div className="relative w-10 h-10 transition-transform group-hover:scale-105">
               <Image 
                 src="/logo.png" 
@@ -55,7 +52,6 @@ export default function Navbar() {
               />
             </div>
             <div className="flex flex-col">
-              {/* Ukuran teks judul dikecilin dikit ke text-xl */}
               <h1 className="text-white font-black text-xl tracking-widest leading-none">FAST</h1>
               <span className="text-[#d97706] text-[8px] font-bold tracking-[0.2em] uppercase mt-1 transition-colors group-hover:text-orange-400">
                 Focus Archery Sport Team
@@ -77,7 +73,6 @@ export default function Navbar() {
               ))}
             </div>
             
-            {/* Padding dan font tombol disesuaikan biar lebih compact */}
             <button className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-2 rounded-lg text-[13px] font-black shadow-lg shadow-orange-600/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all">
               Daftar Sekarang
             </button>

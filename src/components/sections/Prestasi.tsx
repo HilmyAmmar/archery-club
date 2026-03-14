@@ -85,12 +85,11 @@ export default function Prestasi() {
   ];
 
   return (
-    // Transisi background dari biru -> cokelat -> oranye karamel terang (#e36e14)
     <section id="prestasi" className="relative flex flex-col items-center pt-32 pb-32 px-4 bg-gradient-to-b from-[#000b3d] via-[#4a1c0d] via-25% to-[#e36e14]">
       
       <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
         
-        {/* --- Bagian Atas (Statistik) --- */}
+        {/* --- Statistik --- */}
         <div className="border border-[#e59a59]/30 bg-[#e59a59]/5 text-[#e59a59] px-6 py-2 rounded-full text-[10px] font-bold tracking-[0.2em] mb-6 flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M19 3v4M5 3a2 2 0 002 2h10a2 2 0 002-2M5 3h14M9 21h6M12 17v4M7 13h10V9A5 5 0 007 9v4z" />
@@ -111,13 +110,11 @@ export default function Prestasi() {
 
         <div className="w-full bg-white/15 border border-white/20 backdrop-blur-xl rounded-[2.5rem] py-10 px-4 shadow-2xl mb-24 max-w-5xl">
           
-          {/* Grid Layout - Perubahan: divide-white/20 agar garis pemisah senada dengan border */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 divide-y md:divide-y-0 md:divide-x divide-white/20">
             
             {/* Stat 1 */}
             <div className="flex flex-col items-center justify-center">
               <div className="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight">50+</div>
-              {/* Warna label tetap beige agar kontras terhadap putih kaca */}
               <div className="text-[#a87a5d] text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase opacity-90">Juara Umum</div>
             </div>
 
@@ -152,7 +149,7 @@ export default function Prestasi() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mb-24 w-full">
           {kejuaraan.map((item) => (
-            // Warna Card di Rekam Jejak (Coklat Kemerahan, tidak seterang Liputan Media)
+            // Warna Card di Rekam Jejak
             <div key={item.id} className="bg-[#4a1f0f]/80 rounded-[2rem] overflow-hidden border border-white/5 transition-all hover:scale-[1.02] flex flex-col text-left group">
               <div className="relative h-52 w-full p-3 pb-0">
                 <div className="w-full h-full rounded-[1.5rem] bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{ backgroundImage: `url(${item.img})` }}></div>
@@ -186,7 +183,7 @@ export default function Prestasi() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-7 mb-20 w-full">
           {liputan.map((item) => (
-            // Card Liputan Media - Oranye Cerah / Jahe (#f37a23)
+            // Card Liputan Media
             <div key={item.id} className="bg-[#f37a23] rounded-[2rem] overflow-hidden flex flex-col shadow-2xl border border-white/5 transition-transform hover:scale-[1.02] text-left">
               
               {/* Image Section */}
@@ -197,7 +194,7 @@ export default function Prestasi() {
                 >
                   <div className="absolute inset-0 bg-black/10 rounded-[1.5rem]"></div>
                   
-                  {/* Media Brand Badge (Sesuai Prototype) */}
+                  {/* Media Brand Badge */}
                   <div className="absolute top-6 left-6 bg-black/70 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-2 border border-white/10 opacity-90">
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2" />
@@ -232,7 +229,7 @@ export default function Prestasi() {
 
       </div>
 
-      {/* --- SVG Curve (Lengkungan Putih di bawah section) --- */}
+      {/* --- SVG Curve --- */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0">
         <svg className="relative block w-full h-[60px] md:h-[100px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
           <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,120.72,201,110.15c61.4-9.2,118.2-31,175-53.71Z" fill="#f8fafc"></path>

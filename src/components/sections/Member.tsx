@@ -10,7 +10,7 @@ export default function Member() {
       name: 'Andi Pratama',
       title: 'Atlet Terbaik Nasional 2024',
       category: 'Recurve Open',
-      badgeColor: 'bg-[#eab308] text-[#422006]', // Emas
+      badgeColor: 'bg-[#eab308] text-[#422006]',
       achievements: ['Juara Nasional 2024', 'Juara Nasional 2023', 'Medali Perak PON 2022'],
       img: '/bg-hero.jpg', 
     },
@@ -54,7 +54,6 @@ export default function Member() {
     setActiveIndex((prev) => (prev - 1 + members.length) % members.length);
   };
 
-  // Trik supaya card yang aktif selalu ada di tengah secara urutan
   const getVisibleMembers = () => {
     const prev = (activeIndex - 1 + members.length) % members.length;
     const next = (activeIndex + 1) % members.length;
@@ -110,7 +109,6 @@ export default function Member() {
                     style={{ backgroundImage: `url(${member.img})` }}
                   ></div>
                   
-                  {/* --- PERUBAHAN UTAMA: Gradient Overlay --- */}
                   {/* Div ini memberikan efek gradasi gelap dari bawah ke tengah foto */}
                   {isCenter && (
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/60 to-transparent"></div>
