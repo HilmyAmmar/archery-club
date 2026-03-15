@@ -8,7 +8,7 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
   const [imgIndex, setImgIndex] = useState(0);
 
   const nextImg = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Biar kliknya ga memicu fungsi carousel card utama
+    e.stopPropagation(); 
     setImgIndex((prev) => (prev + 1) % images.length);
   };
 
@@ -20,7 +20,6 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
   return (
     <div className="relative w-full h-[220px] shrink-0 bg-[#1a234f] flex items-center justify-center group overflow-hidden">
       
-      {/* Gambar Aktif dengan efek Fade, Tetap menggunakan bg-contain agar tidak terpotong */}
       {images.map((img, idx) => (
         <div 
           key={idx}
@@ -35,13 +34,13 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
         </div>
       ))}
       
-      {/* Overlay Gelap buat Card yang di Kiri/Kanan (Tidak aktif) */}
+      {/* Overlay Gelap buat Card yang di Kiri/Kanan */}
       {isCenter && (
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/10 to-transparent z-20 pointer-events-none"></div>
       )}
       {!isCenter && <div className="absolute inset-0 bg-[#000b3d]/70 z-20 pointer-events-none"></div>}
 
-      {/* Badge Mahkota/Juara (Cuma buat center) */}
+      {/* Badge Mahkota/Juara */}
       {isCenter && (
         <div className="absolute top-4 right-4 text-[#eab308] bg-black/30 p-2 rounded-full backdrop-blur-md z-30 pointer-events-none">
           <svg className="w-5 h-5 drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
@@ -50,7 +49,6 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
         </div>
       )}
 
-      {/* --- KONTROL GAMBAR (Hanya muncul jika Card ditengah dan gambar lebih dari 1) --- */}
       {isCenter && images.length > 1 && (
         <>
           {/* Tombol Kiri/Kanan (Muncul saat hover) */}
@@ -80,9 +78,18 @@ export default function Member() {
       id: 1,
       name: 'Kholidin',
       achievements: [
-        'Medali Emas Asean Para Games 2025', 
-        'Medali Emas Asia Para Cup 2025', 
-        'Medali Perak PON 2022'
+        'Medali Emas Asia Para Cup 2025',
+        'Medali Emas World Ranking Event 2024 (2 Medali)',
+        'Medali Emas Para Archery World Ranking Tournament 2024',
+        'Peringkat 6 Kualifikasi Paralympic WPAC Plzen 2023',
+        'Medali Perunggu Asian Champ 2023',
+        'Medali Emas IWAS 2023 (3 Medali)',
+        'Medali Emas World Abilitysport Games 2023',
+        'Medali Emas Double Men Recurve APG 2022',
+        'Medali Emas, Perak, & Perunggu ASEAN Para Games 2022',
+        'Medali Emas Piala Presiden 2022',
+        'Medali Perak PON Papua 2021 (Mewakili DKI Jakarta)',
+        'Medali Emas PEPARNAS 2021',
       ],
       images: [
         '/hall-of-fame/foto-1.png', 
@@ -117,8 +124,9 @@ export default function Member() {
       achievements: [
         'Medali Perak Nasional Putra Perorangan PON XXI Aceh-Sumut 2024', 
         'Medali Emas Nasional Putra Individu PON XX Papua 2021', 
-        'PON Aceh 2024 : 2 perak + 1 perunggu', 
-        'PON Papua 2021 : 2 emas'
+        '2 Medali Perak PON Aceh 2024',
+        '1 Medali Perunggu PON Aceh 2024',
+        '2 Medali Emas PON Papua 2021',
       ],
       images: [
         '/hall-of-fame/foto-3.png',
@@ -184,7 +192,6 @@ export default function Member() {
                   }
                 }}
               >
-                {/* --- PANGGIL KOMPONEN GALERI FOTO --- */}
                 <MemberGallery images={member.images} isCenter={isCenter} />
 
                 {/* Bagian Info Bawah */}
