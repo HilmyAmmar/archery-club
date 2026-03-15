@@ -99,6 +99,22 @@ export default function Prestasi() {
       title: 'Bidikan Kholidin Tajam dan Membanggakan Merah Putih',
       desc: 'Momen luar biasa dari Kholidin. Lewat bidikannya yang tajam, ia kembali berhasil membawa nama Indonesia dan membanggakan bendera Merah Putih di kancah internasional.',
       link: 'https://www.instagram.com/p/DGUYj11yvsx/?igsh=MWxxMWRyZjEydHV0bA%3D%3D'
+    },
+    {
+      id: 6,
+      media: 'Berita Jakarta',
+      date: '12 Okt 2021',
+      title: 'Kontingen PON XX DKI Senang Terus Dapat Apresiasi Gubernur',
+      desc: 'Atlet panahan FAST yang mewakili DKI Jakarta merasa bangga dan termotivasi atas perhatian langsung Gubernur Anies Baswedan yang mengunjungi venue pertandingan di PON XX Papua.',
+      link: 'https://m.beritajakarta.id/read/92849/kontingen-pon-xx-dki-senang-terus-dapat-perhatian-dan-apresiasi-gubernur'
+    },
+    {
+      id: 7,
+      media: 'Giwangkara.com',
+      date: '10 Okt 2021',
+      title: 'Tiga Medali Emas Didapatkan Panahan DKI dari PON XX',
+      desc: 'Dominasi total diperlihatkan tim panahan DKI Jakarta. Melalui bidikan akurat atlet-atlet terbaiknya, mereka berhasil menyapu bersih tiga medali emas di nomor Nasional Beregu Putra.',
+      link: 'https://www.giwangkara.com/olahraga/pr-851394038/tiga-medali-emas-didapatkan-panahan-dki-dari-pon-xx'
     }
   ];
 
