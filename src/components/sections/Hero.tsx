@@ -1,8 +1,9 @@
+// src/components/sections/Hero.tsx
 'use client'; 
 import { useState, useEffect } from 'react';
 
 export default function Hero() {
-  const ADMIN_WHATSAPP = '6281188037673';
+  const ADMIN_WHATSAPP = '6282170879405';
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function Hero() {
   return (
     <section id="home" className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1a3680]">
       
-      {/* 1. Base Image  */}
+      {/* 1. Base Image */}
       <div className="absolute inset-0 bg-[url('/bg-hero.jpg')] bg-cover bg-[center_top_10%] md:bg-[center_top_20%]" />
       
       {/* 2. Blue Filter Overlay */}
@@ -30,8 +31,8 @@ export default function Hero() {
       {/* 3. Grid Pattern Overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* 4. Bottom Gradient Fade  */}
-      <div className="absolute bottom-0 left-0 w-full h-[35vh] bg-gradient-to-t from-[#eab308] via-[#eab308]/70 via-30% to-transparent z-10 translate-y-[1px]" />
+      {/* 4. Bottom Gradient Fade - Khusus mobile diturunin tingginya jadi h-[20vh] biar ga nutupin teks */}
+      <div className="absolute bottom-0 left-0 w-full h-[20vh] md:h-[35vh] bg-gradient-to-t from-[#eab308] via-[#eab308]/80 via-15% md:via-30% to-transparent z-10 translate-y-[1px]" />
 
       {/* Main Content Container */}
       <div className="relative z-20 flex flex-col items-center text-center w-full px-4 max-w-5xl">
@@ -64,29 +65,29 @@ export default function Hero() {
         </div>
 
         {/* Statistics */}
-        <div className="grid grid-cols-3 gap-8 md:gap-32 w-full max-w-3xl">
+        <div className="grid grid-cols-3 gap-3 sm:gap-8 md:gap-32 w-full max-w-3xl relative z-30">
           <div className="text-center">
-            <div className="text-4xl md:text-[3rem] font-black text-[#fbbf24] mb-1">50+</div>
-            <div className="text-gray-400 text-[10px] font-bold tracking-[0.15em] uppercase">Juara Umum</div>
+            <div className="text-[2.2rem] md:text-[3rem] font-black text-[#fbbf24] mb-1 drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)]">50+</div>
+            <div className="text-white text-[9px] md:text-[10px] font-bold tracking-[0.15em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Juara Umum</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-[3rem] font-black text-[#60a5fa] mb-1">50+</div>
-            <div className="text-gray-400 text-[10px] font-bold tracking-[0.15em] uppercase">Member Aktif</div>
+            <div className="text-[2.2rem] md:text-[3rem] font-black text-[#60a5fa] mb-1 drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)]">50+</div>
+            <div className="text-white text-[9px] md:text-[10px] font-bold tracking-[0.15em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Member Aktif</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-[3rem] font-black text-[#f97316] mb-1">10+</div>
-            <div className="text-gray-400 text-[10px] font-bold tracking-[0.15em] uppercase">Tahun Berdiri</div>
+            <div className="text-[2.2rem] md:text-[3rem] font-black text-[#f97316] mb-1 drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)]">10+</div>
+            <div className="text-white text-[9px] md:text-[10px] font-bold tracking-[0.15em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Tahun Berdiri</div>
           </div>
         </div>
 
       </div>
 
-      {/* Down Arrow */}
+      {/* Down Arrow - Dengan Animasi Menghilang Saat di-Scroll */}
       <div 
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 z-20 transition-all duration-500 ease-in-out
+        className={`absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 z-30 transition-all duration-500 ease-in-out
         ${isScrolled ? 'opacity-0 translate-y-10 pointer-events-none' : 'opacity-100 animate-bounce'}`}
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
           <path d="M6 9l6 6 6-6"/>
         </svg>
       </div>

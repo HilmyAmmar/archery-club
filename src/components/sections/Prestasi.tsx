@@ -85,7 +85,7 @@ export default function Prestasi() {
 
         {/* --- Intro Text --- */}
         <h2 className="text-4xl md:text-[3.5rem] font-black text-white tracking-tight mb-4 drop-shadow-md">
-          Rekam Jejak <span className="text-[#facc15]">Sang Juara</span>
+          Rekam Jejak <span className="text-white drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]">Sang Juara</span>
         </h2>
         <p className="text-white/90 text-sm md:text-base max-w-2xl font-medium mb-12 leading-relaxed drop-shadow-sm">
           Menorehkan lebih dari 50+ gelar Juara Umum di berbagai ajang kompetisi dari tingkat regional hingga internasional sejak 2016.
