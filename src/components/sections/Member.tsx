@@ -1,3 +1,4 @@
+// src/components/sections/Member.tsx
 'use client';
 
 import { useState } from 'react';
@@ -8,6 +9,7 @@ export default function Member() {
       id: 1,
       name: 'Kholidin',
       achievements: ['Medali Emas Asean Para Games 2025', 'Medali Emas Asia Para Cup 2025', 'Medali Perak PON 2022'],
+      // Saran: pastikan background foto aslinya udah transparan/rapi ya
       img: '/hall-of-fame/foto-1.png', 
     },
     {
@@ -17,7 +19,9 @@ export default function Member() {
         'Medali Emas Beregu Nasional Putra PON XX Papua 2021', 
         'Medali Perunggu Perorangan Nasional Putra PON XX Papua 2021',
         'Medali Perunggu Beregu Campuran Nasional pada PON XX Papua 2021', 
-        'Medali Emas Perorangan Nasional Putra Jarak 30M, 40M, & 50M Kejurnas Panahan 2017 Aceh',
+        'Medali Emas Perorangan Nasional Putra Jarak 30M Kejurnas Panahan 2017 Aceh',
+        'Medali Emas Perorangan Nasional Putra Jarak 40M Kejurnas Panahan 2017 Aceh',
+        'Medali Emas Perorangan Nasional Putra Jarak 50M Kejurnas Panahan 2017 Aceh',
         'Medali Perak Beregu campuran Nasional Kejurnas Panahan 2018 Jakarta', 
         'Medali Perak Beregu Putra Nasional Kejurnas Panahan 2018 Jakarta',
         'Medali Emas Nasional Putra Jarak 30M Kejurnas Panahan 2018 Jakarta', 
@@ -95,20 +99,22 @@ export default function Member() {
                 }}
               >
                 {/* --- Bagian Foto --- */}
-                <div className="relative w-full h-[200px] shrink-0">
+                {/* Gw kasih bg-[#1a234f] biar kalo fotonya transparan/contain, pinggirannya ngga keliatan kosong */}
+                <div className="relative w-full h-[220px] shrink-0 bg-[#1a234f] flex items-center justify-center">
                   <div 
-                    className="w-full h-full bg-cover bg-center" 
+                    // PERUBAHAN UTAMA DI SINI: ganti bg-cover jadi bg-contain bg-no-repeat
+                    className="w-[90%] h-[90%] bg-contain bg-no-repeat bg-center" 
                     style={{ backgroundImage: `url(${member.img})` }}
                   ></div>
                   
                   {isCenter && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/10 to-transparent"></div>
                   )}
 
                   {!isCenter && <div className="absolute inset-0 bg-[#000b3d]/70"></div>}
 
                   {isCenter && (
-                    <div className="absolute top-5 right-5 text-[#eab308] bg-black/20 p-2 rounded-full backdrop-blur-sm">
+                    <div className="absolute top-4 right-4 text-[#eab308] bg-black/30 p-2 rounded-full backdrop-blur-md">
                       <svg className="w-5 h-5 drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
@@ -117,19 +123,18 @@ export default function Member() {
                 </div>
 
                 {/* Bagian Info Bawah */}
-                <div className="p-7 flex flex-col flex-grow overflow-hidden text-left">
+                <div className="p-7 flex flex-col flex-grow overflow-hidden text-left bg-[#0f173b]">
                   <h4 className={`font-black ${isCenter ? 'text-2xl text-white' : 'text-xl text-white/80'} mb-4 shrink-0`}>
                     {member.name}
                   </h4>
                   
-                  {/* Container List Achievement */}
-                  <div className="flex flex-col gap-3.5 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                  <div className="flex flex-col gap-3.5 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/40 transition-colors">
                     {member.achievements.map((achieve, index) => (
                       <div key={index} className="flex items-start gap-3">
                         <svg className={`w-4 h-4 shrink-0 mt-0.5 ${isCenter ? 'text-[#eab308]' : 'text-white/30'}`} fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582c.277.11.464.395.464.716v4.3c0 1.944-1.121 3.655-2.822 4.457l-.596.28v1.842a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1.842l-.596-.28A5.002 5.002 0 015 10.92V6.621c0-.321.187-.606.464-.716L9 4.323V3a1 1 0 011-1zm-1 3.323L5.954 6.54l3.046 1.218 3.046-1.218L9 5.323z" clipRule="evenodd" />
                         </svg>
-                        <span className={`text-[13px] font-semibold leading-tight ${isCenter ? 'text-white/90' : 'text-white/50'}`}>
+                        <span className={`text-[13px] font-semibold leading-relaxed ${isCenter ? 'text-white/90' : 'text-white/50'}`}>
                           {achieve}
                         </span>
                       </div>
@@ -145,7 +150,7 @@ export default function Member() {
         <div className="flex items-center justify-center gap-6 mt-4">
           <button 
             onClick={handlePrev}
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#eab308] hover:text-[#000b3d] hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
           </button>
@@ -164,7 +169,7 @@ export default function Member() {
 
           <button 
             onClick={handleNext}
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#eab308] hover:text-[#000b3d] hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>

@@ -67,6 +67,38 @@ export default function Prestasi() {
       title: 'Berlangsung di Lembang, FAST Kodamar Archery Sabet Juara Umum Kasau Cup 2025',
       desc: 'FAST Kodamar Archery tampil gemilang dengan menyabet gelar Juara Umum dalam Kejuaraan Panahan Kasau Cup 2025 kategori umum yang digelar di Lembang. Klub ini memborong total 39 medali.',
       link: 'https://www.delikasia.com/headline-news/berlangsung-di-lembang-fast-kodamar-archery-sabet-juara-umum-kasau-cup-2025'
+    },
+    {
+      id: 2,
+      media: 'Berita Dispora DKI',
+      date: '10 Okt 2021',
+      title: 'Aurel, Yuki & Zaki Raih Emas Panahan Nasional Putra Tim',
+      desc: 'Selamat kepada kontingen DKI Aurel Rahmanda Dastra, Yuki Widiyanto & Zaki Malique Iyadin yang berhasil meraih medali emas dari cabang olahraga Panahan – Nasional Putra Tim pada PON XX Papua.',
+      link: 'https://berita.dispora.id/news/detail/3951'
+    },
+    {
+      id: 3,
+      media: 'Berita Dispora DKI',
+      date: '10 Okt 2021',
+      title: 'Azaria & Yuki Raih Perunggu Panahan Nasional Mix Tim',
+      desc: 'Selamat kepada kontingen DKI Azaria Kinaura Anagatria & Yuki Widiyanto yang berhasil meraih medali perunggu dari cabang olahraga Panahan – Nasional Mix Tim pada ajang PON XX Papua.',
+      link: 'https://berita.dispora.id/news/detail/3952'
+    },
+    {
+      id: 4,
+      media: 'IG @kemenpora',
+      date: 'ASEAN Para Games 2025',
+      title: 'Kholidin Sukses Raih Emas di Men’s Individual Recurve Open',
+      desc: 'Prestasi membanggakan diraih oleh atlet para archery Indonesia. Kholidin berhasil memperoleh poin tertinggi di babak final setelah berhadapan dengan atlet Indonesia lainnya.',
+      link: 'https://www.instagram.com/p/DT189UBgf1r/?igsh=enh1MzA4ZGdjcml5'
+    },
+    {
+      id: 5,
+      media: 'IG @republikindonesia',
+      date: 'Highlight Internasional',
+      title: 'Bidikan Kholidin Tajam dan Membanggakan Merah Putih',
+      desc: 'Momen luar biasa dari Kholidin. Lewat bidikannya yang tajam, ia kembali berhasil membawa nama Indonesia dan membanggakan bendera Merah Putih di kancah internasional.',
+      link: 'https://www.instagram.com/p/DGUYj11yvsx/?igsh=MWxxMWRyZjEydHV0bA%3D%3D'
     }
   ];
 
