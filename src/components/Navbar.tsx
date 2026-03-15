@@ -7,7 +7,6 @@ import Image from 'next/image';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  // Tambah state untuk nge-track menu mobile kebuka/ketutup
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export default function Navbar() {
   return (
     <nav 
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled || isMobileMenuOpen // Kalau di-scroll ATAU menu mobile lagi kebuka, background jadi gelap
+        isScrolled || isMobileMenuOpen 
           ? 'bg-[#000b3d]/95 backdrop-blur-sm shadow-xl py-2' 
           : 'bg-transparent pt-4 pb-1'
       }`}
@@ -46,7 +45,7 @@ export default function Navbar() {
           <Link href="#home" className="flex items-center gap-2.5 group relative z-50">
             <div className="relative w-10 h-10 transition-transform group-hover:scale-105">
               <Image 
-                src="/favicon.png" 
+                src="/favicon.ico" 
                 alt="FAST Logo" 
                 fill
                 className="object-contain"
