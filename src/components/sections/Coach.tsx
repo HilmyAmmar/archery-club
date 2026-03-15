@@ -59,7 +59,7 @@ export default function Coach() {
                 {/* Foto Coach */}
                 <div className="w-40 h-40 md:w-48 md:h-48 shrink-0 rounded-[1.5rem] overflow-hidden relative shadow-md border-4 border-white">
                   <div 
-                    className="w-full h-full bg-cover bg-center"
+                    className="w-full h-full bg-cover bg-top"
                     style={{ backgroundImage: `url(${coach.image})` }}
                   ></div>
                 </div>

@@ -3,14 +3,90 @@
 
 import { useState } from 'react';
 
+// --- SUB-KOMPONEN UNTUK GALERI FOTO ---
+function MemberGallery({ images, isCenter }: { images: string[], isCenter: boolean }) {
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const nextImg = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Biar kliknya ga memicu fungsi carousel card utama
+    setImgIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setImgIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <div className="relative w-full h-[220px] shrink-0 bg-[#1a234f] flex items-center justify-center group overflow-hidden">
+      
+      {/* Gambar Aktif dengan efek Fade, Tetap menggunakan bg-contain agar tidak terpotong */}
+      {images.map((img, idx) => (
+        <div 
+          key={idx}
+          className={`absolute inset-0 w-full h-full transition-opacity duration-500 flex items-center justify-center ${
+            idx === imgIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+        >
+          <div 
+            className="w-[90%] h-[90%] bg-contain bg-no-repeat bg-center"
+            style={{ backgroundImage: `url(${img})` }}
+          />
+        </div>
+      ))}
+      
+      {/* Overlay Gelap buat Card yang di Kiri/Kanan (Tidak aktif) */}
+      {isCenter && (
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/10 to-transparent z-20 pointer-events-none"></div>
+      )}
+      {!isCenter && <div className="absolute inset-0 bg-[#000b3d]/70 z-20 pointer-events-none"></div>}
+
+      {/* Badge Mahkota/Juara (Cuma buat center) */}
+      {isCenter && (
+        <div className="absolute top-4 right-4 text-[#eab308] bg-black/30 p-2 rounded-full backdrop-blur-md z-30 pointer-events-none">
+          <svg className="w-5 h-5 drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        </div>
+      )}
+
+      {/* --- KONTROL GAMBAR (Hanya muncul jika Card ditengah dan gambar lebih dari 1) --- */}
+      {isCenter && images.length > 1 && (
+        <>
+          {/* Tombol Kiri/Kanan (Muncul saat hover) */}
+          <button onClick={prevImg} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button onClick={nextImg} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+
+          {/* Dots Indicator di bawah gambar */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30">
+            {images.map((_, i) => (
+              <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === imgIndex ? 'w-4 bg-[#eab308]' : 'w-1.5 bg-white/50'}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// --- KOMPONEN UTAMA MEMBER ---
 export default function Member() {
   const members = [
     {
       id: 1,
       name: 'Kholidin',
-      achievements: ['Medali Emas Asean Para Games 2025', 'Medali Emas Asia Para Cup 2025', 'Medali Perak PON 2022'],
-      // Saran: pastikan background foto aslinya udah transparan/rapi ya
-      img: '/hall-of-fame/foto-1.png', 
+      achievements: [
+        'Medali Emas Asean Para Games 2025', 
+        'Medali Emas Asia Para Cup 2025', 
+        'Medali Perak PON 2022'
+      ],
+      images: [
+        '/hall-of-fame/foto-1.png', 
+      ], 
     },
     {
       id: 2,
@@ -30,13 +106,23 @@ export default function Member() {
         'Medali Perak Kualifikasi Beregu Putra Nasional Kejurnas Panahan 2018 Jakarta',
         'Medali Perunggu Nasional Putra Jarak 40M pada Kejurnas Panahan 2018 Jakarta'
       ],
-      img: '/hall-of-fame/foto-2.png',
+      images: [
+        '/hall-of-fame/foto-2.png',
+        '/hall-of-fame/yuki.jpeg',
+        ],
     },
     {
       id: 3,
       name: 'Zaki Malique Iyadin',
-      achievements: ['Medali Perak Nasional Putra Perorangan PON XXI Aceh-Sumut 2024', 'Medali Emas Nasional Putra Individu PON XX Papua 2021'],
-      img: '/hall-of-fame/foto-3.png',
+      achievements: [
+        'Medali Perak Nasional Putra Perorangan PON XXI Aceh-Sumut 2024', 
+        'Medali Emas Nasional Putra Individu PON XX Papua 2021', 
+        'PON Aceh 2024 : 2 perak + 1 perunggu', 
+        'PON Papua 2021 : 2 emas'
+      ],
+      images: [
+        '/hall-of-fame/foto-3.png',
+      ], 
     },
   ];
 
@@ -98,29 +184,8 @@ export default function Member() {
                   }
                 }}
               >
-                {/* --- Bagian Foto --- */}
-                {/* Gw kasih bg-[#1a234f] biar kalo fotonya transparan/contain, pinggirannya ngga keliatan kosong */}
-                <div className="relative w-full h-[220px] shrink-0 bg-[#1a234f] flex items-center justify-center">
-                  <div 
-                    // PERUBAHAN UTAMA DI SINI: ganti bg-cover jadi bg-contain bg-no-repeat
-                    className="w-[90%] h-[90%] bg-contain bg-no-repeat bg-center" 
-                    style={{ backgroundImage: `url(${member.img})` }}
-                  ></div>
-                  
-                  {isCenter && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/10 to-transparent"></div>
-                  )}
-
-                  {!isCenter && <div className="absolute inset-0 bg-[#000b3d]/70"></div>}
-
-                  {isCenter && (
-                    <div className="absolute top-4 right-4 text-[#eab308] bg-black/30 p-2 rounded-full backdrop-blur-md">
-                      <svg className="w-5 h-5 drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
+                {/* --- PANGGIL KOMPONEN GALERI FOTO --- */}
+                <MemberGallery images={member.images} isCenter={isCenter} />
 
                 {/* Bagian Info Bawah */}
                 <div className="p-7 flex flex-col flex-grow overflow-hidden text-left bg-[#0f173b]">

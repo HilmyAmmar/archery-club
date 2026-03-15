@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 export default function Hero() {
-  const ADMIN_WHATSAPP = '6282170879405';
+  const ADMIN_WHATSAPP = '6281188037673';
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
