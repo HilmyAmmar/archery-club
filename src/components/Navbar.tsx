@@ -73,9 +73,12 @@ export default function Navbar() {
               ))}
             </div>
             
-            <button className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-2 rounded-lg text-[13px] font-black shadow-lg shadow-orange-600/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all">
+            <Link 
+              href="#pricing" 
+              className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-2 rounded-lg text-[13px] font-black shadow-lg shadow-orange-600/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all"
+            >
               Daftar Sekarang
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}

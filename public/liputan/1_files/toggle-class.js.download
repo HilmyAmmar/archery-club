@@ -1,0 +1,11 @@
+    jQuery(document).ready(function($){
+        $(".oc_search").click(function(){
+            $(".taxx_search").toggleClass("mobile_search");
+        });
+		$(".bottom_float span").click(function(){
+            $(".bottom_ads").hide();
+        });
+		$(".side_float span").click(function(){
+            $(".taxx_float_ads").hide();
+        });
+    });

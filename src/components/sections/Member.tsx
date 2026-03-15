@@ -1,4 +1,3 @@
-// src/components/sections/Member.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,45 +6,38 @@ export default function Member() {
   const members = [
     {
       id: 1,
-      name: 'Andi Pratama',
-      title: 'Atlet Terbaik Nasional 2024',
-      category: 'Recurve Open',
-      badgeColor: 'bg-[#eab308] text-[#422006]',
-      achievements: ['Juara Nasional 2024', 'Juara Nasional 2023', 'Medali Perak PON 2022'],
-      img: '/bg-hero.jpg', 
+      name: 'Kholidin',
+      achievements: ['Medali Emas Asean Para Games 2025', 'Medali Emas Asia Para Cup 2025', 'Medali Perak PON 2022'],
+      img: '/hall-of-fame/foto-1.png', 
     },
     {
       id: 2,
-      name: 'Rizky Maulana',
-      title: 'Atlet Muda Paling Berbakat',
-      category: 'Pelajar Recurve',
-      badgeColor: 'bg-blue-600 text-white', 
-      achievements: ['Juara Pelajar Nasional 2024', 'Juara PORPROV 2023', 'Medali Perak Kejurnas Junior'],
-      img: '/bg-hero.jpg',
+      name: 'Yuki Widiyanto',
+      achievements: [
+        'Medali Emas Beregu Nasional Putra PON XX Papua 2021', 
+        'Medali Perunggu Perorangan Nasional Putra PON XX Papua 2021',
+        'Medali Perunggu Beregu Campuran Nasional pada PON XX Papua 2021', 
+        'Medali Emas Perorangan Nasional Putra Jarak 30M, 40M, & 50M Kejurnas Panahan 2017 Aceh',
+        'Medali Perak Beregu campuran Nasional Kejurnas Panahan 2018 Jakarta', 
+        'Medali Perak Beregu Putra Nasional Kejurnas Panahan 2018 Jakarta',
+        'Medali Emas Nasional Putra Jarak 30M Kejurnas Panahan 2018 Jakarta', 
+        'Medali Perak Total Kualifikasi Nasional Putra Kejurnas Panahan 2018 Jakarta',
+        'Medali Perak Nasional Putra Jarak 50 M Kejurnas Panahan 2018 Jakarta', 
+        'Medali Perak Kualifikasi Beregu Putra Nasional Kejurnas Panahan 2018 Jakarta',
+        'Medali Perunggu Nasional Putra Jarak 40M pada Kejurnas Panahan 2018 Jakarta'
+      ],
+      img: '/hall-of-fame/foto-2.png',
     },
     {
       id: 3,
-      name: 'Sarah Winata',
-      title: 'Best Female Archer 2023',
-      category: 'Recurve Women',
-      badgeColor: 'bg-orange-500 text-white',
-      achievements: ['Juara Umum Regional 2024', 'Medali Perak PON 2023', 'Juara Kejurnas 2023'],
-      img: '/bg-hero.jpg',
+      name: 'Zaki Malique Iyadin',
+      achievements: ['Medali Perak Nasional Putra Perorangan PON XXI Aceh-Sumut 2024', 'Medali Emas Nasional Putra Individu PON XX Papua 2021'],
+      img: '/hall-of-fame/foto-3.png',
     },
-    {
-      id: 4,
-      name: 'Dewi Kusuma',
-      title: '3x Juara Beruntun',
-      category: 'Standard Bow',
-      badgeColor: 'bg-red-500 text-white',
-      achievements: ['Juara Umum 2024', 'Juara Kejurnas 2023', 'Juara Cup Nasional 2022'],
-      img: '/bg-hero.jpg',
-    }
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Fungsi Next & Prev
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % members.length);
   };
@@ -86,15 +78,15 @@ export default function Member() {
         {/* --- Carousel Grid --- */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-6 w-full max-w-5xl mb-12">
           {visibleMembers.map((member, idx) => {
-            const isCenter = idx === 1; // Index 1 selalu yang di tengah (Active)
+            const isCenter = idx === 1; 
 
             return (
               <div 
                 key={`${member.id}-${idx}`} 
-                className={`relative rounded-[2rem] overflow-hidden transition-all duration-500 ease-in-out flex-col w-[90%] max-w-[340px] md:w-[320px] 
+                className={`relative rounded-[2rem] overflow-hidden transition-all duration-500 ease-in-out flex-col w-[90%] max-w-[340px] md:w-[320px] h-[480px]
                   ${isCenter 
-                    ? 'flex scale-100 z-20 shadow-[0_0_40px_rgba(234,179,8,0.15)] border border-[#eab308]/40 bg-[#0f173b]' // Center (Active)
-                    : 'hidden md:flex scale-90 z-10 opacity-40 hover:opacity-70 border border-white/5 bg-[#0a1128] cursor-pointer' // Kiri Kanan (Inactive)
+                    ? 'flex scale-100 z-20 shadow-[0_0_40px_rgba(234,179,8,0.15)] border border-[#eab308]/40 bg-[#0f173b]' 
+                    : 'hidden md:flex scale-90 z-10 opacity-40 hover:opacity-70 border border-white/5 bg-[#0a1128] cursor-pointer'
                   }`}
                 onClick={() => {
                   if (!isCenter) {
@@ -103,26 +95,18 @@ export default function Member() {
                 }}
               >
                 {/* --- Bagian Foto --- */}
-                <div className={`relative w-full ${isCenter ? 'h-64' : 'h-56'}`}>
+                <div className="relative w-full h-[200px] shrink-0">
                   <div 
                     className="w-full h-full bg-cover bg-center" 
                     style={{ backgroundImage: `url(${member.img})` }}
                   ></div>
                   
-                  {/* Div ini memberikan efek gradasi gelap dari bawah ke tengah foto */}
                   {isCenter && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/60 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/40 to-transparent"></div>
                   )}
 
-                  {/* Overlay gelap untuk inactive card (tetap pakai overlay solid biar makin redup) */}
                   {!isCenter && <div className="absolute inset-0 bg-[#000b3d]/70"></div>}
-                  
-                  {/* Badge Kategori */}
-                  <div className={`absolute top-5 left-5 px-3 py-1.5 rounded-lg text-[10px] font-black tracking-wider shadow-lg ${member.badgeColor}`}>
-                    {member.category}
-                  </div>
 
-                  {/* Bintang Emas untuk Center Card */}
                   {isCenter && (
                     <div className="absolute top-5 right-5 text-[#eab308] bg-black/20 p-2 rounded-full backdrop-blur-sm">
                       <svg className="w-5 h-5 drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
@@ -133,15 +117,13 @@ export default function Member() {
                 </div>
 
                 {/* Bagian Info Bawah */}
-                <div className="p-7 flex flex-col flex-grow text-left">
-                  <h4 className={`font-black ${isCenter ? 'text-2xl text-white' : 'text-xl text-white/80'} mb-1`}>
+                <div className="p-7 flex flex-col flex-grow overflow-hidden text-left">
+                  <h4 className={`font-black ${isCenter ? 'text-2xl text-white' : 'text-xl text-white/80'} mb-4 shrink-0`}>
                     {member.name}
                   </h4>
-                  <p className={`text-[13px] font-bold tracking-wide mb-6 ${isCenter ? 'text-[#eab308]' : 'text-blue-400'}`}>
-                    {member.title}
-                  </p>
                   
-                  <div className="flex flex-col gap-3.5 mt-auto">
+                  {/* Container List Achievement */}
+                  <div className="flex flex-col gap-3.5 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {member.achievements.map((achieve, index) => (
                       <div key={index} className="flex items-start gap-3">
                         <svg className={`w-4 h-4 shrink-0 mt-0.5 ${isCenter ? 'text-[#eab308]' : 'text-white/30'}`} fill="currentColor" viewBox="0 0 20 20">
@@ -190,6 +172,12 @@ export default function Member() {
 
       </div>
 
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0">
+        <svg className="relative block w-full h-[60px] md:h-[100px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,120.72,201,110.15c61.4-9.2,118.2-31,175-53.71Z" fill="#f8fafc"></path>
+        </svg>
+      </div>
+      
     </section>
   );
 }

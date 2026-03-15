@@ -5,8 +5,10 @@ import Prestasi from '@/components/sections/Prestasi';
 import Coach from '@/components/sections/Coach';
 import Member from '@/components/sections/Member';
 import Galeri from '@/components/sections/Galeri';
+import Harga from '@/components/sections/Harga';
+import Footer from '@/components/Footer';
 
-const IS_UNDER_MAINTENANCE = true;
+const IS_UNDER_MAINTENANCE = false;
 
 export default function Home() {
   
@@ -43,6 +45,8 @@ export default function Home() {
       <Coach />
       <Member />
       <Galeri />
+      <Harga />
+      <Footer />
     </main>
   );
 }
