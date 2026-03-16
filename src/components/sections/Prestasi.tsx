@@ -3,9 +3,12 @@ import { allPrestasiData, liputanData } from '@/data/prestasiData';
 
 export default function Prestasi() {
   return (
-    <section id="prestasi" className="relative flex flex-col items-center pt-24 pb-32 px-4 bg-gradient-to-b from-[#eab308] via-[#e65c00] via-40% to-[#8b1812]">
+    <section 
+      id="prestasi" 
+      className="relative flex flex-col items-center pt-24 pb-32 px-4 bg-gradient-to-b from-[#facc15] via-[#e65c00] via-40% to-[#8b1812]"
+    >
       
-      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center text-center mt-10">
         
         {/* --- Badge Title --- */}
         <div className="border border-white/30 bg-white/10 text-white px-6 py-2 rounded-full text-[11px] font-bold tracking-[0.2em] mb-6 flex items-center gap-2 backdrop-blur-sm shadow-sm">
@@ -58,7 +61,7 @@ export default function Prestasi() {
               
               <div className="bg-black/70 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-2 border border-white/10 opacity-90 self-start mb-5 shadow-inner">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2" />
                 </svg>
                 {item.media}
               </div>
