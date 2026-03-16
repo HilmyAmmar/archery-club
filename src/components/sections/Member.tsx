@@ -158,9 +158,12 @@ export default function Member() {
                       <h3 className="text-2xl font-black text-white mb-3">Atlet Berprestasi Lainnya</h3>
                       <p className="text-blue-100/70 text-sm font-medium mb-8">Jelajahi seluruh rekam jejak juara dari keluarga besar FAST.</p>
                       
-                      <Link href="/atlet" className="bg-[#eab308] hover:bg-yellow-400 text-[#000b3d] px-8 py-3.5 rounded-xl font-bold transition-all hover:scale-105 shadow-lg shadow-yellow-500/20 w-full">
+                      <a 
+                        href="/atlet" 
+                        className="bg-[#eab308] hover:bg-yellow-400 text-[#000b3d] px-8 py-3.5 rounded-xl font-bold transition-all hover:scale-105 shadow-lg shadow-yellow-500/20 w-full"
+                      >
                         Eksplor Galeri Member
-                      </Link>
+                      </a>
                     </div>
                   ) : (
                     <div className="text-center px-4 flex flex-col items-center justify-center h-full w-full">
