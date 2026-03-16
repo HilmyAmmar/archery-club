@@ -73,7 +73,7 @@ export default function AtletPage() {
         {/* Pattern Grid Tipis biar teksturnya kaya di landing page */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] z-0 pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto mt-4 md:mt-10 relative z-20">
+        <div className="max-w-7xl mx-auto mt-4 md:mt-10 relative z-20">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div className="flex flex-col items-start text-left">
@@ -114,7 +114,7 @@ export default function AtletPage() {
           </div>
 
           {filteredMembers.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
               {filteredMembers.map((member) => (
                 <div 
                   key={member.id} 
