@@ -27,7 +27,7 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
         <div 
           key={idx}
           // REVISI: Ganti bg-contain jadi bg-cover, posisi bg-top biar kotak penuh dan kepala ga kepotong
-          className={`absolute inset-0 w-full h-full transition-opacity duration-500 bg-cover bg-top ${
+          className={`absolute inset-0 w-full h-full transition-opacity duration-500 bg-cover bg-center ${
             idx === imgIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
           style={{ backgroundImage: `url(${img})` }}
@@ -114,7 +114,7 @@ export default function Member() {
         'Medali Perak Kualifikasi Beregu Putra Nasional Kejurnas Panahan 2018 Jakarta',
         'Medali Perunggu Nasional Putra Jarak 40M pada Kejurnas Panahan 2018 Jakarta'
       ],
-      images: ['/hall-of-fame/foto-2.png', '/hall-of-fame/yuki.jpeg'],
+      images: ['/hall-of-fame/foto-2.png', '/hall-of-fame/yuki.jpeg', '/hall-of-fame/yuki-2.jpeg', '/hall-of-fame/yuki-3.jpeg'],
     },
     {
       id: 3,
