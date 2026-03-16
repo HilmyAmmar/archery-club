@@ -1,13 +1,11 @@
+// src/components/sections/Galeri.tsx
 'use client';
 
-export default function Galeri() {
-  const galleryImages = [
-    '/galeri/1.jpeg', '/galeri/2.jpeg', '/galeri/3.jpeg', '/galeri/4.jpeg', '/galeri/5.jpeg', '/galeri/6.jpeg',
-    '/galeri/7.jpeg', '/galeri/8.jpeg', '/galeri/9.jpeg', '/galeri/10.jpeg', '/galeri/11.jpeg', '/galeri/12.jpeg',
-  ];
+import { galeriImages } from '@/data/galeryData';
 
-  const row1 = [...galleryImages.slice(0, 6), ...galleryImages.slice(0, 6)];
-  const row2 = [...galleryImages.slice(6, 12), ...galleryImages.slice(6, 12)];
+export default function Galeri() {
+  const row1 = [...galeriImages.slice(0, 6), ...galeriImages.slice(0, 6)];
+  const row2 = [...galeriImages.slice(6, 12), ...galeriImages.slice(6, 12)];
 
   return (
     <section id="galeri" className="relative flex flex-col items-center pt-24 pb-40 px-4 bg-[#f8fafc] overflow-hidden">
@@ -37,7 +35,7 @@ export default function Galeri() {
         <div className="absolute top-0 left-0 w-16 md:w-40 h-full bg-gradient-to-r from-[#f8fafc] via-[#f8fafc]/80 to-transparent z-20 pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-16 md:w-40 h-full bg-gradient-to-l from-[#f8fafc] via-[#f8fafc]/80 to-transparent z-20 pointer-events-none"></div>
 
-        {/* ROW 1: ARAH KE KIRI */}
+        {/* ROW 1 */}
         <div className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused]">
           {row1.map((imgUrl, index) => (
             <div key={`r1-${index}`} className="w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">
@@ -46,7 +44,7 @@ export default function Galeri() {
           ))}
         </div>
 
-        {/* ROW 2: ARAH KE KANAN */}
+        {/* ROW 2 */}
         <div className="flex w-max animate-infinite-scroll-reverse hover:[animation-play-state:paused]">
           {row2.map((imgUrl, index) => (
             <div key={`r2-${index}`} className="w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">

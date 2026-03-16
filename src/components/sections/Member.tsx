@@ -1,8 +1,8 @@
-// src/components/sections/Member.tsx
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { membersData } from '@/data/memberData';
 
 // --- SUB-KOMPONEN UNTUK GALERI FOTO ---
 function MemberGallery({ images, isCenter }: { images: string[], isCenter: boolean }) {
@@ -19,40 +19,33 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
   };
 
   return (
-    // REVISI: Wadah foto gw balikin kaku (overflow-hidden) biar pas pake bg-cover kelihatannya landscape rapi
     <div className="relative w-full h-[220px] shrink-0 bg-[#1a234f] flex items-center justify-center group overflow-hidden">
       
-      {/* Gambar Aktif dengan efek Fade */}
       {images.map((img, idx) => (
         <div 
           key={idx}
-          // REVISI: Ganti bg-contain jadi bg-cover, posisi bg-top biar kotak penuh dan kepala ga kepotong
-          className={`absolute inset-0 w-full h-full transition-opacity duration-500 bg-cover bg-center ${
+          className={`absolute inset-0 w-full h-full transition-opacity duration-500 bg-cover bg-top ${
             idx === imgIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
           style={{ backgroundImage: `url(${img})` }}
         />
       ))}
       
-      {/* Overlay Gelap buat Card yang di Kiri/Kanan */}
       {isCenter && (
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/10 to-transparent z-20 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#0f173b] via-[#0f173b]/60 to-transparent z-20 pointer-events-none transition-opacity duration-500"></div>
       )}
-      {!isCenter && <div className="absolute inset-0 bg-[#000b3d]/70 z-20 pointer-events-none"></div>}
+      {!isCenter && <div className="absolute inset-0 bg-[#000b3d]/70 z-20 pointer-events-none transition-opacity duration-500"></div>}
 
-      {/* Badge Mahkota/Juara */}
       {isCenter && (
-        <div className="absolute top-4 right-4 text-[#eab308] bg-black/30 p-2 rounded-full backdrop-blur-md z-30 pointer-events-none">
+        <div className="absolute top-4 right-4 text-[#eab308] bg-black/30 p-2 rounded-full backdrop-blur-md z-30 pointer-events-none transition-all duration-500 animate-in fade-in zoom-in">
           <svg className="w-5 h-5 drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
         </div>
       )}
 
-      {/* --- KONTROL GAMBAR (Hanya muncul jika Card ditengah dan gambar lebih dari 1) --- */}
       {isCenter && images.length > 1 && (
         <>
-          {/* Tombol Kiri/Kanan (Muncul saat hover) */}
           <button onClick={prevImg} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
           </button>
@@ -60,8 +53,7 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>
 
-          {/* Dots Indicator di bawah gambar */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30 transition-opacity duration-500 animate-in fade-in slide-in-from-bottom-2">
             {images.map((_, i) => (
               <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === imgIndex ? 'w-4 bg-[#eab308]' : 'w-1.5 bg-white/50'}`} />
             ))}
@@ -74,61 +66,11 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
 
 // --- KOMPONEN UTAMA MEMBER ---
 export default function Member() {
-  const members = [
-    {
-      id: 1,
-      isCTA: false,
-      name: 'Kholidin',
-      achievements: [
-        'Medali Emas Asia Para Cup 2025',
-        'Medali Emas World Ranking Event 2024 (2 Medali)',
-        'Medali Emas Para Archery World Ranking Tournament 2024',
-        'Peringkat 6 Kualifikasi Paralympic WPAC Plzen 2023',
-        'Medali Perunggu Asian Champ 2023',
-        'Medali Emas IWAS 2023 (3 Medali)',
-        'Medali Emas World Abilitysport Games 2023',
-        'Medali Emas Double Men Recurve APG 2022',
-        'Medali Emas, Perak, & Perunggu ASEAN Para Games 2022',
-        'Medali Emas Piala Presiden 2022',
-        'Medali Perak PON Papua 2021 (Mewakili DKI Jakarta)',
-        'Medali Emas PEPARNAS 2021',
-      ],
-      images: ['/hall-of-fame/foto-1.png'], 
-    },
-    {
-      id: 2,
-      isCTA: false,
-      name: 'Yuki Widiyanto',
-      achievements: [
-        'Medali Emas Beregu Nasional Putra PON XX Papua 2021', 
-        'Medali Perunggu Perorangan Nasional Putra PON XX Papua 2021',
-        'Medali Perunggu Beregu Campuran Nasional pada PON XX Papua 2021', 
-        'Medali Emas Perorangan Nasional Putra Jarak 30M Kejurnas Panahan 2017 Aceh',
-        'Medali Emas Perorangan Nasional Putra Jarak 40M Kejurnas Panahan 2017 Aceh',
-        'Medali Emas Perorangan Nasional Putra Jarak 50M Kejurnas Panahan 2017 Aceh',
-        'Medali Perak Beregu campuran Nasional Kejurnas Panahan 2018 Jakarta', 
-        'Medali Perak Beregu Putra Nasional Kejurnas Panahan 2018 Jakarta',
-        'Medali Emas Nasional Putra Jarak 30M Kejurnas Panahan 2018 Jakarta', 
-        'Medali Perak Total Kualifikasi Nasional Putra Kejurnas Panahan 2018 Jakarta',
-        'Medali Perak Nasional Putra Jarak 50 M Kejurnas Panahan 2018 Jakarta', 
-        'Medali Perak Kualifikasi Beregu Putra Nasional Kejurnas Panahan 2018 Jakarta',
-        'Medali Perunggu Nasional Putra Jarak 40M pada Kejurnas Panahan 2018 Jakarta'
-      ],
-      images: ['/hall-of-fame/foto-2.png', '/hall-of-fame/yuki.jpeg', '/hall-of-fame/yuki-2.jpeg', '/hall-of-fame/yuki-3.jpeg'],
-    },
-    {
-      id: 3,
-      isCTA: false,
-      name: 'Zaki Malique Iyadin',
-      achievements: [
-        'Medali Perak Nasional Putra Perorangan PON XXI Aceh-Sumut 2024', 
-        'Medali Emas Nasional Putra Individu PON XX Papua 2021', 
-        '2 Medali Perak PON Aceh 2024',
-        '1 Medali Perunggu PON Aceh 2024',
-        '2 Medali Emas PON Papua 2021',
-      ],
-      images: ['/hall-of-fame/foto-3.png'], 
-    },
+  
+  const topThreeMembers = membersData.slice(0, 3);
+  
+  const carouselData = [
+    ...topThreeMembers,
     {
       id: 'cta-card',
       isCTA: true,
@@ -141,7 +83,7 @@ export default function Member() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleNext = () => {
-    if (activeIndex < members.length - 1) {
+    if (activeIndex < carouselData.length - 1) {
       setActiveIndex((prev) => prev + 1);
     }
   };
@@ -153,9 +95,9 @@ export default function Member() {
   };
 
   const getVisibleMembers = () => {
-    const prev = activeIndex > 0 ? members[activeIndex - 1] : null;
-    const current = members[activeIndex];
-    const next = activeIndex < members.length - 1 ? members[activeIndex + 1] : null;
+    const prev = activeIndex > 0 ? carouselData[activeIndex - 1] : null;
+    const current = carouselData[activeIndex];
+    const next = activeIndex < carouselData.length - 1 ? carouselData[activeIndex + 1] : null;
     return [prev, current, next];
   };
 
@@ -186,33 +128,33 @@ export default function Member() {
         <div className="flex flex-col md:flex-row items-center justify-center gap-6 w-full max-w-5xl mb-12 min-h-[480px]">
           {visibleMembers.map((member, idx) => {
             if (!member) {
-              return <div key={`empty-${idx}`} className="hidden md:block w-[320px] h-[480px] opacity-0 pointer-events-none"></div>;
+              return <div key={`empty-${idx}`} className="hidden md:block w-[320px] h-[480px] opacity-0 pointer-events-none transition-all duration-500"></div>;
             }
 
             const isCenter = idx === 1;
 
-            // KONDISI JIKA INI ADALAH CARD "LIHAT SEMUA" (CTA)
-            if (member.isCTA) {
-              return (
-                <div 
-                  key={member.id} 
-                  className={`relative rounded-[2rem] overflow-hidden transition-all duration-500 ease-in-out flex flex-col justify-center items-center w-[90%] max-w-[340px] md:w-[320px] h-[480px]
-                    ${isCenter 
-                      ? 'scale-100 z-20 shadow-[0_0_40px_rgba(234,179,8,0.2)] border-2 border-[#eab308] bg-gradient-to-b from-[#1a234f] to-[#0f173b]' 
-                      : 'hidden md:flex scale-90 z-10 opacity-40 hover:opacity-70 border border-white/5 bg-[#0a1128] cursor-pointer'
-                    }`}
-                  onClick={() => {
-                    if (!isCenter) handleNext();
-                  }}
-                >
-                  {isCenter ? (
-                    <div className="text-center px-8 flex flex-col items-center justify-center h-full w-full">
+            return (
+              <div 
+                key={`${member.id}-${idx}`} 
+                className={`relative rounded-[2rem] overflow-hidden transition-all duration-500 ease-out flex-col w-[90%] max-w-[340px] md:w-[320px] h-[480px]
+                  ${isCenter 
+                    ? 'flex scale-100 z-20 shadow-[0_0_40px_rgba(234,179,8,0.2)] border-2 border-[#eab308] bg-gradient-to-b from-[#1a234f] to-[#0f173b] opacity-100 translate-y-0' 
+                    : 'hidden md:flex scale-90 z-10 opacity-40 hover:opacity-70 border border-white/5 bg-[#0a1128] cursor-pointer translate-y-2'
+                  }`}
+                onClick={() => {
+                  if (!isCenter) {
+                    idx === 0 ? handlePrev() : handleNext();
+                  }
+                }}
+              >
+                {member.isCTA ? (
+                   isCenter ? (
+                    <div className="text-center px-8 flex flex-col items-center justify-center h-full w-full animate-in fade-in zoom-in duration-500">
                       <div className="w-20 h-20 bg-[#eab308]/20 rounded-full flex items-center justify-center mb-6">
                         <svg className="w-10 h-10 text-[#eab308]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                       </div>
-                      {/* REVISI: Hilangin "50+" */}
                       <h3 className="text-2xl font-black text-white mb-3">Atlet Berprestasi Lainnya</h3>
                       <p className="text-blue-100/70 text-sm font-medium mb-8">Jelajahi seluruh rekam jejak juara dari keluarga besar FAST.</p>
                       
@@ -221,52 +163,37 @@ export default function Member() {
                       </Link>
                     </div>
                   ) : (
-                    <div className="text-center px-4">
+                    <div className="text-center px-4 flex flex-col items-center justify-center h-full w-full">
                       <svg className="w-12 h-12 text-white/50 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                       </svg>
                       <h3 className="text-lg font-bold text-white/80">Lihat Semua Member</h3>
                     </div>
-                  )}
-                </div>
-              );
-            }
+                  )
+                ) : (
+                  <div className={`flex flex-col h-full w-full ${isCenter ? 'animate-in fade-in zoom-in duration-500' : ''}`}>
+                    <MemberGallery images={member.images} isCenter={isCenter} />
 
-            // KONDISI JIKA INI ADALAH CARD PROFIL BIASA
-            return (
-              <div 
-                key={`${member.id}-${idx}`} 
-                className={`relative rounded-[2rem] overflow-hidden transition-all duration-500 ease-in-out flex-col w-[90%] max-w-[340px] md:w-[320px] h-[480px]
-                  ${isCenter 
-                    ? 'flex scale-100 z-20 shadow-[0_0_40px_rgba(234,179,8,0.2)] border-2 border-[#eab308] bg-gradient-to-b from-[#1a234f] to-[#0f173b]' 
-                    : 'hidden md:flex scale-90 z-10 opacity-40 hover:opacity-70 border border-white/5 bg-[#0a1128] cursor-pointer'
-                  }`}
-                onClick={() => {
-                  if (!isCenter) {
-                    idx === 0 ? handlePrev() : handleNext();
-                  }
-                }}
-              >
-                <MemberGallery images={member.images} isCenter={isCenter} />
-
-                <div className="p-7 flex flex-col flex-grow overflow-hidden text-left bg-transparent relative z-30">
-                  <h4 className={`font-black ${isCenter ? 'text-2xl text-white' : 'text-xl text-white/80'} mb-4 shrink-0`}>
-                    {member.name}
-                  </h4>
-                  
-                  <div className="flex flex-col gap-3.5 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/40 transition-colors">
-                    {member.achievements.map((achieve, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <svg className={`w-4 h-4 shrink-0 mt-0.5 ${isCenter ? 'text-[#eab308]' : 'text-white/30'}`} fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582c.277.11.464.395.464.716v4.3c0 1.944-1.121 3.655-2.822 4.457l-.596.28v1.842a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1.842l-.596-.28A5.002 5.002 0 015 10.92V6.621c0-.321.187-.606.464-.716L9 4.323V3a1 1 0 011-1zm-1 3.323L5.954 6.54l3.046 1.218 3.046-1.218L9 5.323z" clipRule="evenodd" />
-                        </svg>
-                        <span className={`text-[13px] font-semibold leading-relaxed ${isCenter ? 'text-white/90' : 'text-white/50'}`}>
-                          {achieve}
-                        </span>
+                    <div className="p-7 flex flex-col flex-grow overflow-hidden text-left bg-transparent relative z-30">
+                      <h4 className={`font-black transition-colors duration-500 ${isCenter ? 'text-2xl text-white' : 'text-xl text-white/80'} mb-4 shrink-0`}>
+                        {member.name}
+                      </h4>
+                      
+                      <div className="flex flex-col gap-3.5 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/40 transition-colors">
+                        {member.achievements.map((achieve, index) => (
+                          <div key={index} className="flex items-start gap-3">
+                            <svg className={`w-4 h-4 shrink-0 mt-0.5 transition-colors duration-500 ${isCenter ? 'text-[#eab308]' : 'text-white/30'}`} fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582c.277.11.464.395.464.716v4.3c0 1.944-1.121 3.655-2.822 4.457l-.596.28v1.842a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1.842l-.596-.28A5.002 5.002 0 015 10.92V6.621c0-.321.187-.606.464-.716L9 4.323V3a1 1 0 011-1zm-1 3.323L5.954 6.54l3.046 1.218 3.046-1.218L9 5.323z" clipRule="evenodd" />
+                            </svg>
+                            <span className={`text-[13px] font-semibold leading-relaxed transition-colors duration-500 ${isCenter ? 'text-white/90' : 'text-white/50'}`}>
+                              {achieve}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
@@ -287,7 +214,7 @@ export default function Member() {
           </button>
           
           <div className="flex items-center gap-2.5">
-            {members.map((_, index) => (
+            {carouselData.map((_, index) => (
               <button 
                 key={index}
                 onClick={() => setActiveIndex(index)}
@@ -300,9 +227,9 @@ export default function Member() {
 
           <button 
             onClick={handleNext}
-            disabled={activeIndex === members.length - 1}
+            disabled={activeIndex === carouselData.length - 1}
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-              activeIndex === members.length - 1 
+              activeIndex === carouselData.length - 1 
                 ? 'bg-white/5 border border-white/5 text-white/20 cursor-not-allowed' 
                 : 'bg-white/5 border border-white/10 text-white hover:bg-[#eab308] hover:text-[#000b3d] hover:scale-105 active:scale-95 cursor-pointer'
             }`}

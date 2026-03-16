@@ -1,56 +1,8 @@
 'use client'; 
+import { hargaData } from "@/data/hargaData";
 
 export default function Harga() {
   const adminWhatsApp = '6281188037673';
-
-  const monthlyPackages = [
-    {
-      id: 1,
-      name: 'WEEK END',
-      price: '600.000',
-      period: 'per bulan',
-      isPopular: false,
-      features: [
-        'Jadwal: Sabtu & Minggu',
-        'Jam Latihan: 07.00 - 12.00',
-        'Fasilitas lapangan standar',
-        'Program latihan dasar',
-      ],
-      btnText: 'Daftar Week End',
-      pkgCode: 'Week End',
-    },
-    {
-      id: 2,
-      name: 'REGULER',
-      price: '700.000',
-      period: 'per bulan',
-      isPopular: false,
-      features: [
-        'Jadwal: 3x Seminggu (Rabu, Sabtu, Minggu)',
-        'Rabu: 13.00 - 17.00',
-        'Weekend: 07.00 - 12.00',
-        'Program latihan terstruktur',
-      ],
-      btnText: 'Daftar Reguler',
-      pkgCode: 'Reguler',
-    },
-    {
-      id: 3,
-      name: 'PRESTASI',
-      price: '800.000',
-      period: 'per bulan',
-      isPopular: true, 
-      features: [
-        'Jadwal Latihan: Bebas (Setiap Hari)',
-        'Jam Latihan Fleksibel',
-        'Fokus pembinaan atlet kompetitif',
-        'Prioritas fasilitas & lapangan',
-      ],
-      btnText: 'Daftar Prestasi',
-      pkgCode: 'Prestasi',
-    },
-  ];
-
   const handleRegister = (pkgCode: string) => {
     const message = `Halo Admin FAST, saya ingin mendaftar dengan data berikut:\n\nNama :\nAlamat :\nTempat & tgl lahir :\nAsal sekolah :\nNo HP :\nNama Ayah/Ibu :\nNo HP Ayah/Ibu :\n\nPilihan Membership : ${pkgCode}`;
     const whatsappUrl = `https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`;
@@ -92,7 +44,7 @@ export default function Harga() {
 
         {/* --- Grid 3 Card Bulanan --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 w-full max-w-5xl items-center mb-8">
-          {monthlyPackages.map((pkg) => (
+          {hargaData.map((pkg) => (
             <div 
               key={pkg.id} 
               className={`relative rounded-[2rem] text-left flex flex-col h-full transition-all duration-300

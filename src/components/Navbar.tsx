@@ -4,10 +4,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-
+import { usePathname } from 'next/navigation'; 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isHome = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,11 +26,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Prestasi', href: '#prestasi' },
-    { name: 'Coach', href: '#coach' },
-    { name: 'Member', href: '#member' },
-    { name: 'Galeri', href: '#galeri' },
+    { name: 'Home', href: isHome ? '#home' : '/#home' },
+    { name: 'Prestasi', href: isHome ? '#prestasi' : '/#prestasi' },
+    { name: 'Coach', href: isHome ? '#coach' : '/#coach' },
+    { name: 'Member', href: isHome ? '#member' : '/#member' },
+    { name: 'Galeri', href: isHome ? '#galeri' : '/#galeri' },
   ];
 
   return (
@@ -42,7 +45,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-14">
           
           {/* --- Logo Section --- */}
-          <Link href="#home" className="flex items-center gap-2.5 group relative z-50">
+          <Link href={isHome ? '#home' : '/#home'} className="flex items-center gap-2.5 group relative z-50">
             <div className="relative w-10 h-10 transition-transform group-hover:scale-105">
               <Image 
                 src="/favicon.ico" 
@@ -75,7 +78,7 @@ export default function Navbar() {
             </div>
             
             <Link 
-              href="#pricing" 
+              href={isHome ? '#pricing' : '/#pricing'} 
               className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-2 rounded-lg text-[13px] font-black shadow-lg shadow-orange-600/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all"
             >
               Daftar Sekarang
@@ -88,7 +91,6 @@ export default function Navbar() {
               className="text-white p-2 focus:outline-none"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {/* Ikon berubah dari Hamburger jadi 'X' kalau diklik */}
               {isMobileMenuOpen ? (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -104,7 +106,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* --- Mobile Menu Dropdown (Muncul cuma di HP) --- */}
+      {/* --- Mobile Menu Dropdown --- */}
       <div 
         className={`md:hidden absolute top-full left-0 w-full bg-[#000b3d]/95 backdrop-blur-md border-t border-white/10 overflow-hidden transition-all duration-300 ease-in-out shadow-2xl ${
           isMobileMenuOpen ? 'max-h-[400px] opacity-100 py-6' : 'max-h-0 opacity-0 py-0'
@@ -115,14 +117,14 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              onClick={() => setIsMobileMenuOpen(false)} // Nutup menu abis di-klik
+              onClick={() => setIsMobileMenuOpen(false)} 
               className="text-gray-300 hover:text-white text-base font-bold tracking-wide transition-all w-full text-center py-2 border-b border-white/5"
             >
               {link.name}
             </Link>
           ))}
           <Link 
-            href="#pricing" 
+            href={isHome ? '#pricing' : '/#pricing'} 
             onClick={() => setIsMobileMenuOpen(false)}
             className="w-full text-center bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-3.5 rounded-xl text-sm font-black shadow-lg shadow-orange-600/20 mt-2"
           >

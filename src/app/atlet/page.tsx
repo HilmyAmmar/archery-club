@@ -1,0 +1,147 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import Navbar from '@/components/Navbar'; 
+import Footer from '@/components/Footer';
+import { membersData } from '@/data/memberData';
+
+function MemberGallery({ images }: { images: string[] }) {
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const nextImg = (e: React.MouseEvent) => {
+    e.stopPropagation(); 
+    setImgIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setImgIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <div className="relative w-full aspect-square shrink-0 bg-[#1a234f] flex items-center justify-center group overflow-hidden">
+      {images.map((img, idx) => (
+        <div 
+          key={idx}
+          className={`absolute inset-0 w-full h-full transition-opacity duration-500 bg-cover bg-top ${
+            idx === imgIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+          style={{ backgroundImage: `url(${img})` }}
+        />
+      ))}
+      
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#1a234f] via-[#1a234f]/60 to-transparent z-20 pointer-events-none"></div>
+
+      {images.length > 1 && (
+        <>
+          <button onClick={prevImg} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button onClick={nextImg} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30">
+            {images.map((_, i) => (
+              <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === imgIndex ? 'w-4 bg-[#eab308]' : 'w-1.5 bg-white/50'}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default function AtletPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filtering sekarang pake data yang di-import dari membersData
+  const filteredMembers = membersData.filter((member) => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    return member.name.toLowerCase().includes(lowerCaseQuery) || 
+           member.achievements.some(achieve => achieve.toLowerCase().includes(lowerCaseQuery));
+  });
+
+  return (
+    <div className="flex flex-col min-h-screen bg-[#000b3d] text-white selection:bg-[#eab308] selection:text-[#000b3d]">
+      
+      <Navbar />
+
+      <main className="flex-grow relative z-0 pt-20 pb-20 px-4">
+        <div className="max-w-6xl mx-auto mt-4 md:mt-10">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="flex flex-col items-start text-left">
+              <Link href="/" className="group flex items-center gap-2 text-white/60 hover:text-[#eab308] text-sm font-semibold transition-colors mb-6">
+                <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali ke Beranda
+              </Link>
+              <div className="border border-[#eab308]/30 bg-[#eab308]/10 text-[#eab308] px-4 py-1.5 rounded-full text-[10px] font-bold tracking-[0.2em] mb-4 uppercase">
+                Hall of Fame
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
+                Daftar <span className="text-[#eab308]">Atlet Fast</span>
+              </h1>
+              <p className="text-blue-100/70 text-sm md:text-base font-medium max-w-xl">
+                Seluruh rekam jejak atlet kebanggaan FAST yang telah mengharumkan nama klub.
+              </p>
+            </div>
+
+            <div className="relative w-full md:w-[350px] shrink-0">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input 
+                type="text" 
+                placeholder="Cari nama atau event..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#eab308] transition-all"
+              />
+            </div>
+          </div>
+
+          {filteredMembers.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+              {filteredMembers.map((member) => (
+                <div 
+                  key={member.id} 
+                  className="flex flex-col rounded-[1.5rem] overflow-hidden border border-white/10 bg-[#1a234f] hover:border-[#eab308]/50 hover:shadow-[0_0_30px_rgba(234,179,8,0.15)] transition-all duration-300 group"
+                >
+                  <MemberGallery images={member.images} />
+                  
+                  <div className="p-6 pt-2 flex flex-col flex-grow h-[260px] relative z-30 bg-[#1a234f]">
+                    <h4 className="font-black text-2xl text-white mb-4 shrink-0 border-b border-white/5 pb-4 group-hover:text-[#eab308] transition-colors">
+                      {member.name}
+                    </h4>
+                    <div className="flex flex-col gap-3 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                      {member.achievements.map((achieve, index) => (
+                        <div key={index} className="flex items-start gap-3">
+                          <svg className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[#eab308]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582c.277.11.464.395.464.716v4.3c0 1.944-1.121 3.655-2.822 4.457l-.596.28v1.842a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1.842l-.596-.28A5.002 5.002 0 015 10.92V6.621c0-.321.187-.606.464-.716L9 4.323V3a1 1 0 011-1zm-1 3.323L5.954 6.54l3.046 1.218 3.046-1.218L9 5.323z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-[13px] font-medium text-white/80 leading-relaxed">{achieve}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 bg-white/5 rounded-[2rem] border border-dashed border-white/10">
+              <p className="text-white/40">Hasil tidak ditemukan.</p>
+            </div>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+
+    </div>
+  );
+}
