@@ -1,3 +1,4 @@
+// src/app/atlet/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -55,7 +56,6 @@ function MemberGallery({ images }: { images: string[] }) {
 export default function AtletPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filtering sekarang pake data yang di-import dari membersData
   const filteredMembers = membersData.filter((member) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     return member.name.toLowerCase().includes(lowerCaseQuery) || 
@@ -63,28 +63,35 @@ export default function AtletPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#000b3d] text-white selection:bg-[#eab308] selection:text-[#000b3d]">
+    // REVISI GRADIENT: Biru Navbar (#000b3d) -> Oren (#e65c00) -> Kuning (#eab308) -> Merah (#8b1812)
+    <div className="flex flex-col min-h-screen text-white selection:bg-[#eab308] selection:text-[#000b3d] bg-[linear-gradient(to_bottom,#000b3d_0%,#e65c00_45%,#eab308_75%,#8b1812_100%)]">
       
       <Navbar />
 
-      <main className="flex-grow relative z-0 pt-20 pb-20 px-4">
-        <div className="max-w-6xl mx-auto mt-4 md:mt-10">
+      <main className="flex-grow relative z-10 pt-28 pb-20 px-4">
+        
+        {/* Pattern Grid Tipis biar teksturnya kaya di landing page */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] z-0 pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto mt-4 md:mt-10 relative z-20">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div className="flex flex-col items-start text-left">
+              {/* Balik ke versi elegan tanpa background karena warnanya udah biru gelap */}
               <Link href="/" className="group flex items-center gap-2 text-white/60 hover:text-[#eab308] text-sm font-semibold transition-colors mb-6">
                 <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 Kembali ke Beranda
               </Link>
+              
               <div className="border border-[#eab308]/30 bg-[#eab308]/10 text-[#eab308] px-4 py-1.5 rounded-full text-[10px] font-bold tracking-[0.2em] mb-4 uppercase">
                 Hall of Fame
               </div>
-              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
+              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3 drop-shadow-md">
                 Daftar <span className="text-[#eab308]">Atlet Fast</span>
               </h1>
-              <p className="text-blue-100/70 text-sm md:text-base font-medium max-w-xl">
+              <p className="text-white/80 text-sm md:text-base font-medium max-w-xl">
                 Seluruh rekam jejak atlet kebanggaan FAST yang telah mengharumkan nama klub.
               </p>
             </div>
@@ -100,7 +107,8 @@ export default function AtletPage() {
                 placeholder="Cari nama atau event..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#eab308] transition-all"
+                // Search bar balikin ke versi transparan
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#eab308] transition-all backdrop-blur-sm"
               />
             </div>
           </div>
@@ -110,7 +118,7 @@ export default function AtletPage() {
               {filteredMembers.map((member) => (
                 <div 
                   key={member.id} 
-                  className="flex flex-col rounded-[1.5rem] overflow-hidden border border-white/10 bg-[#1a234f] hover:border-[#eab308]/50 hover:shadow-[0_0_30px_rgba(234,179,8,0.15)] transition-all duration-300 group"
+                  className="flex flex-col rounded-[1.5rem] overflow-hidden border border-white/10 bg-[#1a234f] hover:border-[#eab308]/50 hover:shadow-[0_10px_40px_rgba(234,179,8,0.2)] hover:-translate-y-1 transition-all duration-300 group"
                 >
                   <MemberGallery images={member.images} />
                   
@@ -118,7 +126,7 @@ export default function AtletPage() {
                     <h4 className="font-black text-2xl text-white mb-4 shrink-0 border-b border-white/5 pb-4 group-hover:text-[#eab308] transition-colors">
                       {member.name}
                     </h4>
-                    <div className="flex flex-col gap-3 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                    <div className="flex flex-col gap-3 flex-grow overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/40">
                       {member.achievements.map((achieve, index) => (
                         <div key={index} className="flex items-start gap-3">
                           <svg className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[#eab308]" fill="currentColor" viewBox="0 0 20 20">
@@ -133,12 +141,18 @@ export default function AtletPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-white/5 rounded-[2rem] border border-dashed border-white/10">
-              <p className="text-white/40">Hasil tidak ditemukan.</p>
+            <div className="text-center py-20 bg-white/5 backdrop-blur-md rounded-[2rem] border border-dashed border-white/20">
+              <p className="text-white/60 font-medium">Hasil tidak ditemukan.</p>
             </div>
           )}
         </div>
       </main>
+
+      <div className="relative w-full overflow-hidden leading-none z-0 translate-y-[1px]">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[60px] md:h-[100px] fill-[#0f172a]">
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,120.72,201,110.15c61.4-9.2,118.2-31,175-53.71Z"></path>
+        </svg>
+      </div>
 
       <Footer />
 

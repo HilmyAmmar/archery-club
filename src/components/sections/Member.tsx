@@ -67,7 +67,11 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
 // --- KOMPONEN UTAMA MEMBER ---
 export default function Member() {
   
-  const topThreeMembers = membersData.slice(0, 3);
+  const heroNames = ['Kholidin', 'Yuki Widiyanto', 'Zaki Malique Iyadin'];
+  
+  const topThreeMembers = heroNames.map(name => 
+    membersData.find(member => member.name === name)
+  ).filter(member => member !== undefined);
   
   const carouselData = [
     ...topThreeMembers,
