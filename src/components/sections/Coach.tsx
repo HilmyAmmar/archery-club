@@ -45,7 +45,7 @@ export default function Coach() {
         </div>
 
         <h2 className="text-4xl md:text-[3.5rem] font-black text-[#000b3d] tracking-tight mb-16 text-center">
-          Dibimbing pelatih <span className="text-blue-600">Pelatda Panahan DKI</span>
+          Dibimbing Pelatih <span className="text-blue-600">Pelatda Panahan DKI</span>
         </h2>
 
         {/* --- Looping Data Coach --- */}
