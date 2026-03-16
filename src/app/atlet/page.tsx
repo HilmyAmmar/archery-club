@@ -96,9 +96,15 @@ export default function AtletPage() {
               </p>
             </div>
 
-            <div className="relative w-full md:w-[350px] shrink-0">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <div className="relative w-full md:w-[350px] shrink-0 group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                <svg 
+                  className="w-5 h-5 text-white/40 group-focus-within:text-[#eab308] transition-colors" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -107,8 +113,7 @@ export default function AtletPage() {
                 placeholder="Cari nama atau event..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                // Search bar balikin ke versi transparan
-                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#eab308] transition-all backdrop-blur-sm"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#eab308] focus:bg-black/20 transition-all backdrop-blur-sm relative z-0"
               />
             </div>
           </div>
