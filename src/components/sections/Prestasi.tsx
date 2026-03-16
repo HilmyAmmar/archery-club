@@ -5,7 +5,7 @@ export default function Prestasi() {
   return (
     <section 
       id="prestasi" 
-      className="relative flex flex-col items-center pt-24 pb-32 px-4 bg-gradient-to-b from-[#facc15] via-[#e65c00] via-40% to-[#8b1812]"
+      className="relative flex flex-col items-center pt-24 pb-32 px-4 bg-gradient-to-b from-[#fec400] via-[#e65c00] via-40% to-[#8b1812]"
     >
       
       <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center text-center mt-10">

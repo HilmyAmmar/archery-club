@@ -31,8 +31,8 @@ export default function Hero() {
       {/* 3. Grid Pattern Overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* 4. Bottom Gradient Fade - Pudar ke Kuning Solid #facc15 tanpa transparansi di paling bawah */}
-      <div className="absolute bottom-0 left-0 w-full h-[25vh] bg-gradient-to-t from-[#facc15] via-[#facc15]/80 to-transparent z-10" />
+      {/* 4. Bottom Gradient Fade - Berakhir di warna solid #fec400 tanpa transparansi */}
+      <div className="absolute bottom-0 left-0 w-full h-[25vh] bg-gradient-to-t from-[#fec400] via-[#fec400]/80 to-transparent z-10" />
 
       {/* Main Content Container */}
       <div className="relative z-20 flex flex-col items-center text-center w-full px-4 max-w-5xl">
