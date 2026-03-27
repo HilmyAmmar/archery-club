@@ -154,7 +154,7 @@ export default function AdminLayout({
           </button>
         </div>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-10 z-0">
+        <main className="flex-1 overflow-y-auto p-4 md:p-10 relative">
           <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div>
               <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{title}</h1>
