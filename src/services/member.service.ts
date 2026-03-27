@@ -10,10 +10,8 @@ export interface CreateMemberPayload {
   alamat?: string;
   no_hp_utama?: string;
   asal_sekolah?: string;
-  nama_ayah?: string;
-  no_hp_ayah?: string;
-  nama_ibu?: string;
-  no_hp_ibu?: string;
+  nama_wali?: string; 
+  no_hp_wali?: string; 
   catatan?: string;
 }
 
@@ -50,10 +48,8 @@ export async function createMemberService(payload: CreateMemberPayload) {
         alamat: payload.alamat || null,
         no_hp_utama: payload.no_hp_utama || null,
         asal_sekolah: payload.asal_sekolah || null,
-        nama_ayah: payload.nama_ayah || null,
-        no_hp_ayah: payload.no_hp_ayah || null,
-        nama_ibu: payload.nama_ibu || null,
-        no_hp_ibu: payload.no_hp_ibu || null,
+        nama_wali: payload.nama_wali || null,
+        no_hp_wali: payload.no_hp_wali || null,
         catatan: payload.catatan || null,
       }
     ])
@@ -70,7 +66,7 @@ export async function createMemberService(payload: CreateMemberPayload) {
 /**
  * FUNGSI 3: Update data member berdasarkan ID
  */
-export async function updateMemberService(id: string, payload: Partial<CreateMemberPayload & { status_member: string }>) {
+export async function updateMemberService(id: string, payload: Partial<CreateMemberPayload>) {
   const { data, error } = await supabase
     .from('members')
     .update(payload)

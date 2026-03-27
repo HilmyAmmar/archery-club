@@ -1,3 +1,5 @@
+'use client';
+
 import { PlusCircle, X, Loader2, Save, UserCheck, Edit2 } from 'lucide-react';
 
 interface Props {
@@ -69,7 +71,7 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-slate-600">Jenis Kelamin <span className="text-red-500">*</span></label>
-                  <select required name="jenis_kelamin" value={formData.jenis_kelamin} onChange={onChange} className={selectClassName}>
+                  <select required name="jenis_kelamin" value={formData.jenis_kelamin || ""} onChange={onChange} className={selectClassName}>
                     <option value="" disabled hidden>Pilih jenis kelamin...</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
@@ -78,7 +80,7 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-slate-600">Tipe Membership <span className="text-red-500">*</span></label>
-                  <select required name="tipe_membership" value={formData.tipe_membership} onChange={onChange} className={selectClassName}>
+                  <select required name="tipe_membership" value={formData.tipe_membership || ""} onChange={onChange} className={selectClassName}>
                     <option value="" disabled hidden>Pilih paket langganan...</option>
                     <option value="Reguler">Reguler</option>
                     <option value="Weekend">Weekend</option>
@@ -88,13 +90,8 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 
                 <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-semibold text-slate-600">Status Member <span className="text-red-500">*</span></label>
-                    <select 
-                        required 
-                        name="status_member" 
-                        value={formData.status_member || "aktif"} 
-                        onChange={onChange} 
-                        className={selectClassName}
-                    >
+                    <select required name="status_member" value={formData.status_member || ""} onChange={onChange} className={selectClassName}>
+                        <option value="" disabled hidden>Pilih status member...</option>
                         <option value="aktif">Aktif</option>
                         <option value="cuti">Cuti</option>
                         <option value="non-aktif">Non-Aktif</option>
@@ -103,7 +100,7 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-slate-600">No. HP Utama / WA <span className="text-red-500">*</span></label>
-                  <input required type="text" name="no_hp_utama" value={formData.no_hp_utama} onChange={onChange} placeholder="Contoh: 081234567890" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <input required type="text" name="no_hp_utama" value={formData.no_hp_utama} onChange={onChange} placeholder="Contoh: 081234567890" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
                 
                 <div className="flex flex-col gap-1.5">
@@ -115,40 +112,29 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                   <label className="text-sm font-semibold text-slate-600">Tanggal Lahir</label>
                   <input type="date" name="tanggal_lahir" value={formData.tanggal_lahir || ''} onChange={onChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
-                
               </div>
             </div>
 
-            {/* --- KONTAK & KELUARGA (OPSIONAL) --- */}
+            {/* --- INFORMASI TAMBAHAN --- */}
             <div>
               <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <span className="w-6 h-px bg-slate-200"></span> Informasi Tambahan
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 md:col-span-2">
                   <label className="text-sm font-semibold text-slate-600">Asal Sekolah</label>
                   <input type="text" name="asal_sekolah" value={formData.asal_sekolah || ''} onChange={onChange} placeholder="Contoh: SDIT Nurul Hikmah" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
-                
+
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-600">Nama Ayah</label>
-                  <input type="text" name="nama_ayah" value={formData.nama_ayah || ''} onChange={onChange} placeholder="Nama lengkap ayah" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="text-sm font-semibold text-slate-600">Nama Wali</label>
+                  <input type="text" name="nama_wali" value={formData.nama_wali || ''} onChange={onChange} placeholder="Nama lengkap wali" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
                 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-600">No. HP Ayah</label>
-                  <input type="text" name="no_hp_ayah" value={formData.no_hp_ayah || ''} onChange={onChange} placeholder="Kontak darurat ayah" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-                </div>
-                
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-600">Nama Ibu</label>
-                  <input type="text" name="nama_ibu" value={formData.nama_ibu || ''} onChange={onChange} placeholder="Nama lengkap ibu" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-                </div>
-                
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-600">No. HP Ibu</label>
-                  <input type="text" name="no_hp_ibu" value={formData.no_hp_ibu || ''} onChange={onChange} placeholder="Kontak darurat ibu" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="text-sm font-semibold text-slate-600">No. HP Wali</label>
+                  <input type="text" name="no_hp_wali" value={formData.no_hp_wali || ''} onChange={onChange} placeholder="Kontak darurat wali" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
                 
                 <div className="flex flex-col gap-1.5 md:col-span-2">
@@ -158,9 +144,8 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 
                 <div className="flex flex-col gap-1.5 md:col-span-2">
                   <label className="text-sm font-semibold text-slate-600">Catatan Khusus</label>
-                  <textarea name="catatan" value={formData.catatan || ''} onChange={onChange} rows={2} placeholder="Riwayat medis, alergi, atau catatan lainnya (opsional)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"></textarea>
+                  <textarea name="catatan" value={formData.catatan || ''} onChange={onChange} rows={2} placeholder="Alergi, riwayat cedera, dll..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"></textarea>
                 </div>
-                
               </div>
             </div>
           </form>
@@ -175,7 +160,6 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
             {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</> : <><Save className="w-4 h-4" /> {isEditMode ? 'Simpan Perubahan' : 'Simpan Data'}</>}
           </button>
         </div>
-
       </div>
     </div>
   );

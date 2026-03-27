@@ -4,17 +4,15 @@ export interface Member {
   id: string;
   nama_lengkap: string;
   jenis_kelamin: 'Laki-laki' | 'Perempuan';
-  tipe_membership: 'Reguler' | 'Weekend' | 'Private' | 'Ekskul';
-  status_member: 'aktif' | 'cuti' | 'non-aktif'; // Sudah benar
+  tipe_membership: 'Reguler' | 'Weekend' | 'Prestasi';
+  status_member: 'aktif' | 'cuti' | 'non-aktif';
   tempat_lahir?: string;
   tanggal_lahir?: string;
   alamat?: string;
   no_hp_utama?: string;
   asal_sekolah?: string;
-  nama_ayah?: string;
-  no_hp_ayah?: string;
-  nama_ibu?: string;
-  no_hp_ibu?: string;
+  nama_wali?: string;    // Baru
+  no_hp_wali?: string;   // Baru
   catatan?: string;
   created_at?: string;
 }
@@ -29,10 +27,8 @@ interface MemberFormData {
   alamat: string;
   no_hp_utama: string;
   asal_sekolah: string;
-  nama_ayah: string;
-  no_hp_ayah: string;
-  nama_ibu: string;
-  no_hp_ibu: string;
+  nama_wali: string;     // Baru
+  no_hp_wali: string;    // Baru
   catatan: string;
 }
 
@@ -47,21 +43,18 @@ export function useMembers() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Member | null>(null);
 
-  // Pastikan default status_member di sini adalah 'aktif' agar tidak kosong saat POST
   const initialFormState: MemberFormData = {
     nama_lengkap: '', 
     jenis_kelamin: '', 
     tipe_membership: '', 
-    status_member: 'aktif', // Set default ke aktif
+    status_member: '', 
     tempat_lahir: '', 
     tanggal_lahir: '', 
     alamat: '', 
     no_hp_utama: '',
     asal_sekolah: '', 
-    nama_ayah: '', 
-    no_hp_ayah: '', 
-    nama_ibu: '', 
-    no_hp_ibu: '', 
+    nama_wali: '',    // Diupdate
+    no_hp_wali: '',   // Diupdate
     catatan: ''
   };
   
@@ -94,18 +87,16 @@ export function useMembers() {
     
     setFormData({
       nama_lengkap: member.nama_lengkap || '',
-      jenis_kelamin: member.jenis_kelamin || 'Laki-laki',
-      tipe_membership: member.tipe_membership || 'Reguler',
-      status_member: member.status_member || 'aktif',
+      jenis_kelamin: member.jenis_kelamin || '',
+      tipe_membership: member.tipe_membership || '',
+      status_member: member.status_member || '',
       tempat_lahir: member.tempat_lahir || '',
       tanggal_lahir: member.tanggal_lahir || '',
       alamat: member.alamat || '',
       no_hp_utama: member.no_hp_utama || '',
       asal_sekolah: member.asal_sekolah || '',
-      nama_ayah: member.nama_ayah || '',
-      no_hp_ayah: member.no_hp_ayah || '',
-      nama_ibu: member.nama_ibu || '',
-      no_hp_ibu: member.no_hp_ibu || '',
+      nama_wali: member.nama_wali || '',    // Diupdate
+      no_hp_wali: member.no_hp_wali || '',  // Diupdate
       catatan: member.catatan || ''
     });
     setIsModalOpen(true);
@@ -177,11 +168,9 @@ export function useMembers() {
     }
   };
 
-  // --- PERBAIKAN STATS DI SINI ---
   const stats = {
     aktif: members.filter(m => m.status_member === 'aktif').length,
     cuti: members.filter(m => m.status_member === 'cuti').length,
-    // Key harus matching dengan yang dipanggil di UI: stats['non-aktif']
     'non-aktif': members.filter(m => m.status_member === 'non-aktif').length,
   };
 
