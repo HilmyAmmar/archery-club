@@ -139,14 +139,16 @@ export default function AdminLayout({
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         <div className="md:hidden flex items-center justify-between bg-white p-4 shadow-sm border-b border-slate-100 z-10">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-1.5 rounded-lg">
-              <Target className="w-5 h-5 text-white" />
+            {/* Ganti Target Icon jadi Img Logo FAST */}
+            <img src="/favicon.ico" alt="FAST Logo" className="w-8 h-8 object-contain shrink-0" />
+            <div className="flex flex-col">
+              <span className="font-black text-lg leading-none tracking-wide text-slate-800">FAST</span>
+              <span className="text-blue-600 text-[10px] font-bold uppercase tracking-wider">Admin Portal</span>
             </div>
-            <span className="font-bold text-slate-800">FAST Admin</span>
           </div>
           <button 
             onClick={() => setIsMobileOpen(true)}
-            className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+            className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
           >
             <Menu className="w-6 h-6" />
           </button>

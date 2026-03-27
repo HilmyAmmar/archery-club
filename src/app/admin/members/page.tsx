@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import AdminLayout from '@/components/admin/adminLayout';
 import MemberFormModal from '@/components/admin/MemberFormModal';
 import { useMembers } from '@/hook/useMember';
-import { UserCheck, UserMinus, UserX, PlusCircle, Loader2, Search, Users, Edit2, Trash2, AlertTriangle } from 'lucide-react';
+import { UserCheck, UserMinus, UserX, PlusCircle, Loader2, Search, Users, Edit2, Trash2, AlertTriangle, Filter, ChevronDown } from 'lucide-react';
 
 export default function Members() {
   const { 
@@ -15,6 +16,33 @@ export default function Members() {
     deleteTarget, setDeleteTarget, confirmDelete
   } = useMembers();
 
+  // --- STATE UNTUK SEARCH & FILTER ---
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterPaket, setFilterPaket] = useState('Semua');
+  const [filterStatus, setFilterStatus] = useState('Semua');
+
+  // --- LOGIC FILTERING ---
+  const filteredMembers = members.filter((member) => {
+    const matchSearch = member.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchPaket = filterPaket === 'Semua' || member.tipe_membership === filterPaket;
+    const matchStatus = filterStatus === 'Semua' || member.status_member === filterStatus;
+    return matchSearch && matchPaket && matchStatus;
+  });
+
+  // --- HELPER WARNA UNTUK TIPE MEMBERSHIP ---
+  const getBadgeColor = (tipe: string) => {
+    switch (tipe?.toLowerCase()) {
+      case 'reguler':
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'weekend':
+        return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'prestasi':
+        return 'bg-orange-50 text-orange-700 border-orange-200';
+      default:
+        return 'bg-slate-50 text-slate-700 border-slate-200';
+    }
+  };
+
   const actionButton = (
     <button 
       onClick={openAddModal}
@@ -23,6 +51,8 @@ export default function Members() {
       <PlusCircle className="w-4 h-4" /> Tambah Member
     </button>
   );
+
+  const filterSelectClass = "appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer w-full sm:w-auto transition-all";
 
   return (
     <AdminLayout title="Data Member" subtitle="Kelola anggota club panahan FAST" action={actionButton}>
@@ -55,7 +85,6 @@ export default function Members() {
               <UserX className="w-5 h-5 text-rose-600" />
             </div>
             <div>
-              {/* DIGANTI JADI NON-AKTIF */}
               <p className="text-slate-500 text-sm font-medium mb-1">Non-Aktif</p>
               {isFetching ? <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-2xl font-bold text-slate-800">{stats['non-aktif'] || 0}</p>}
             </div>
@@ -64,13 +93,59 @@ export default function Members() {
 
         {/* --- TABEL DATA MEMBER --- */}
         <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-          <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
-            <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+          <div className="p-5 border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-slate-50/50">
+            <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2 shrink-0">
               <Users className="w-5 h-5 text-blue-600" /> Daftar Anggota
             </h3>
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Cari nama..." className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full sm:w-64 transition-all" />
+            
+            {/* --- FILTER & SEARCH CONTROLS --- */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto justify-end">
+              
+              {/* 1. Filter Paket */}
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-slate-400 hidden sm:block shrink-0" />
+                <div className="relative w-full sm:w-auto">
+                  <select 
+                    value={filterPaket} 
+                    onChange={(e) => setFilterPaket(e.target.value)}
+                    className={filterSelectClass}
+                  >
+                    <option value="Semua">Semua Paket</option>
+                    <option value="Reguler">Reguler</option>
+                    <option value="Weekend">Weekend</option>
+                    <option value="Prestasi">Prestasi</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* 2. Filter Status */}
+              <div className="relative w-full sm:w-auto">
+                <select 
+                  value={filterStatus} 
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className={filterSelectClass}
+                >
+                  <option value="Semua">Semua Status</option>
+                  <option value="aktif">Aktif</option>
+                  <option value="cuti">Cuti</option>
+                  <option value="non-aktif">Non-Aktif</option>
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* 3. Search Box */}
+              <div className="relative w-full sm:w-64">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari nama..." 
+                  className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full transition-all bg-white" 
+                />
+              </div>
+
             </div>
           </div>
 
@@ -93,18 +168,18 @@ export default function Members() {
                       <p className="font-medium">Memuat data dari database...</p>
                     </td>
                   </tr>
-                ) : members.length === 0 ? (
+                ) : filteredMembers.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-12 text-center text-slate-400">
+                    <td colSpan={5} className="p-12 text-center text-slate-500">
                       <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                         <Users className="w-8 h-8 text-slate-300" />
                       </div>
-                      <p className="font-medium">Belum ada data member.</p>
-                      <p className="text-sm mt-1">Klik "Tambah Member" untuk memulai.</p>
+                      <p className="font-medium text-slate-600">Data tidak ditemukan.</p>
+                      <p className="text-sm mt-1 text-slate-400">Coba sesuaikan filter atau kata kunci pencarian.</p>
                     </td>
                   </tr>
                 ) : (
-                  members.map((member) => (
+                  filteredMembers.map((member) => (
                     <tr key={member.id} className="hover:bg-blue-50/50 transition-colors group">
                       <td className="p-4">
                         <div className="flex flex-col">
@@ -113,9 +188,14 @@ export default function Members() {
                         </div>
                       </td>
                       <td className="p-4 text-sm text-slate-600 font-medium">{member.no_hp_utama || '-'}</td>
+                      
+                      {/* BADGE TIPE MEMBERSHIP BERWARNA */}
                       <td className="p-4">
-                        <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-200">{member.tipe_membership}</span>
+                        <span className={`px-3 py-1 text-xs font-bold rounded-lg border ${getBadgeColor(member.tipe_membership)}`}>
+                          {member.tipe_membership}
+                        </span>
                       </td>
+
                       <td className="p-4">
                         <span className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center w-fit gap-1.5 ${
                           member.status_member === 'aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
