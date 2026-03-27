@@ -36,25 +36,28 @@ export default function Members() {
             </div>
             <div>
               <p className="text-slate-500 text-sm font-medium mb-1">Aktif</p>
-              {isFetching ? <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-2xl font-bold text-slate-800">{stats.aktif}</p>}
+              {isFetching ? <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-2xl font-bold text-slate-800">{stats.aktif || 0}</p>}
             </div>
           </div>
+
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
             <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
               <UserMinus className="w-5 h-5 text-amber-500" />
             </div>
             <div>
               <p className="text-slate-500 text-sm font-medium mb-1">Cuti</p>
-              {isFetching ? <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-2xl font-bold text-slate-800">{stats.cuti}</p>}
+              {isFetching ? <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-2xl font-bold text-slate-800">{stats.cuti || 0}</p>}
             </div>
           </div>
+
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
             <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center">
               <UserX className="w-5 h-5 text-rose-600" />
             </div>
             <div>
-              <p className="text-slate-500 text-sm font-medium mb-1">Keluar</p>
-              {isFetching ? <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-2xl font-bold text-slate-800">{stats.keluar}</p>}
+              {/* DIGANTI JADI NON-AKTIF */}
+              <p className="text-slate-500 text-sm font-medium mb-1">Non-Aktif</p>
+              {isFetching ? <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-2xl font-bold text-slate-800">{stats['non-aktif'] || 0}</p>}
             </div>
           </div>
         </div>
@@ -117,14 +120,17 @@ export default function Members() {
                         <span className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center w-fit gap-1.5 ${
                           member.status_member === 'aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
                           member.status_member === 'cuti' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
-                          'bg-rose-50 text-rose-700 border border-rose-100'
+                          'bg-rose-50 text-rose-700 border border-rose-100' // Warna untuk non-aktif
                         }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${member.status_member === 'aktif' ? 'bg-emerald-500' : member.status_member === 'cuti' ? 'bg-amber-500' : 'bg-rose-500'}`}></span>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            member.status_member === 'aktif' ? 'bg-emerald-500' : 
+                            member.status_member === 'cuti' ? 'bg-amber-500' : 
+                            'bg-rose-500'
+                          }`}></span>
                           {member.status_member.toUpperCase()}
                         </span>
                       </td>
                       <td className="p-4 text-right">
-                        {/* TOMBOL EDIT & DELETE */}
                         <div className="flex items-center justify-end gap-2">
                           <button 
                             onClick={() => openEditModal(member)}
@@ -151,7 +157,6 @@ export default function Members() {
         </div>
       </div>
 
-      {/* --- FORM MODAL (Tambah/Edit) --- */}
       <MemberFormModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -159,7 +164,7 @@ export default function Members() {
         errorMsg={errorMsg} 
         successMsg={successMsg} 
         formData={formData} 
-        isEditMode={!!editingId} // Tru jika editingId ada isinya
+        isEditMode={!!editingId} 
         onChange={handleChange} 
         onSubmit={handleSubmit} 
       />
@@ -197,7 +202,6 @@ export default function Members() {
           </div>
         </div>
       )}
-
     </AdminLayout>
   );
 }

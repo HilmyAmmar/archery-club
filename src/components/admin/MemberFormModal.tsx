@@ -87,18 +87,18 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 </div>
                 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-600">Status Member <span className="text-red-500">*</span></label>
-                  <select 
-                    required 
-                    name="status_member" 
-                    value={formData.status_member || "aktif"} 
-                    onChange={onChange} 
-                    className={selectClassName}
-                  >
-                    <option value="aktif">Aktif</option>
-                    <option value="cuti">Cuti</option>
-                    <option value="keluar">Keluar</option>
-                  </select>
+                    <label className="text-sm font-semibold text-slate-600">Status Member <span className="text-red-500">*</span></label>
+                    <select 
+                        required 
+                        name="status_member" 
+                        value={formData.status_member || "aktif"} 
+                        onChange={onChange} 
+                        className={selectClassName}
+                    >
+                        <option value="aktif">Aktif</option>
+                        <option value="cuti">Cuti</option>
+                        <option value="non-aktif">Non-Aktif</option>
+                    </select>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
