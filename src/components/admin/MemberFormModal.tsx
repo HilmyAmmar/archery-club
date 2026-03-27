@@ -99,8 +99,15 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-slate-600">No. HP Utama / WA <span className="text-red-500">*</span></label>
-                  <input required type="text" name="no_hp_utama" value={formData.no_hp_utama} onChange={onChange} placeholder="Contoh: 081234567890" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="text-sm font-semibold text-slate-600">No. HP Utama / WA</label>
+                  <input 
+                    type="text" 
+                    name="no_hp_utama" 
+                    value={formData.no_hp_utama || ''} 
+                    onChange={onChange} 
+                    placeholder="Contoh: 081234567890" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" 
+                  />
                 </div>
                 
                 <div className="flex flex-col gap-1.5">

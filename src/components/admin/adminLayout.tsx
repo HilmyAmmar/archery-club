@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation'; // Tambahin useRouter
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Users, 
@@ -36,14 +36,12 @@ export default function AdminLayout({
 }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter(); // Inisialisasi router
+  const router = useRouter(); 
 
   // --- Fungsi Logout Baru ---
   const handleLogout = async () => {
     try {
-      // Panggil API logout buat ngapus cookie
       await fetch('/api/auth/logout', { method: 'POST' });
-      // Arahin ke halaman login pake router.push (lebih halus dari window.location)
       router.push('/admin');
       router.refresh(); 
     } catch (error) {

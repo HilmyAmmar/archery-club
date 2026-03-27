@@ -95,8 +95,8 @@ export function useMembers() {
       alamat: member.alamat || '',
       no_hp_utama: member.no_hp_utama || '',
       asal_sekolah: member.asal_sekolah || '',
-      nama_wali: member.nama_wali || '',    // Diupdate
-      no_hp_wali: member.no_hp_wali || '',  // Diupdate
+      nama_wali: member.nama_wali || '',   
+      no_hp_wali: member.no_hp_wali || '',  
       catatan: member.catatan || ''
     });
     setIsModalOpen(true);

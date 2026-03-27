@@ -8,7 +8,7 @@ export async function POST(request: Request) {
         const result = await loginAdmin(username, password);
 
         if (!result) {
-            return NextResponse.json({ message: 'Login Gagal' }, { status: 401 });
+            return NextResponse.json({ message: 'Username atau password salah' }, { status: 401 });
         }
 
         const response = NextResponse.json({ message: 'Login Berhasil', ...result });
@@ -21,12 +21,16 @@ export async function POST(request: Request) {
             sameSite: 'lax',
             path: '/',
             maxAge: 60 * 60 * 24 * 7, 
-        })
+        });
 
         return response;
-    } catch (error) {
+        
+    } catch (error: any) {
         console.error('Error logging in admin:', error);
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
-
+        
+        return NextResponse.json(
+            { message: error.message || 'Username atau password salah.' }, 
+            { status: 401 }
+        );
     }
 }
