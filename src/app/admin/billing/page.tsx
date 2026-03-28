@@ -1,77 +1,414 @@
 'use client';
 
 import AdminLayout from '@/components/admin/adminLayout';
-import { PlusCircle, CheckCircle2, Clock, CreditCard } from 'lucide-react';
+import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, ChevronDown, Receipt, X, Loader2, Save, DollarSign, Calendar, UploadCloud, FileText, Users, FilePlus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useBillings, BillingRecord } from '@/hook/useBilling';
 
+// --- KOMPONEN MODAL PEMBAYARAN ---
+interface PaymentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  billingData: BillingRecord | null;
+  onSave: (data: any) => void;
+  isUpdating: boolean;
+}
+
+function PaymentModal({ isOpen, onClose, billingData, onSave, isUpdating }: PaymentModalProps) {
+  const [formData, setFormData] = useState({
+    nominal_bayar: '',
+    tanggal_bayar: '',
+    keterangan: ''
+  });
+
+  useEffect(() => {
+    if (billingData) {
+      setFormData({
+        nominal_bayar: billingData.nominal_bayar > 0 ? billingData.nominal_bayar.toString() : '',
+        tanggal_bayar: billingData.tanggal_bayar || new Date().toISOString().split('T')[0],
+        keterangan: billingData.keterangan || ''
+      });
+    }
+  }, [billingData]);
+
+  if (!isOpen || !billingData) return null;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({ 
+      id: billingData.id,
+      tagihan: billingData.nominal_tagihan,
+      ...formData 
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg shadow-sm bg-blue-600">
+              <Receipt className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">Update Pembayaran</h2>
+              <p className="text-xs text-slate-500 font-medium">Catat iuran untuk {billingData.members?.nama_lengkap}</p>
+            </div>
+          </div>
+          <button onClick={onClose} disabled={isUpdating} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Total Tagihan</p>
+              <p className="text-2xl font-black text-blue-900">Rp {billingData.nominal_tagihan.toLocaleString('id-ID')}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Paket</p>
+              <p className="text-sm font-bold text-blue-900">{billingData.members?.tipe_membership}</p>
+            </div>
+          </div>
+
+          <form id="payment-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-slate-400" /> Nominal Dibayar <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
+                  <input required type="number" name="nominal_bayar" value={formData.nominal_bayar} onChange={handleChange} placeholder="0" className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-slate-400" /> Tanggal Transaksi <span className="text-red-500">*</span>
+                </label>
+                <input required type="date" name="tanggal_bayar" value={formData.tanggal_bayar} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+              </div>
+              <div className="flex flex-col gap-1.5 md:col-span-2">
+                <label className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-slate-400" /> Catatan Tambahan (Bisa untuk log cicilan)
+                </label>
+                <textarea name="keterangan" value={formData.keterangan} onChange={handleChange} rows={2} placeholder="Misal: Cicilan 1 (200rb) - 12 Mei..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div className="p-6 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-3 shrink-0">
+          <button type="button" onClick={onClose} disabled={isUpdating} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50">
+            Batal
+          </button>
+          <button type="submit" form="payment-form" disabled={isUpdating} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50">
+            {isUpdating ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</> : <><Save className="w-4 h-4" /> Simpan Pembayaran</>}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- KOMPONEN MODAL KONFIRMASI GENERATE ---
+function ConfirmGenerateModal({ isOpen, onClose, onConfirm, periode, isGenerating, count }: { isOpen: boolean, onClose: () => void, onConfirm: () => void, periode: string, isGenerating: boolean, count: number }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[400px] p-8 flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
+        <div className="w-20 h-20 bg-blue-50 border-[6px] border-blue-100/50 rounded-full flex items-center justify-center mb-5">
+          <FilePlus className="w-8 h-8 text-blue-600" />
+        </div>
+        <h3 className="text-xl font-black text-slate-800 mb-2">Buat Tagihan Massal?</h3>
+        <p className="text-sm text-slate-500 mb-8 leading-relaxed">
+          Apakah Anda yakin ingin membuat tagihan massal untuk periode <span className="font-bold text-slate-800">{periode}</span>? Tindakan ini akan menerbitkan tagihan secara otomatis untuk <span className="font-bold text-slate-800">{count} anggota</span>.
+        </p>
+        <div className="flex items-center w-full gap-3">
+          <button onClick={onClose} disabled={isGenerating} className="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-all">Batal</button>
+          <button onClick={onConfirm} disabled={isGenerating} className="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50">
+            {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FilePlus className="w-4 h-4" />}
+            {isGenerating ? 'Memproses...' : 'Ya, Terbitkan!'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- MAIN COMPONENT ---
 export default function Billing() {
-  
+  const {
+    selectedMonth, setSelectedMonth,
+    selectedYear, setSelectedYear,
+    searchQuery, setSearchQuery,
+    billings, stats,
+    isFetching, isGenerating, isUpdating,
+    isModalOpen, selectedBill,
+    openModal, closeModal,
+    handleGenerateBilling, 
+    handleSavePayment, 
+    hasData,           
+    isSyncNeeded,      
+    totalActiveMembers 
+  } = useBillings();
+
+  // STATE BARU BUAT BUKA TUTUP MODAL
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  // FUNGSI BUAT TRIGGER API DARI DALAM MODAL
+  const onConfirmGenerate = async () => {
+    const success = await handleGenerateBilling();
+    if (success) {
+      setIsConfirmOpen(false); // Tutup otomatis kalo berhasil
+    }
+  };
+
+  const filterSelectClass = "appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer w-full sm:w-auto transition-all bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%24%2024%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat";
+
   const actionButton = (
-    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all shadow-sm active:scale-95">
-      <PlusCircle className="w-4 h-4" />
-      Buat Periode Iuran
+    <button 
+      onClick={() => setIsConfirmOpen(true)} // INI YANG DIGANTI: Buka modal pas diklik
+      disabled={isGenerating || isFetching || (hasData && !isSyncNeeded)} 
+      className={`
+        px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm active:scale-95
+        ${isSyncNeeded 
+          ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200' 
+          : hasData 
+            ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' 
+            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200'}
+      `}
+    >
+      {isGenerating ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : isSyncNeeded ? (
+        <PlusCircle className="w-4 h-4" /> 
+      ) : hasData ? (
+        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+      ) : (
+        <PlusCircle className="w-4 h-4" />
+      )}
+      
+      <span>
+        {isGenerating 
+          ? 'Memproses...' 
+          : isSyncNeeded 
+            ? `Sinkronkan (+${totalActiveMembers - billings.length} Member)` 
+            : hasData 
+              ? 'Tagihan Sudah Terbit' 
+              : `Terbitkan Tagihan ${selectedMonth}/${selectedYear}`}
+      </span>
     </button>
   );
 
   return (
     <AdminLayout 
       title="Iuran Bulanan" 
-      subtitle="Kelola pembayaran iuran anggota"
+      subtitle="Kelola dan pantau pembayaran anggota per periode."
       action={actionButton}
     >
-      <div className="flex flex-col gap-8 animate-in fade-in duration-500">
+      <div className="flex flex-col gap-6 animate-in fade-in duration-500 relative z-10">
         
-        {/* --- Cards 3 Kolom --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        {/* --- KONTROL PERIODE --- */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-50 p-2.5 rounded-xl">
+              <CalendarDays className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-800">Periode Aktif</h2>
+              <p className="text-xs font-medium text-slate-500">Pilih bulan tagihan yang ingin dilihat</p>
+            </div>
+          </div>
           
-          {/* Card 1: Sudah Bayar */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className={filterSelectClass} disabled={isFetching}>
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">Agustus</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+            <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className={filterSelectClass} disabled={isFetching}>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+          </div>
+        </div>
+
+        {/* --- STATS CARDS --- */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-50 rounded-full blur-2xl"></div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-100/50 flex items-center justify-center relative z-10 border border-emerald-100">
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
-            <div>
-              <p className="text-slate-500 text-sm font-medium mb-1">Sudah Bayar</p>
-              <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div>
+            <div className="relative z-10">
+              <p className="text-slate-500 text-sm font-semibold mb-1">Lunas</p>
+              {isFetching ? <div className="h-8 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">{stats.lunas}</p>}
             </div>
           </div>
 
-          {/* Card 2: Belum Bayar */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-50 rounded-full blur-2xl"></div>
+            <div className="w-10 h-10 rounded-xl bg-rose-100/50 flex items-center justify-center relative z-10 border border-rose-100">
               <Clock className="w-5 h-5 text-rose-600" />
             </div>
-            <div>
-              <p className="text-slate-500 text-sm font-medium mb-1">Belum Bayar</p>
-              <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div>
+            <div className="relative z-10">
+              <p className="text-slate-500 text-sm font-semibold mb-1">Belum Bayar</p>
+              {isFetching ? <div className="h-8 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">{stats.belum}</p>}
             </div>
           </div>
 
-          {/* Card 3: Cicil */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-2xl border border-amber-100 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-50 rounded-full blur-2xl"></div>
+            <div className="w-10 h-10 rounded-xl bg-amber-100/50 flex items-center justify-center relative z-10 border border-amber-100">
               <CreditCard className="w-5 h-5 text-amber-500" />
             </div>
-            <div>
-              <p className="text-slate-500 text-sm font-medium mb-1">Cicil</p>
-              <div className="h-6 w-12 bg-slate-200 rounded animate-pulse"></div>
+            <div className="relative z-10">
+              <p className="text-slate-500 text-sm font-semibold mb-1">Menyicil</p>
+              {isFetching ? <div className="h-8 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">{stats.cicil}</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* --- TABEL TAGIHAN --- */}
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col mt-2">
+          
+          <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
+            <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-blue-600" /> Status Iuran {selectedMonth}/{selectedYear}
+            </h3>
+            
+            <div className="relative w-full sm:w-72">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari nama member..." 
+                className="pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full transition-all bg-white font-medium" 
+              />
             </div>
           </div>
 
-        </div>
-
-        {/* --- Banner Segera Hadir --- */}
-        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 flex items-start gap-4">
-          <div className="bg-blue-100 p-2.5 rounded-lg shrink-0 mt-0.5">
-            <CreditCard className="w-5 h-5 text-blue-600" />
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="bg-white border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                  <th className="p-5 w-1/4">Member</th>
+                  <th className="p-5">Tagihan</th>
+                  <th className="p-5">Dibayar</th>
+                  <th className="p-5">Tgl Bayar</th>
+                  <th className="p-5">Status</th>
+                  <th className="p-5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {isFetching ? (
+                  <tr>
+                    <td colSpan={6} className="p-12 text-center text-slate-400">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3 text-blue-500" />
+                      <p className="font-medium">Memuat data tagihan...</p>
+                    </td>
+                  </tr>
+                ) : billings.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-12 text-center text-slate-500">
+                      <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Users className="w-8 h-8 text-slate-300" />
+                      </div>
+                      <p className="font-medium text-slate-600">Belum ada tagihan di periode ini.</p>
+                      <p className="text-sm mt-1 text-slate-400">Klik tombol "Buat Tagihan" di pojok kanan atas.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  billings.map((bill) => (
+                    <tr key={bill.id} className="hover:bg-slate-50 transition-colors group">
+                      <td className="p-5">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-slate-800">{bill.members?.nama_lengkap}</span>
+                          <span className="text-xs font-semibold text-slate-400 mt-0.5">{bill.members?.tipe_membership}</span>
+                        </div>
+                      </td>
+                      <td className="p-5">
+                        <span className="font-bold text-slate-600">Rp {bill.nominal_tagihan.toLocaleString('id-ID')}</span>
+                      </td>
+                      <td className="p-5">
+                        <span className={`font-bold ${bill.nominal_bayar >= bill.nominal_tagihan ? 'text-emerald-600' : bill.nominal_bayar > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
+                          Rp {bill.nominal_bayar.toLocaleString('id-ID')}
+                        </span>
+                      </td>
+                      <td className="p-5 text-sm font-medium text-slate-500">
+                        {bill.tanggal_bayar || '-'}
+                      </td>
+                      <td className="p-5">
+                        <span className={`px-3 py-1 text-xs font-bold rounded-lg border w-fit flex items-center gap-1.5 ${
+                          bill.status === 'lunas' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                          bill.status === 'cicil' ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                          'bg-rose-50 text-rose-700 border-rose-100'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            bill.status === 'lunas' ? 'bg-emerald-500' : 
+                            bill.status === 'cicil' ? 'bg-amber-500' : 
+                            'bg-rose-500'
+                          }`}></span>
+                          {bill.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="p-5 text-right">
+                        <button 
+                          onClick={() => openModal(bill)}
+                          className="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-sm"
+                        >
+                          {bill.status === 'lunas' ? 'Edit/Detail' : 'Bayar'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-          <div className="flex flex-col gap-1">
-            <h3 className="font-bold text-blue-900 text-lg">Iuran Bulanan — Segera Hadir</h3>
-            <p className="text-blue-700/80 text-sm font-medium leading-relaxed">
-              Buat periode iuran baru, cek status pembayaran per anggota, input pembayaran dengan upload foto bukti transfer, dan catat admin fee cuti.
-            </p>
-          </div>
+          
         </div>
-
       </div>
+
+      {/* --- MODAL DI RENDER DI SINI --- */}
+      <PaymentModal 
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        billingData={selectedBill}
+        onSave={handleSavePayment}
+        isUpdating={isUpdating}
+      />
+
+      {/* --- MODAL KONFIRMASI GENERATE DI SINI --- */}
+      <ConfirmGenerateModal 
+        isOpen={isConfirmOpen} 
+        onClose={() => setIsConfirmOpen(false)} 
+        onConfirm={onConfirmGenerate} 
+        periode={`${selectedMonth}/${selectedYear}`} 
+        isGenerating={isGenerating}
+        count={isSyncNeeded ? (totalActiveMembers - billings.length) : totalActiveMembers}
+      />
+
     </AdminLayout>
   );
 }
