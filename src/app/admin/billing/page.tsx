@@ -54,32 +54,36 @@ export default function Billing() {
 
   // --- LOGIC WHATSAPP INVOICE ---
   const generateWhatsAppLink = (bill: BillingRecord) => {
-    // Ambil nomor WA (pastikan di database anggota ada kolom 'nomor_wa')
-    let phone = (bill.members as any)?.nomor_wa || ''; 
+    // 1. Ambil nomor telepon wali dari tabel members
+    let phone = (bill.members as any)?.no_hp_wali || ''; 
     
-    // Sanitasi nomor (hapus spasi, ganti awalan 0 ke 62)
+    // 2. Bersihkan nomor (hilangkan karakter non-angka, ganti 0 ke 62)
     phone = phone.replace(/[^0-9]/g, '');
     if (phone.startsWith('0')) phone = '62' + phone.slice(1);
 
+    // 3. Konversi angka bulan jadi nama bulan
     const bulanStr = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ][bill.month - 1];
 
+    // 4. Set status teks simpel (Lunas / Belum Lunas)
     const statusText = bill.status === 'lunas' ? '✅ LUNAS' : '❌ BELUM LUNAS';
 
+    // 5. Template pesan persis seperti yang lu mau (Rata kiri penuh)
     const message = `Yth. Bapak/Ibu Orang Tua/Wali dari *${bill.members?.nama_lengkap}*,
 
-  Berikut kami sampaikan rincian tagihan iuran bulanan FAST:
+Berikut kami sampaikan rincian tagihan iuran bulanan FAST:
 
-  • Periode: *${bulanStr} ${bill.year}*
-  • Total Tagihan: *Rp ${bill.nominal_tagihan.toLocaleString('id-ID')}*
-  • Status: *${statusText}*
+• Periode: *${bulanStr} ${bill.year}*
+• Total Tagihan: *Rp ${bill.nominal_tagihan.toLocaleString('id-ID')}*
+• Status: *${statusText}*
 
-  Jika status masih belum lunas, mohon kesediaannya untuk menyelesaikan pembayaran. Setelah melakukan transfer, harap segera mengirimkan foto bukti transaksi ke pesan WhatsApp ini agar dapat kami proses ke dalam sistem.
+Jika status masih belum lunas, mohon kesediaannya untuk menyelesaikan pembayaran. Setelah melakukan transfer, harap segera mengirimkan foto bukti transaksi ke pesan WhatsApp ini agar dapat kami proses ke dalam sistem.
 
-  Terima kasih atas perhatian dan kerja samanya.`;
+Terima kasih atas perhatian dan kerja samanya.`;
 
+    // 6. Return link WhatsApp API
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   };
 
