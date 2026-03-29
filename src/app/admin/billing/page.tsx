@@ -1,121 +1,11 @@
 'use client';
 
 import AdminLayout from '@/components/admin/adminLayout';
-import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, ChevronDown, Receipt, X, Loader2, Save, DollarSign, Calendar, UploadCloud, FileText, Users, FilePlus } from 'lucide-react';
-import { useState, useEffect } from 'react';
+// Tambahan import MessageCircle di sini
+import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, ChevronDown, Receipt, X, Loader2, Save, DollarSign, Calendar, UploadCloud, FileText, Users, FilePlus, MessageCircle } from 'lucide-react';
+import { useState } from 'react';
 import { useBillings, BillingRecord } from '@/hook/useBilling';
-
-// --- KOMPONEN MODAL PEMBAYARAN ---
-interface PaymentModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  billingData: BillingRecord | null;
-  onSave: (data: any) => void;
-  isUpdating: boolean;
-}
-
-function PaymentModal({ isOpen, onClose, billingData, onSave, isUpdating }: PaymentModalProps) {
-  const [formData, setFormData] = useState({
-    nominal_bayar: '',
-    tanggal_bayar: '',
-    keterangan: ''
-  });
-
-  useEffect(() => {
-    if (billingData) {
-      setFormData({
-        nominal_bayar: billingData.nominal_bayar > 0 ? billingData.nominal_bayar.toString() : '',
-        tanggal_bayar: billingData.tanggal_bayar || new Date().toISOString().split('T')[0],
-        keterangan: billingData.keterangan || ''
-      });
-    }
-  }, [billingData]);
-
-  if (!isOpen || !billingData) return null;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave({ 
-      id: billingData.id,
-      tagihan: billingData.nominal_tagihan,
-      ...formData 
-    });
-  };
-
-  return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg shadow-sm bg-blue-600">
-              <Receipt className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-800">Update Pembayaran</h2>
-              <p className="text-xs text-slate-500 font-medium">Catat iuran untuk {billingData.members?.nama_lengkap}</p>
-            </div>
-          </div>
-          <button onClick={onClose} disabled={isUpdating} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Total Tagihan</p>
-              <p className="text-2xl font-black text-blue-900">Rp {billingData.nominal_tagihan.toLocaleString('id-ID')}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Paket</p>
-              <p className="text-sm font-bold text-blue-900">{billingData.members?.tipe_membership}</p>
-            </div>
-          </div>
-
-          <form id="payment-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-slate-400" /> Nominal Dibayar <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
-                  <input required type="number" name="nominal_bayar" value={formData.nominal_bayar} onChange={handleChange} placeholder="0" className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-slate-400" /> Tanggal Transaksi <span className="text-red-500">*</span>
-                </label>
-                <input required type="date" name="tanggal_bayar" value={formData.tanggal_bayar} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-              </div>
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-slate-400" /> Catatan Tambahan (Bisa untuk log cicilan)
-                </label>
-                <textarea name="keterangan" value={formData.keterangan} onChange={handleChange} rows={2} placeholder="Misal: Cicilan 1 (200rb) - 12 Mei..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"></textarea>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div className="p-6 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-3 shrink-0">
-          <button type="button" onClick={onClose} disabled={isUpdating} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50">
-            Batal
-          </button>
-          <button type="submit" form="payment-form" disabled={isUpdating} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50">
-            {isUpdating ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</> : <><Save className="w-4 h-4" /> Simpan Pembayaran</>}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+import PaymentModal from '@/components/admin/PaymentModal';
 
 // --- KOMPONEN MODAL KONFIRMASI GENERATE ---
 function ConfirmGenerateModal({ isOpen, onClose, onConfirm, periode, isGenerating, count }: { isOpen: boolean, onClose: () => void, onConfirm: () => void, periode: string, isGenerating: boolean, count: number }) {
@@ -129,7 +19,7 @@ function ConfirmGenerateModal({ isOpen, onClose, onConfirm, periode, isGeneratin
         </div>
         <h3 className="text-xl font-black text-slate-800 mb-2">Buat Tagihan Massal?</h3>
         <p className="text-sm text-slate-500 mb-8 leading-relaxed">
-          Apakah Anda yakin ingin membuat tagihan massal untuk periode <span className="font-bold text-slate-800">{periode}</span>? Tindakan ini akan menerbitkan tagihan secara otomatis untuk <span className="font-bold text-slate-800">{count} anggota</span>.
+          Apakah Anda yakin ingin menerbitkan tagihan massal untuk periode <span className="font-bold text-slate-800">{periode}</span>? Sistem akan membuat data tagihan secara otomatis untuk <span className="font-bold text-slate-800">{count} anggota aktif</span>.
         </p>
         <div className="flex items-center w-full gap-3">
           <button onClick={onClose} disabled={isGenerating} className="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-all">Batal</button>
@@ -160,22 +50,51 @@ export default function Billing() {
     totalActiveMembers 
   } = useBillings();
 
-  // STATE BARU BUAT BUKA TUTUP MODAL
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  // FUNGSI BUAT TRIGGER API DARI DALAM MODAL
+  // --- LOGIC WHATSAPP INVOICE ---
+  const generateWhatsAppLink = (bill: BillingRecord) => {
+    // Ambil nomor WA (pastikan di database anggota ada kolom 'nomor_wa')
+    let phone = (bill.members as any)?.nomor_wa || ''; 
+    
+    // Sanitasi nomor (hapus spasi, ganti awalan 0 ke 62)
+    phone = phone.replace(/[^0-9]/g, '');
+    if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+
+    const bulanStr = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ][bill.month - 1];
+
+    const statusText = bill.status === 'lunas' ? '✅ LUNAS' : '❌ BELUM LUNAS';
+
+    const message = `Yth. Bapak/Ibu Orang Tua/Wali dari *${bill.members?.nama_lengkap}*,
+
+  Berikut kami sampaikan rincian tagihan iuran bulanan FAST:
+
+  • Periode: *${bulanStr} ${bill.year}*
+  • Total Tagihan: *Rp ${bill.nominal_tagihan.toLocaleString('id-ID')}*
+  • Status: *${statusText}*
+
+  Jika status masih belum lunas, mohon kesediaannya untuk menyelesaikan pembayaran. Setelah melakukan transfer, harap segera mengirimkan foto bukti transaksi ke pesan WhatsApp ini agar dapat kami proses ke dalam sistem.
+
+  Terima kasih atas perhatian dan kerja samanya.`;
+
+    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  };
+
   const onConfirmGenerate = async () => {
     const success = await handleGenerateBilling();
     if (success) {
-      setIsConfirmOpen(false); // Tutup otomatis kalo berhasil
+      setIsConfirmOpen(false);
     }
   };
 
-  const filterSelectClass = "appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer w-full sm:w-auto transition-all bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%24%2024%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat";
+  const filterSelectClass = "appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer w-full sm:w-auto transition-all bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat";
 
   const actionButton = (
     <button 
-      onClick={() => setIsConfirmOpen(true)} // INI YANG DIGANTI: Buka modal pas diklik
+      onClick={() => setIsConfirmOpen(true)}
       disabled={isGenerating || isFetching || (hasData && !isSyncNeeded)} 
       className={`
         px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm active:scale-95
@@ -200,7 +119,7 @@ export default function Billing() {
         {isGenerating 
           ? 'Memproses...' 
           : isSyncNeeded 
-            ? `Sinkronkan (+${totalActiveMembers - billings.length} Member)` 
+            ? `Sinkronkan (+${totalActiveMembers - billings.length} Anggota)` 
             : hasData 
               ? 'Tagihan Sudah Terbit' 
               : `Terbitkan Tagihan ${selectedMonth}/${selectedYear}`}
@@ -302,7 +221,7 @@ export default function Billing() {
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari nama member..." 
+                placeholder="Cari nama anggota..." 
                 className="pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full transition-all bg-white font-medium" 
               />
             </div>
@@ -335,7 +254,7 @@ export default function Billing() {
                         <Users className="w-8 h-8 text-slate-300" />
                       </div>
                       <p className="font-medium text-slate-600">Belum ada tagihan di periode ini.</p>
-                      <p className="text-sm mt-1 text-slate-400">Klik tombol "Buat Tagihan" di pojok kanan atas.</p>
+                      <p className="text-sm mt-1 text-slate-400">Klik tombol "Terbitkan Tagihan" di pojok kanan atas.</p>
                     </td>
                   </tr>
                 ) : (
@@ -373,12 +292,24 @@ export default function Billing() {
                         </span>
                       </td>
                       <td className="p-5 text-right">
-                        <button 
-                          onClick={() => openModal(bill)}
-                          className="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-sm"
-                        >
-                          {bill.status === 'lunas' ? 'Edit/Detail' : 'Bayar'}
-                        </button>
+                        {/* UPDATE DI SINI: Flex container untuk dua tombol */}
+                        <div className="flex items-center justify-end gap-2">
+                          <a 
+                            href={generateWhatsAppLink(bill)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-100 shadow-sm group/wa"
+                            title="Kirim Invoice WA"
+                          >
+                            <MessageCircle className="w-4 h-4 transition-transform group-hover/wa:scale-110" />
+                          </a>
+                          <button 
+                            onClick={() => openModal(bill)}
+                            className="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-sm"
+                          >
+                            {bill.status === 'lunas' ? 'Edit/Detail' : 'Bayar'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -390,7 +321,6 @@ export default function Billing() {
         </div>
       </div>
 
-      {/* --- MODAL DI RENDER DI SINI --- */}
       <PaymentModal 
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -399,7 +329,6 @@ export default function Billing() {
         isUpdating={isUpdating}
       />
 
-      {/* --- MODAL KONFIRMASI GENERATE DI SINI --- */}
       <ConfirmGenerateModal 
         isOpen={isConfirmOpen} 
         onClose={() => setIsConfirmOpen(false)} 

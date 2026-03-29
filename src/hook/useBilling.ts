@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 
+// 1. TAMBAH BUKTI TRANSAKSI DI INTERFACE
 export interface BillingRecord {
   id: string;
   member_id: string;
@@ -10,6 +11,7 @@ export interface BillingRecord {
   tanggal_bayar: string | null;
   status: 'lunas' | 'belum' | 'cicil';
   keterangan: string | null;
+  bukti_transaksi: string | null; // <--- INI DITAMBAHKAN
   members?: {
     nama_lengkap: string;
     tipe_membership: string;
@@ -107,7 +109,8 @@ export function useBillings() {
           nominal_bayar: updatedData.nominal_bayar,
           tanggal_bayar: updatedData.tanggal_bayar,
           keterangan: updatedData.keterangan,
-          nominal_tagihan: updatedData.tagihan 
+          nominal_tagihan: updatedData.tagihan,
+          bukti_transaksi: updatedData.bukti_transaksi // <--- INI DITAMBAHKAN AGAR TERKIRIM KE API
         }),
       });
       
@@ -156,8 +159,6 @@ export function useBillings() {
       bill.members?.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [billings, searchQuery]);
-
-  
 
   return {
     selectedMonth, setSelectedMonth,
