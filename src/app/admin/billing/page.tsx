@@ -1,7 +1,6 @@
 'use client';
 
 import AdminLayout from '@/components/admin/adminLayout';
-// Tambahan import MessageCircle di sini
 import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, ChevronDown, Receipt, X, Loader2, Save, DollarSign, Calendar, UploadCloud, FileText, Users, FilePlus, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useBillings, BillingRecord } from '@/hook/useBilling';
@@ -51,26 +50,29 @@ export default function Billing() {
   } = useBillings();
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  
+  // --- STATE UNTUK FILTER STATUS LOKAL ---
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  // Menyaring data tagihan berdasarkan dropdown status
+  const displayedBillings = billings.filter((bill) => {
+    if (statusFilter === 'all') return true;
+    return bill.status === statusFilter;
+  });
 
   // --- LOGIC WHATSAPP INVOICE ---
   const generateWhatsAppLink = (bill: BillingRecord) => {
-    // 1. Ambil nomor telepon wali dari tabel members
     let phone = (bill.members as any)?.no_hp_wali || ''; 
-    
-    // 2. Bersihkan nomor (hilangkan karakter non-angka, ganti 0 ke 62)
     phone = phone.replace(/[^0-9]/g, '');
     if (phone.startsWith('0')) phone = '62' + phone.slice(1);
 
-    // 3. Konversi angka bulan jadi nama bulan
     const bulanStr = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ][bill.month - 1];
 
-    // 4. Set status teks simpel (Lunas / Belum Lunas)
     const statusText = bill.status === 'lunas' ? '✅ LUNAS' : '❌ BELUM LUNAS';
 
-    // 5. Template pesan persis seperti yang lu mau (Rata kiri penuh)
     const message = `Yth. Bapak/Ibu Orang Tua/Wali dari *${bill.members?.nama_lengkap}*,
 
 Berikut kami sampaikan rincian tagihan iuran bulanan FAST:
@@ -83,7 +85,6 @@ Jika status masih belum lunas, mohon kesediaannya untuk menyelesaikan pembayaran
 
 Terima kasih atas perhatian dan kerja samanya.`;
 
-    // 6. Return link WhatsApp API
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   };
 
@@ -219,15 +220,29 @@ Terima kasih atas perhatian dan kerja samanya.`;
               <Receipt className="w-5 h-5 text-blue-600" /> Status Iuran {selectedMonth}/{selectedYear}
             </h3>
             
-            <div className="relative w-full sm:w-72">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari nama anggota..." 
-                className="pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full transition-all bg-white font-medium" 
-              />
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              {/* DROPDOWN FILTER STATUS */}
+              <select 
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className={filterSelectClass}
+              >
+                <option value="all">Semua Status</option>
+                <option value="lunas">Lunas</option>
+                <option value="belum">Belum Bayar</option>
+                <option value="cicil">Menyicil</option>
+              </select>
+
+              <div className="relative w-full sm:w-64">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari nama anggota..." 
+                  className="pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full transition-all bg-white font-medium" 
+                />
+              </div>
             </div>
           </div>
 
@@ -251,18 +266,17 @@ Terima kasih atas perhatian dan kerja samanya.`;
                       <p className="font-medium">Memuat data tagihan...</p>
                     </td>
                   </tr>
-                ) : billings.length === 0 ? (
+                ) : displayedBillings.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="p-12 text-center text-slate-500">
                       <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                         <Users className="w-8 h-8 text-slate-300" />
                       </div>
-                      <p className="font-medium text-slate-600">Belum ada tagihan di periode ini.</p>
-                      <p className="text-sm mt-1 text-slate-400">Klik tombol "Terbitkan Tagihan" di pojok kanan atas.</p>
+                      <p className="font-medium text-slate-600">Tidak ada tagihan yang sesuai filter.</p>
                     </td>
                   </tr>
                 ) : (
-                  billings.map((bill) => (
+                  displayedBillings.map((bill) => (
                     <tr key={bill.id} className="hover:bg-slate-50 transition-colors group">
                       <td className="p-5">
                         <div className="flex flex-col">
@@ -296,17 +310,29 @@ Terima kasih atas perhatian dan kerja samanya.`;
                         </span>
                       </td>
                       <td className="p-5 text-right">
-                        {/* UPDATE DI SINI: Flex container untuk dua tombol */}
                         <div className="flex items-center justify-end gap-2">
-                          <a 
-                            href={generateWhatsAppLink(bill)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-100 shadow-sm group/wa"
-                            title="Kirim Invoice WA"
-                          >
-                            <MessageCircle className="w-4 h-4 transition-transform group-hover/wa:scale-110" />
-                          </a>
+                          
+                          {/* LOGIKA DISABLE TOMBOL WHATSAPP JIKA NOMOR WALI KOSONG */}
+                          {((bill.members as any)?.no_hp_wali) ? (
+                            <a 
+                              href={generateWhatsAppLink(bill)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-100 shadow-sm group/wa"
+                              title="Kirim Invoice WA"
+                            >
+                              <MessageCircle className="w-4 h-4 transition-transform group-hover/wa:scale-110" />
+                            </a>
+                          ) : (
+                            <button 
+                              disabled
+                              className="p-2.5 bg-slate-50 text-slate-300 rounded-lg border border-slate-100 cursor-not-allowed"
+                              title="Nomor WA wali belum terdaftar"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                            </button>
+                          )}
+
                           <button 
                             onClick={() => openModal(bill)}
                             className="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-sm"

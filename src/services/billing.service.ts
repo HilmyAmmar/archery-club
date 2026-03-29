@@ -31,7 +31,15 @@ const HARGA_PAKET: Record<string, number> = {
 export async function getBillingsService(month: number, year: number) {
     const { data, error } = await supabase
         .from('payments')
-        .select(`*, members (nama_lengkap, tipe_membership)`)
+        .select(`
+            *, 
+            members (
+                nama_lengkap, 
+                tipe_membership, 
+                no_hp_wali,
+                nama_wali
+            )
+        `) 
         .eq('month', month)
         .eq('year', year)
         .order('created_at', { ascending: false });

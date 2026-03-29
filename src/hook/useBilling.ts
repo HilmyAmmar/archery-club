@@ -11,10 +11,12 @@ export interface BillingRecord {
   tanggal_bayar: string | null;
   status: 'lunas' | 'belum' | 'cicil';
   keterangan: string | null;
-  bukti_transaksi: string | null; // <--- INI DITAMBAHKAN
+  bukti_transaksi: string | null;
   members?: {
     nama_lengkap: string;
     tipe_membership: string;
+    no_hp_wali: string; // <--- TAMBAHKAN INI
+    nama_wali: string;   
   };
 }
 
@@ -23,6 +25,7 @@ export function useBillings() {
   const [selectedMonth, setSelectedMonth] = useState(String(today.getMonth() + 1));
   const [selectedYear, setSelectedYear] = useState(String(today.getFullYear()));
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const [billings, setBillings] = useState<BillingRecord[]>([]);
   const [totalActiveMembers, setTotalActiveMembers] = useState(0); 
@@ -154,16 +157,19 @@ export function useBillings() {
   }, [billings]);
 
   const filteredBillings = useMemo(() => {
-    if (!searchQuery) return billings;
-    return billings.filter((bill) => 
-      bill.members?.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [billings, searchQuery]);
+    return billings.filter((bill) => {
+      const matchName = bill.members?.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchStatus = statusFilter === 'all' ? true : bill.status === statusFilter;
+      
+      return matchName && matchStatus;
+    });
+  }, [billings, searchQuery, statusFilter]);
 
   return {
     selectedMonth, setSelectedMonth,
     selectedYear, setSelectedYear,
     searchQuery, setSearchQuery,
+    statusFilter, setStatusFilter,
     billings: filteredBillings,
     stats,
     isFetching,
