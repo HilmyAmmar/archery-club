@@ -72,7 +72,7 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-slate-600">Jenis Kelamin <span className="text-red-500">*</span></label>
                   <select required name="jenis_kelamin" value={formData.jenis_kelamin || ""} onChange={onChange} className={selectClassName}>
-                    <option value="" disabled hidden>Pilih jenis kelamin...</option>
+                    <option value="" disabled hidden>-- Pilih Jenis Kelamin --</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
                   </select>
@@ -81,7 +81,7 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-slate-600">Tipe Membership <span className="text-red-500">*</span></label>
                   <select required name="tipe_membership" value={formData.tipe_membership || ""} onChange={onChange} className={selectClassName}>
-                    <option value="" disabled hidden>Pilih paket langganan...</option>
+                    <option value="" disabled hidden>-- Pilih Paket Langganan --</option>
                     <option value="Reguler">Reguler</option>
                     <option value="Weekend">Weekend</option>
                     <option value="Prestasi">Prestasi</option>
@@ -91,7 +91,7 @@ export default function MemberFormModal({ isOpen, onClose, isLoading, errorMsg, 
                 <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-semibold text-slate-600">Status Member <span className="text-red-500">*</span></label>
                     <select required name="status_member" value={formData.status_member || ""} onChange={onChange} className={selectClassName}>
-                        <option value="" disabled hidden>Pilih status member...</option>
+                        <option value="" disabled hidden>-- Pilih Status Member --</option>
                         <option value="aktif">Aktif</option>
                         <option value="cuti">Cuti</option>
                         <option value="non-aktif">Non-Aktif</option>

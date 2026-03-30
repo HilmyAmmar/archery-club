@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/adminLayout';
-import MemberFormModal from '@/components/admin/MemberFormModal';
+import MemberFormModal from '@/components/admin/member/MemberFormModal';
 import { useMembers } from '@/hook/useMember';
 import { UserCheck, UserMinus, UserX, PlusCircle, Loader2, Search, Users, Edit2, Trash2, AlertTriangle, Filter, ChevronDown } from 'lucide-react';
 

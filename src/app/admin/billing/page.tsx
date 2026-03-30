@@ -4,7 +4,7 @@ import AdminLayout from '@/components/admin/adminLayout';
 import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, ChevronDown, Receipt, X, Loader2, Save, DollarSign, Calendar, UploadCloud, FileText, Users, FilePlus, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useBillings, BillingRecord } from '@/hook/useBilling';
-import PaymentModal from '@/components/admin/PaymentModal';
+import PaymentModal from '@/components/admin/billing/PaymentModal';
 
 // --- KOMPONEN MODAL KONFIRMASI GENERATE ---
 function ConfirmGenerateModal({ isOpen, onClose, onConfirm, periode, isGenerating, count }: { isOpen: boolean, onClose: () => void, onConfirm: () => void, periode: string, isGenerating: boolean, count: number }) {

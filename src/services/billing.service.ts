@@ -98,13 +98,12 @@ export async function generateMassBillingService(month: number, year: number) {
 }
 
 /**
- * 3. Update Pembayaran Member (Auto-Status Logic)
+ * 3. Update Pembayaran Member & Sinkronisasi Kas Otomatis (RPC)
  */
 export async function updatePaymentService(paymentId: string, payload: Partial<PaymentRecord>) {
-    // Kita butuh nominal_tagihan untuk menentukan status lunas/cicil
+    // 1. Kita butuh nominal_tagihan untuk menentukan status lunas/cicil
     let tagihan: number = payload.nominal_tagihan ?? 0;
 
-    // Jika tagihan tidak dikirim dari FE, kita ambil dulu dari database
     if (!tagihan) {
         const { data: current } = await supabase
             .from('payments')
@@ -116,24 +115,34 @@ export async function updatePaymentService(paymentId: string, payload: Partial<P
 
     const bayar = Number(payload.nominal_bayar || 0);
     
-    // --- Server Side Business Rule Enforcement ---
+    // 2. Tentukan Status (Logic tetap di Server)
+    let statusFinal: 'lunas' | 'cicil' | 'belum' = 'belum';
     if (bayar >= tagihan) {
-        payload.status = 'lunas';
+        statusFinal = 'lunas';
     } else if (bayar > 0) {
-        payload.status = 'cicil';
-    } else {
-        payload.status = 'belum';
+        statusFinal = 'cicil';
     }
 
-    const { data, error } = await supabase
-        .from('payments')
-        .update(payload)
-        .eq('id', paymentId)
-        .select()
-        .single();
+    // 3. PANGGIL RPC (Remote Procedure Call)
+    // Ini yang bikin iuran dan kas harian sinkron dalam satu transaksi
+    const { data, error } = await supabase.rpc('process_payment_and_ledger', {
+        p_payment_id: paymentId,
+        p_nominal_bayar: bayar,
+        p_status: statusFinal,
+        p_keterangan: payload.keterangan || '',
+        p_bukti_url: payload.bukti_transaksi || null 
+    });
 
     if (error) {
-        throw new Error(`Gagal update pembayaran: ${error.message}`);
+        console.error("RPC Error:", error);
+        throw new Error(`Gagal sinkronisasi pembayaran: ${error.message}`);
     }
-    return data;
+
+    // Return data manual agar UI FE bisa langsung update state tanpa refresh
+    return { 
+        ...payload, 
+        id: paymentId, 
+        status: statusFinal, 
+        nominal_bayar: bayar 
+    };
 }
