@@ -71,7 +71,7 @@ export default function Billing() {
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ][bill.month - 1];
 
-    const statusText = bill.status === 'lunas' ? '✅ LUNAS' : '❌ BELUM LUNAS';
+    const statusText = bill.status === 'lunas' ? 'LUNAS' : 'BELUM LUNAS';
 
     const message = `Yth. Bapak/Ibu Orang Tua/Wali dari *${bill.members?.nama_lengkap}*,
 
