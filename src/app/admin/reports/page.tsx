@@ -11,11 +11,7 @@ import {
   ResponsiveContainer, PieChart as RePie, Pie, Cell, Legend 
 } from 'recharts';
 import { useReport } from '@/hook/useReport';
-
-// ============================================================================
-// KONFIGURASI SALDO AWAL (Initial Balance)
-// ============================================================================
-const INITIAL_BALANCE = 75000000; 
+import { TOTAL_INITIAL_BALANCE } from '@/app/lib/constants';
 
 // Warna untuk Pie Chart Kategori
 const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899', '#8b5cf6'];
@@ -46,9 +42,12 @@ export default function FinancialReport() {
   const currTarget = Number(currentMonth?.target_iuran || 0);
   const piutangBulanIni = currTarget > currMasuk ? currTarget - currMasuk : 0;
 
+  // Tetap hitung total histori dari seluruh data yang dikirim API (monthly array)
   const totalPemasukanDB = (monthly || []).reduce((acc: number, curr: any) => acc + Number(curr.pemasukan), 0);
   const totalPengeluaranDB = (monthly || []).reduce((acc: number, curr: any) => acc + Number(curr.pengeluaran), 0);
-  const totalSaldoSaatIni = INITIAL_BALANCE + totalPemasukanDB - totalPengeluaranDB;
+  
+  // Saldo ini adalah posisi Kas FAST detik ini di dunia nyata
+  const totalSaldoSaatIni = TOTAL_INITIAL_BALANCE + totalPemasukanDB - totalPengeluaranDB;
 
   // --- UI HELPER ---
   const formatRupiah = (angka: number) => {
@@ -94,28 +93,32 @@ export default function FinancialReport() {
             {/* --- 1. EXECUTIVE SUMMARY CARDS --- */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <StatCard 
-                title="Total Saldo Saat Ini" 
+                title="Total Saldo Kas" 
                 value={formatRupiah(totalSaldoSaatIni)} 
                 icon={<Wallet />} 
                 color="blue" 
+                subtitle="Akumulasi Seluruh Dana"
               />
               <StatCard 
                 title={`Pemasukan (${currentMonth?.nama_bulan || 'Bulan Ini'})`} 
                 value={formatRupiah(currMasuk)} 
                 icon={<TrendingUp />} 
                 color="emerald" 
+                subtitle="Total Masuk Periode Ini"
               />
               <StatCard 
                 title={`Pengeluaran (${currentMonth?.nama_bulan || 'Bulan Ini'})`} 
                 value={formatRupiah(currKeluar)} 
                 icon={<TrendingDown />} 
                 color="rose" 
+                subtitle="Total Keluar Periode Ini"
               />
               <StatCard 
                 title={`Piutang (${currentMonth?.nama_bulan || 'Bulan Ini'})`} 
                 value={formatRupiah(piutangBulanIni)} 
                 icon={<PieChart />} 
                 color="amber" 
+                subtitle="Estimasi Iuran Belum Masuk"
               />
             </div>
 
@@ -139,16 +142,39 @@ export default function FinancialReport() {
                     />
                   ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      {/* margin left diganti jadi 20 biar label angka nggak nabrak tembok kiri */}
+                      <BarChart data={chartData} margin={{ top: 10, right: 10, left: 20, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12, fontWeight: 600}} dy={10} />
-                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} tickFormatter={(value) => `Rp ${value/1000}k`} />
+                        <XAxis 
+                          dataKey="name" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{fill: '#64748b', fontSize: 12, fontWeight: 600}} 
+                          dy={10} 
+                        />
+                        <YAxis 
+                          axisLine={false} 
+                          tickLine={false} 
+                          // width ditambahin biar angka jutaan (banyak digit) muat di area sumbu Y
+                          width={80} 
+                          tick={{fill: '#64748b', fontSize: 12}} 
+                          // Formatter cerdas: kalau jutaan pake 'jt', kalau ribuan pake 'k'
+                          tickFormatter={(value) => value >= 1000000 
+                            ? `Rp ${(value/1000000).toFixed(1)}jt` 
+                            : `Rp ${value/1000}k`
+                          } 
+                        />
                         <Tooltip 
                           cursor={{fill: '#f8fafc'}}
                           contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
                           formatter={(value: any) => formatRupiah(Number(value))}
                         />
-                        <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{paddingBottom: '20px', fontSize: '12px', fontWeight: 700}} />
+                        <Legend 
+                          verticalAlign="top" 
+                          align="right" 
+                          iconType="circle" 
+                          wrapperStyle={{paddingBottom: '20px', fontSize: '12px', fontWeight: 700}} 
+                        />
                         <Bar dataKey="pemasukan" name="Pemasukan" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
                         <Bar dataKey="pengeluaran" name="Pengeluaran" fill="#f43f5e" radius={[4, 4, 0, 0]} barSize={30} />
                       </BarChart>
@@ -286,8 +312,7 @@ export default function FinancialReport() {
 }
 
 // --- SUB-COMPONENT CARDS ---
-// --- SUB-COMPONENT CARDS ---
-function StatCard({ title, value, icon, color }: any) {
+function StatCard({ title, value, icon, color, subtitle }: any) {
   const colorMap: any = {
     blue: "bg-blue-50 text-blue-600 border-blue-100",
     emerald: "bg-emerald-50 text-emerald-600 border-emerald-100",
@@ -296,13 +321,14 @@ function StatCard({ title, value, icon, color }: any) {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3 group hover:border-blue-400 transition-all cursor-default">
+    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3 group hover:border-blue-400 transition-all cursor-default text-slate-800">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${colorMap[color]} group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
       <div>
         <p className="text-slate-500 text-[11px] font-bold uppercase tracking-wider">{title}</p>
         <p className="text-2xl font-black text-slate-800 mt-1">{value}</p>
+        {subtitle && <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{subtitle}</p>}
       </div>
     </div>
   );

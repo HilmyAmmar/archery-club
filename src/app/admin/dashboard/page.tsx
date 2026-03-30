@@ -4,13 +4,12 @@ import AdminLayout from '@/components/admin/adminLayout';
 import { 
   Users, Wallet, ArrowUpRight, ArrowDownRight, 
   Clock, CheckCircle2, ChevronRight, LayoutDashboard,
-  Calendar, Loader2, ArrowRightLeft, TrendingUp
+  Calendar, Loader2, ArrowRightLeft, TrendingUp,
+  CreditCard, DollarSign
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-// KONFIGURASI SALDO AWAL (Samakan dengan Laporan Keuangan)
-const INITIAL_BALANCE = 75000000;
+import { INITIAL_BANK, INITIAL_TUNAI } from '@/app/lib/constants';
 
 export default function Dashboard() {
   const [data, setData] = useState<any>(null);
@@ -18,14 +17,12 @@ export default function Dashboard() {
   const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
-    // Logic Sapaan Dinamis
     const hour = new Date().getHours();
     if (hour < 11) setGreeting('Selamat Pagi');
     else if (hour < 15) setGreeting('Selamat Siang');
     else if (hour < 19) setGreeting('Selamat Sore');
     else setGreeting('Selamat Malam');
 
-    // Fetch Dashboard Data
     const fetchDashboard = async () => {
       try {
         const res = await fetch('/api/dashboard');
@@ -41,7 +38,11 @@ export default function Dashboard() {
   }, []);
 
   const formatRupiah = (num: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+    return new Intl.NumberFormat('id-ID', { 
+      style: 'currency', 
+      currency: 'IDR', 
+      minimumFractionDigits: 0 
+    }).format(num);
   };
 
   if (isLoading) {
@@ -55,14 +56,19 @@ export default function Dashboard() {
     );
   }
 
-  const totalSaldo = INITIAL_BALANCE + (data?.saldoDB || 0);
+  // ==========================================================================
+  // LOGIC SINKRONISASI SALDO (INITIAL + MUTASI DB)
+  // ==========================================================================
+  const saldoBankFinal = INITIAL_BANK + Number(data?.saldoRekening || 0);
+  const saldoTunaiFinal = INITIAL_TUNAI + Number(data?.saldoTunai || 0);
+  const totalSaldoFinal = saldoBankFinal + saldoTunaiFinal;
 
   return (
     <AdminLayout 
       title="Dashboard" 
       subtitle="Ringkasan aktivitas dan performa klub FAST hari ini."
     >
-      <div className="flex flex-col gap-8 animate-in fade-in duration-700 pb-10">
+      <div className="flex flex-col gap-8 animate-in fade-in duration-700 pb-10 text-slate-800">
         
         {/* --- WELCOME BANNER --- */}
         <div className="relative overflow-hidden bg-blue-600 rounded-[32px] p-8 text-white shadow-xl shadow-blue-200">
@@ -72,7 +78,6 @@ export default function Dashboard() {
               Klub panahan FAST terpantau aman. Kamu punya {data?.iuranProgress.total - data?.iuranProgress.lunas} member yang belum bayar iuran bulan ini.
             </p>
           </div>
-          {/* Dekorasi Abstract Bulat */}
           <div className="absolute -right-10 -top-10 w-64 h-64 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
           <div className="absolute right-20 -bottom-20 w-40 h-40 bg-blue-400 rounded-full opacity-30 blur-2xl"></div>
         </div>
@@ -81,10 +86,22 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard 
             title="Total Saldo Kas" 
-            value={formatRupiah(totalSaldo)} 
+            value={formatRupiah(totalSaldoFinal)} 
             icon={<Wallet />} 
             color="blue"
             link="/admin/reports"
+            subValue={
+              <div className="flex flex-col gap-1 mt-1 border-t border-blue-100 pt-2">
+                <div className="flex justify-between items-center text-[10px] font-bold">
+                  <span className="text-slate-400 uppercase tracking-tighter">Bank:</span>
+                  <span className="text-blue-600">{formatRupiah(saldoBankFinal)}</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-bold">
+                  <span className="text-slate-400 uppercase tracking-tighter">Tunai:</span>
+                  <span className="text-emerald-600">{formatRupiah(saldoTunaiFinal)}</span>
+                </div>
+              </div>
+            }
           />
           <StatCard 
             title="Total Anggota" 
@@ -92,6 +109,7 @@ export default function Dashboard() {
             icon={<Users />} 
             color="emerald"
             link="/admin/members"
+            subValue={<span className="text-[10px] font-bold text-slate-400 uppercase">Status: Aktif & Cuti</span>}
           />
           <StatCard 
             title="Iuran Terbayar" 
@@ -99,14 +117,14 @@ export default function Dashboard() {
             icon={<CheckCircle2 />} 
             color="amber"
             link="/admin/billing"
-            subValue="Member sudah lunas bulan ini"
+            subValue={<span className="text-[10px] font-bold text-slate-400 uppercase">Progres Kelunasan Bulan Ini</span>}
           />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           
           {/* --- LEFT: RECENT TRANSACTIONS --- */}
-          <div className="lg:col-span-3 flex flex-col gap-4">
+          <div className="lg:col-span-3 flex flex-col gap-4 text-slate-800">
             <div className="flex items-center justify-between px-1">
               <h3 className="font-black text-slate-800 text-lg flex items-center gap-2">
                 <ArrowRightLeft className="w-5 h-5 text-blue-600" /> Aktivitas Kas Terbaru
@@ -128,7 +146,12 @@ export default function Dashboard() {
                           {tx.tipe === 'pemasukan' ? <ArrowDownRight className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
                         </div>
                         <div>
-                          <p className="font-bold text-slate-800 text-sm">{tx.kategori}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-slate-800 text-sm">{tx.kategori}</p>
+                            <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border ${tx.metode_pembayaran === 'tunai' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-slate-50 text-slate-500 border-slate-200'}`}>
+                              {tx.metode_pembayaran === 'tunai' ? 'CASH' : 'BANK'}
+                            </span>
+                          </div>
                           <p className="text-xs text-slate-500 font-medium">{tx.tanggal}</p>
                         </div>
                       </div>
@@ -142,8 +165,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* --- RIGHT: MINI CALENDAR / INFO --- */}
-          <div className="lg:col-span-2 flex flex-col gap-4">
+          {/* --- RIGHT: INFO HARI INI --- */}
+          <div className="lg:col-span-2 flex flex-col gap-4 text-slate-800">
             <h3 className="font-black text-slate-800 text-lg flex items-center gap-2 px-1">
               <Calendar className="w-5 h-5 text-blue-600" /> Informasi Hari Ini
             </h3>
@@ -155,14 +178,24 @@ export default function Dashboard() {
                 <div className="text-xl font-bold text-slate-800 uppercase tracking-widest">
                   {new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(new Date())}
                 </div>
-                <div className="mt-6 w-full pt-6 border-t border-slate-100 flex flex-col gap-4 text-left">
+                <div className="mt-6 w-full pt-6 border-t border-slate-100 flex flex-col gap-5 text-left">
                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
-                      <p className="text-sm font-medium text-slate-600">Pastikan semua nota fisik sudah difoto dan diupload ke sistem.</p>
+                      <div className="w-2 h-2 rounded-full bg-rose-500 mt-1.5 shrink-0"></div>
+                      <p className="text-sm font-medium text-slate-600">
+                        Masih ada <b>{data?.iuranProgress.total - data?.iuranProgress.lunas} member</b> yang belum menyelesaikan iuran bulan ini.
+                      </p>
                    </div>
                    <div className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 shrink-0"></div>
-                      <p className="text-sm font-medium text-slate-600">Gunakan menu <b>Laporan Keuangan</b> untuk melihat tren surplus bulanan.</p>
+                      <p className="text-sm font-medium text-slate-600">
+                        Total iuran lunas bulan ini: <b>{formatRupiah(data?.totalNominalIuranLunas || 0)}</b>.
+                      </p>
+                   </div>
+                   <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+                      <p className="text-sm font-medium text-slate-600">
+                        Jangan lupa input pengeluaran atau pemasukan hari ini agar saldo tetap akurat.
+                      </p>
                    </div>
                 </div>
               </div>
@@ -175,7 +208,6 @@ export default function Dashboard() {
   );
 }
 
-// --- SUB COMPONENT CARD ---
 function StatCard({ title, value, icon, color, link, subValue }: any) {
   const colorMap: any = {
     blue: "bg-blue-50 text-blue-600 border-blue-100",
@@ -184,14 +216,14 @@ function StatCard({ title, value, icon, color, link, subValue }: any) {
   };
 
   return (
-    <Link href={link} className="bg-white p-6 rounded-[28px] border border-slate-200 shadow-sm flex flex-col gap-4 group hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100 transition-all active:scale-95">
+    <Link href={link} className="bg-white p-6 rounded-[28px] border border-slate-200 shadow-sm flex flex-col gap-4 group hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100 transition-all active:scale-95 text-slate-800">
       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${colorMap[color]} group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
       <div>
         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">{title}</p>
         <p className="text-2xl font-black text-slate-800 mt-1">{value}</p>
-        {subValue && <p className="text-[11px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{subValue}</p>}
+        {subValue && <div className="mt-1">{subValue}</div>}
       </div>
     </Link>
   );

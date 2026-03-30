@@ -9,6 +9,7 @@ export interface CashTransaction {
   keterangan: string;
   bukti_transaksi_url: string | null;
   payment_id: string | null;
+  metode_pembayaran: 'tunai' | 'transfer'; // <--- TAMBAHKAN INI
   created_at: string;
 }
 
@@ -33,12 +34,10 @@ export function useCash() {
     }
   }, []);
 
-  // Fetch pertama kali komponen di-mount
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
 
-  // Fungsi buat nambah transaksi manual dari Modal FE
   const addTransaction = async (payload: Partial<CashTransaction>) => {
     const res = await fetch('/api/cash', {
       method: 'POST',
@@ -49,17 +48,15 @@ export function useCash() {
     const json = await res.json();
     if (!res.ok) throw new Error(json.message || 'Gagal menyimpan transaksi');
 
-    // Re-fetch data terbaru setelah berhasil insert
     await fetchTransactions();
     return json.data;
   };
 
   const updateTransaction = async (id: string, payload: Partial<CashTransaction>) => {
-    // Tembak langsung ke URL spesifik pakai [id]
     const res = await fetch(`/api/cash/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload), // Gak perlu selipin ID di body lagi
+      body: JSON.stringify(payload),
     });
     
     const json = await res.json();
@@ -70,7 +67,6 @@ export function useCash() {
   };
 
   const deleteTransaction = async (id: string) => {
-    // Tembak langsung ke URL spesifik pakai [id]
     const res = await fetch(`/api/cash/${id}`, { 
       method: 'DELETE' 
     });

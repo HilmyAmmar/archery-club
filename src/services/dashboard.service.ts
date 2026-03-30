@@ -44,6 +44,17 @@ export async function getDashboardDataService() {
   const lunasCount = payments?.filter(p => p.status === 'lunas').length || 0;
   const totalTagihan = payments?.length || 0;
 
+  // Di dashboard.service.ts, pastiin lu ngitung ini:
+const { data: totalData } = await supabase.from('kas_harian').select('nominal, tipe, metode_pembayaran');
+
+const saldoRekening = totalData
+  ?.filter(t => t.metode_pembayaran === 'transfer')
+  .reduce((acc, curr) => curr.tipe === 'pemasukan' ? acc + curr.nominal : acc - curr.nominal, 0) || 0;
+
+const saldoTunai = totalData
+  ?.filter(t => t.metode_pembayaran === 'tunai')
+  .reduce((acc, curr) => curr.tipe === 'pemasukan' ? acc + curr.nominal : acc - curr.nominal, 0) || 0;
+
   return {
     totalMember: memberCount || 0,
     saldoDB: sumIn - sumOut,
@@ -51,6 +62,8 @@ export async function getDashboardDataService() {
       lunas: lunasCount,
       total: totalTagihan
     },
-    recentTransactions: recentTransactions || []
+    recentTransactions: recentTransactions || [],
+    saldoRekening, 
+    saldoTunai,
   };
 }

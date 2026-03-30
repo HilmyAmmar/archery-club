@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { useCash } from '@/hook/useCash';
 import AddTransactionModal from '@/components/admin/cash/AddTransactionModal'; 
+import { INITIAL_BANK, INITIAL_TUNAI } from '@/app/lib/constants';
 
 export default function Cash() {
   const { 
@@ -41,6 +42,7 @@ export default function Cash() {
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
+    // Format YYYY-MM-DD untuk hari ini
     return `${year}-${month}-${day}`;
   });
 
@@ -51,14 +53,19 @@ export default function Cash() {
     return trx.tanggal >= startDate && trx.tanggal <= endDate;
   });
 
-  // --- LEDGER CALCULATION (Dihitung HANYA untuk periode yang dipilih) ---
-  const totalPemasukan = periodFilteredTransactions
-    .filter(t => t.tipe === 'pemasukan')
-    .reduce((acc, curr) => acc + Number(curr.nominal), 0);
-  const totalPengeluaran = periodFilteredTransactions
-    .filter(t => t.tipe === 'pengeluaran')
-    .reduce((acc, curr) => acc + Number(curr.nominal), 0);
-  const selisihPeriode = totalPemasukan - totalPengeluaran;
+  // --- HITUNG POSISI SALDO REAL-TIME (Dari awal sampai detik ini) ---
+  const allInBank = transactions.filter(t => t.tipe === 'pemasukan' && t.metode_pembayaran === 'transfer').reduce((acc, curr) => acc + Number(curr.nominal), 0);
+  const allOutBank = transactions.filter(t => t.tipe === 'pengeluaran' && t.metode_pembayaran === 'transfer' && t.kategori !== 'Koreksi Iuran').reduce((acc, curr) => acc + Number(curr.nominal), 0);
+  const allInTunai = transactions.filter(t => t.tipe === 'pemasukan' && t.metode_pembayaran === 'tunai').reduce((acc, curr) => acc + Number(curr.nominal), 0);
+  const allOutTunai = transactions.filter(t => t.tipe === 'pengeluaran' && t.metode_pembayaran === 'tunai' && t.kategori !== 'Koreksi Iuran').reduce((acc, curr) => acc + Number(curr.nominal), 0);
+
+  const saldoAkhirBank = INITIAL_BANK + allInBank - allOutBank;
+  const saldoAkhirTunai = INITIAL_TUNAI + allInTunai - allOutTunai;
+  const totalSaldoSemua = saldoAkhirBank + saldoAkhirTunai;
+
+  // --- HITUNG PERFORMA PERIODE (Hanya yang difilter tanggal) ---
+  const totalPemasukan = periodFilteredTransactions.filter(t => t.tipe === 'pemasukan').reduce((acc, curr) => acc + Number(curr.nominal), 0);
+  const totalPengeluaran = periodFilteredTransactions.filter(t => t.tipe === 'pengeluaran').reduce((acc, curr) => acc + Number(curr.nominal), 0);
 
   // --- FILTER LOGIC: 2. Filter Berdasarkan Tipe & Search (Untuk Tabel) ---
   const displayedTransactions = periodFilteredTransactions.filter((trx) => {
@@ -161,36 +168,61 @@ export default function Cash() {
 
         {/* --- STATS CARDS --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-50 rounded-full blur-2xl"></div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-100/50 flex items-center justify-center relative z-10 border border-emerald-100">
-              <TrendingUp className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div className="relative z-10">
-              <p className="text-slate-500 text-sm font-semibold mb-1">Pemasukan Periode Ini</p>
-              {isLoading ? <div className="h-8 w-24 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">Rp {totalPemasukan.toLocaleString('id-ID')}</p>}
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-50 rounded-full blur-2xl"></div>
-            <div className="w-10 h-10 rounded-xl bg-rose-100/50 flex items-center justify-center relative z-10 border border-rose-100">
-              <TrendingDown className="w-5 h-5 text-rose-600" />
-            </div>
-            <div className="relative z-10">
-              <p className="text-slate-500 text-sm font-semibold mb-1">Pengeluaran Periode Ini</p>
-              {isLoading ? <div className="h-8 w-24 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">Rp {totalPengeluaran.toLocaleString('id-ID')}</p>}
+          
+          {/* PEMASUKAN */}
+          <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm flex flex-col gap-4">
+            <TrendingUp className="w-10 h-10 p-2.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100" />
+            <div>
+              <p className="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">Pemasukan Periode Ini</p>
+              {isLoading ? (
+                <div className="h-9 w-32 bg-slate-100 animate-pulse rounded-lg"></div>
+              ) : (
+                <p className="text-3xl font-black text-slate-800">Rp {totalPemasukan.toLocaleString('id-ID')}</p>
+              )}
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full blur-2xl"></div>
-            <div className="w-10 h-10 rounded-xl bg-blue-100/50 flex items-center justify-center relative z-10 border border-blue-100">
-              <Wallet className="w-5 h-5 text-blue-600" />
+          {/* PENGELUARAN */}
+          <div className="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm flex flex-col gap-4">
+            <TrendingDown className="w-10 h-10 p-2.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100" />
+            <div>
+              <p className="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">Pengeluaran Periode Ini</p>
+              {isLoading ? (
+                <div className="h-9 w-32 bg-slate-100 animate-pulse rounded-lg"></div>
+              ) : (
+                <p className="text-3xl font-black text-slate-800">Rp {totalPengeluaran.toLocaleString('id-ID')}</p>
+              )}
             </div>
+          </div>
+
+          {/* TOTAL SALDO KAS */}
+          <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-200 flex flex-col gap-4 relative overflow-hidden text-white">
             <div className="relative z-10">
-              <p className="text-slate-500 text-sm font-semibold mb-1">Selisih Kas Periode Ini</p>
-              {isLoading ? <div className="h-8 w-24 bg-slate-200 rounded animate-pulse"></div> : <p className={`text-3xl font-black ${selisihPeriode < 0 ? 'text-rose-600' : 'text-slate-800'}`}>Rp {selisihPeriode.toLocaleString('id-ID')}</p>}
+              <p className="text-blue-100 text-[11px] font-bold mb-1 uppercase tracking-widest">Total Saldo Kas</p>
+              {isLoading ? (
+                <div className="h-9 w-48 bg-blue-500 animate-pulse rounded-lg"></div>
+              ) : (
+                <p className="text-3xl font-black">Rp {totalSaldoSemua.toLocaleString('id-ID')}</p>
+              )}
+              
+              <div className="mt-4 pt-4 border-t border-blue-500 flex flex-col gap-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-blue-200 uppercase tracking-tighter">Bank:</span>
+                  {isLoading ? (
+                    <div className="h-3 w-24 bg-blue-500 animate-pulse rounded"></div>
+                  ) : (
+                    <span className="font-black">Rp {saldoAkhirBank.toLocaleString('id-ID')}</span>
+                  )}
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-blue-200 uppercase tracking-tighter">Tunai:</span>
+                  {isLoading ? (
+                    <div className="h-3 w-24 bg-blue-500 animate-pulse rounded"></div>
+                  ) : (
+                    <span className="font-black">Rp {saldoAkhirTunai.toLocaleString('id-ID')}</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -278,6 +310,9 @@ export default function Cash() {
                               ? <span className="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-md">IN</span>
                               : <span className="px-2 py-0.5 text-[10px] bg-rose-100 text-rose-700 rounded-md">OUT</span>
                             }
+                            <span className={`px-2 py-0.5 text-[10px] font-black rounded-md border ${trx.metode_pembayaran === 'tunai' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                              {trx.metode_pembayaran === 'tunai' ? 'TUNAI' : 'BANK'}
+                            </span>
                             {trx.payment_id && (
                               <span className="px-2 py-0.5 text-[10px] bg-blue-100 text-blue-700 rounded-md font-bold">IURAN</span>
                             )}
