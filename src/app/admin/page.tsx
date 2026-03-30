@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import router buat redirect
+import { useRouter } from 'next/navigation'; 
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -9,7 +9,7 @@ export default function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // State baru buat loading
+  const [isLoading, setIsLoading] = useState(false); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +17,6 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      // 1. Tembak API Route yang kita buat tadi
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -27,14 +26,15 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Kalau server balikin 401 atau error lainnya
         throw new Error(data.message || 'Login gagal, Bos!');
       }
 
-      // 2. Jika sukses (Cookie otomatis tersimpan oleh browser karena HttpOnly)
-      // Kita nggak perlu simpan token manual di localStorage
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
       router.push('/admin/dashboard');
-      router.refresh(); // Refresh route biar middleware sadar kita udah login
+      router.refresh();
 
     } catch (err: any) {
       setError(err.message);

@@ -4,8 +4,7 @@ import AdminLayout from '@/components/admin/adminLayout';
 import { 
   Users, Wallet, ArrowUpRight, ArrowDownRight, 
   Clock, CheckCircle2, ChevronRight, LayoutDashboard,
-  Calendar, Loader2, ArrowRightLeft, TrendingUp,
-  CreditCard, DollarSign
+  Calendar, Loader2, ArrowRightLeft, 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -15,6 +14,7 @@ export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [greeting, setGreeting] = useState('');
+  const [adminName, setAdminName] = useState('Admin');
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -22,6 +22,16 @@ export default function Dashboard() {
     else if (hour < 15) setGreeting('Selamat Siang');
     else if (hour < 19) setGreeting('Selamat Sore');
     else setGreeting('Selamat Malam');
+
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userObj = JSON.parse(storedUser);
+        setAdminName(userObj.name || userObj.username || 'Admin');
+      } catch (e) {
+        console.error("Gagal parse user data");
+      }
+    }
 
     const fetchDashboard = async () => {
       try {
@@ -73,7 +83,7 @@ export default function Dashboard() {
         {/* --- WELCOME BANNER --- */}
         <div className="relative overflow-hidden bg-blue-600 rounded-[32px] p-8 text-white shadow-xl shadow-blue-200">
           <div className="relative z-10">
-            <h1 className="text-3xl font-black mb-2">{greeting}, Admin! 👋</h1>
+            <h1 className="text-3xl font-black mb-2">{greeting}, {adminName}! 👋</h1>
             <p className="text-blue-100 font-medium max-w-md">
               Klub panahan FAST terpantau aman. Kamu punya {data?.iuranProgress.total - data?.iuranProgress.lunas} member yang belum bayar iuran bulan ini.
             </p>

@@ -8,10 +8,16 @@ export async function POST(request: Request) {
         const result = await loginAdmin(username, password);
 
         if (!result) {
-            return NextResponse.json({ message: 'Username atau password salah' }, { status: 401 });
+            return NextResponse.json(
+                { message: 'Username atau password salah' }, 
+                { status: 401 }
+            );
         }
 
-        const response = NextResponse.json({ message: 'Login Berhasil', ...result });
+        const response = NextResponse.json({ 
+            message: 'Login Berhasil', 
+            user: result.user 
+        });
 
         response.cookies.set({
             name: 'token',
@@ -29,7 +35,7 @@ export async function POST(request: Request) {
         console.error('Error logging in admin:', error);
         
         return NextResponse.json(
-            { message: error.message || 'Username atau password salah.' }, 
+            { message: error.message || 'Terjadi kesalahan pada server.' }, 
             { status: 401 }
         );
     }

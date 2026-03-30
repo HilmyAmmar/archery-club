@@ -61,6 +61,7 @@ export async function loginAdmin(username: string, password: string) {
         const payload = {
             id: data.id,
             username: data.username,
+            name: data.name, 
             role: data.role || 'superadmin'
         }
 

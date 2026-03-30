@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
@@ -37,6 +37,9 @@ export default function AdminLayout({
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter(); 
+  const [adminName, setAdminName] = useState('Admin');
+  const [role, setRole] = useState('');
+
 
   // --- Fungsi Logout Baru ---
   const handleLogout = async () => {
@@ -90,12 +93,11 @@ export default function AdminLayout({
             S
           </div>
           <div className="flex flex-col text-left">
-            <span className="text-sm font-bold text-white">Syarna Savitri</span>
-            <span className="text-xs text-blue-400 font-medium">Superadmin</span>
+            <span className="text-sm font-bold text-white">{adminName}</span>
+            <span className="text-xs text-blue-400 font-medium">{role}</span>
           </div>
         </div>
         
-        {/* --- Ganti Link jadi button yang panggil handleLogout --- */}
         <button 
           onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-2 w-full text-left text-sm font-medium text-slate-400 hover:text-white transition-colors"
@@ -106,6 +108,19 @@ export default function AdminLayout({
       </div>
     </div>
   );
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userObj = JSON.parse(storedUser);
+        setAdminName(userObj.name || userObj.username || 'Admin');
+        setRole(userObj.role || 'User');
+      } catch (e) {
+        console.error("Gagal parse user data");
+      }
+    }
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#f8fafc] font-sans overflow-hidden">
