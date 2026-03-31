@@ -27,17 +27,22 @@ export default function PaymentModal({ isOpen, onClose, billingData, onSave, isU
   const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (billingData) {
+    if (billingData && isOpen) { 
+      
+      const safeDate = billingData.tanggal_bayar 
+        ? billingData.tanggal_bayar.substring(0, 10) 
+        : new Date().toISOString().split('T')[0];
+
       setFormData({
         nominal_bayar: billingData.nominal_bayar > 0 ? billingData.nominal_bayar.toString() : '',
-        tanggal_bayar: billingData.tanggal_bayar || new Date().toISOString().split('T')[0],
+        tanggal_bayar: safeDate,
         keterangan: billingData.keterangan || '',
         bukti_transaksi: billingData.bukti_transaksi || ''
       });
       setImagePreview(billingData.bukti_transaksi || null);
       setValidationError(null);
     }
-  }, [billingData]);
+  }, [isOpen, billingData?.id]); 
 
   if (!isOpen || !billingData) return null;
 

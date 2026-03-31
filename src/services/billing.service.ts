@@ -123,6 +123,8 @@ export async function updatePaymentService(paymentId: string, payload: Partial<P
         statusFinal = 'cicil';
     }
 
+    const cleanDate = payload.tanggal_bayar ? payload.tanggal_bayar.substring(0, 10) : null;
+
     // 3. PANGGIL RPC (Remote Procedure Call)
     // Ini yang bikin iuran dan kas harian sinkron dalam satu transaksi
     const { data, error } = await supabase.rpc('process_payment_and_ledger', {
@@ -130,7 +132,8 @@ export async function updatePaymentService(paymentId: string, payload: Partial<P
         p_nominal_bayar: bayar,
         p_status: statusFinal,
         p_keterangan: payload.keterangan || '',
-        p_bukti_url: payload.bukti_transaksi || null 
+        p_bukti_url: payload.bukti_transaksi || null,
+        p_tanggal_bayar: cleanDate
     });
 
     if (error) {
@@ -143,6 +146,7 @@ export async function updatePaymentService(paymentId: string, payload: Partial<P
         ...payload, 
         id: paymentId, 
         status: statusFinal, 
-        nominal_bayar: bayar 
+        nominal_bayar: bayar ,
+        tanggal_bayar: cleanDate
     };
 }
