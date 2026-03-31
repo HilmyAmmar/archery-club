@@ -1,32 +1,71 @@
 'use client';
 
 import AdminLayout from '@/components/admin/adminLayout';
-import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, ChevronDown, Receipt, X, Loader2, Save, DollarSign, Calendar, UploadCloud, FileText, Users, FilePlus, MessageCircle } from 'lucide-react';
+import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, ChevronDown, Receipt, X, Loader2, Save, DollarSign, Calendar, UploadCloud, FileText, Users, FilePlus, MessageCircle, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { useBillings, BillingRecord } from '@/hook/useBilling';
 import PaymentModal from '@/components/admin/billing/PaymentModal';
 
 // --- KOMPONEN MODAL KONFIRMASI GENERATE ---
-function ConfirmGenerateModal({ isOpen, onClose, onConfirm, periode, isGenerating, count }: { isOpen: boolean, onClose: () => void, onConfirm: () => void, periode: string, isGenerating: boolean, count: number }) {
+function ConfirmGenerateModal({ 
+  isOpen, onClose, onConfirm, periode, isGenerating, count, hasData, isMissingMembers 
+}: { 
+  isOpen: boolean, onClose: () => void, onConfirm: () => void, periode: string, isGenerating: boolean, count: number, hasData: boolean, isMissingMembers: boolean 
+}) {
   if (!isOpen) return null;
+
+  // --- KONDISIONAL KONTEN MODAL ---
+  let title = "";
+  let description = <></>;
+  let buttonText = "";
+  let IconComponent = FilePlus;
+  let colorTheme = { iconText: "", iconBg: "", buttonBg: "" };
+
+  if (!hasData) {
+    // KONDISI 1: Belum ada tagihan sama sekali (GENERATE BARU)
+    title = "Buat Tagihan Massal?";
+    description = <>Apakah Anda yakin ingin menerbitkan tagihan massal untuk periode <span className="font-bold text-slate-800">{periode}</span>? Sistem akan membuat data tagihan secara otomatis untuk <span className="font-bold text-slate-800">{count} anggota aktif</span>.</>;
+    buttonText = "Ya, Terbitkan!";
+    IconComponent = FilePlus;
+    colorTheme = { iconText: "text-blue-600", iconBg: "bg-blue-50 border-blue-100/50", buttonBg: "bg-blue-600 hover:bg-blue-700 shadow-blue-200" };
+  } else if (isMissingMembers) {
+    // KONDISI 2: Ada member baru masuk di tengah bulan (SYNC MEMBER BARU)
+    title = "Sinkronkan Anggota Baru?";
+    description = <>Terdapat <span className="font-bold text-slate-800">{count} anggota aktif baru</span> yang belum memiliki tagihan pada periode <span className="font-bold text-slate-800">{periode}</span>. Terbitkan tagihan untuk mereka sekarang?</>;
+    buttonText = "Sinkronkan Anggota";
+    IconComponent = Users;
+    colorTheme = { iconText: "text-amber-500", iconBg: "bg-amber-50 border-amber-100/50", buttonBg: "bg-amber-500 hover:bg-amber-600 shadow-amber-200" };
+  } else {
+    // KONDISI 3: Data sudah lengkap, hanya update nominal harga (RE-SYNC NOMINAL)
+    title = "Sinkronkan Ulang Data?";
+    description = <>Sistem akan memeriksa perubahan profil pada <span className="font-bold text-slate-800">{count} anggota</span> di periode <span className="font-bold text-slate-800">{periode}</span> dan menyesuaikan nominal tagihan secara otomatis bagi yang berstatus <span className="font-bold text-slate-800">Belum Lunas</span>.</>;
+    buttonText = "Sinkronkan Ulang";
+    IconComponent = RefreshCw;
+    colorTheme = { iconText: "text-indigo-500", iconBg: "bg-indigo-50 border-indigo-100/50", buttonBg: "bg-indigo-500 hover:bg-indigo-600 shadow-indigo-200" };
+  }
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[400px] p-8 flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
-        <div className="w-20 h-20 bg-blue-50 border-[6px] border-blue-100/50 rounded-full flex items-center justify-center mb-5">
-          <FilePlus className="w-8 h-8 text-blue-600" />
+      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[420px] p-8 flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
+        
+        <div className={`w-20 h-20 border-[6px] rounded-full flex items-center justify-center mb-5 ${colorTheme.iconBg}`}>
+          <IconComponent className={`w-8 h-8 ${colorTheme.iconText}`} />
         </div>
-        <h3 className="text-xl font-black text-slate-800 mb-2">Buat Tagihan Massal?</h3>
+        
+        <h3 className="text-xl font-black text-slate-800 mb-2">{title}</h3>
         <p className="text-sm text-slate-500 mb-8 leading-relaxed">
-          Apakah Anda yakin ingin menerbitkan tagihan massal untuk periode <span className="font-bold text-slate-800">{periode}</span>? Sistem akan membuat data tagihan secara otomatis untuk <span className="font-bold text-slate-800">{count} anggota aktif</span>.
+          {description}
         </p>
+        
         <div className="flex items-center w-full gap-3">
           <button onClick={onClose} disabled={isGenerating} className="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-all">Batal</button>
-          <button onClick={onConfirm} disabled={isGenerating} className="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50">
-            {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FilePlus className="w-4 h-4" />}
-            {isGenerating ? 'Memproses...' : 'Ya, Terbitkan!'}
+          
+          <button onClick={onConfirm} disabled={isGenerating} className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 ${colorTheme.buttonBg}`}>
+            {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <IconComponent className="w-4 h-4" />}
+            {isGenerating ? 'Memproses...' : buttonText}
           </button>
         </div>
+
       </div>
     </div>
   );
@@ -45,7 +84,7 @@ export default function Billing() {
     handleGenerateBilling, 
     handleSavePayment, 
     hasData,           
-    isSyncNeeded,      
+    isMissingMembers,      
     totalActiveMembers 
   } = useBillings();
 
@@ -100,19 +139,20 @@ Terima kasih atas perhatian dan kerja samanya.`;
   const actionButton = (
     <button 
       onClick={() => setIsConfirmOpen(true)}
-      disabled={isGenerating || isFetching || (hasData && !isSyncNeeded)} 
+      disabled={isGenerating || isFetching} 
       className={`
         px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm active:scale-95
-        ${isSyncNeeded 
-          ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200' 
-          : hasData 
-            ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' 
-            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200'}
+        ${!hasData 
+          ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200' // Biru: Belum Terbit
+          : isMissingMembers 
+            ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200' // Kuning: Ada member baru
+            : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-indigo-200' // Indigo: Udah lengkap, cuma mau Sync nominal
+        }
       `}
     >
       {isGenerating ? (
         <Loader2 className="w-4 h-4 animate-spin" />
-      ) : isSyncNeeded ? (
+      ) : isMissingMembers ? (
         <PlusCircle className="w-4 h-4" /> 
       ) : hasData ? (
         <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -123,11 +163,12 @@ Terima kasih atas perhatian dan kerja samanya.`;
       <span>
         {isGenerating 
           ? 'Memproses...' 
-          : isSyncNeeded 
-            ? `Sinkronkan (+${totalActiveMembers - billings.length} Anggota)` 
-            : hasData 
-              ? 'Tagihan Sudah Terbit' 
-              : `Terbitkan Tagihan ${selectedMonth}/${selectedYear}`}
+          : !hasData 
+            ? `Terbitkan Tagihan ${selectedMonth}/${selectedYear}`
+            : isMissingMembers 
+              ? `Sinkronkan (+${totalActiveMembers - billings.length} Anggota)` 
+              : 'Sinkronkan Ulang Data' // <--- Nah ini baru bener munculnya!
+        }
       </span>
     </button>
   );
@@ -365,7 +406,11 @@ Terima kasih atas perhatian dan kerja samanya.`;
         onConfirm={onConfirmGenerate} 
         periode={`${selectedMonth}/${selectedYear}`} 
         isGenerating={isGenerating}
-        count={isSyncNeeded ? (totalActiveMembers - billings.length) : totalActiveMembers}
+        
+        hasData={hasData}
+        isMissingMembers={isMissingMembers}
+        
+        count={!hasData ? totalActiveMembers : isMissingMembers ? (totalActiveMembers - billings.length) : totalActiveMembers}
       />
 
     </AdminLayout>

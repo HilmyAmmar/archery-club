@@ -54,45 +54,85 @@ export async function getBillingsService(month: number, year: number) {
  * 2. Generate Tagihan Massal (Awal Bulan)
  */
 export async function generateMassBillingService(month: number, year: number) {
+    // 1. Ambil SEMUA member yang berhak ditagih (Aktif & Cuti)
     const { data: members, error: memberError } = await supabase
         .from('members')
-        .select('id, tipe_membership, status_member')
+        .select('id, tipe_membership, status_member, biaya_custom')
         .in('status_member', ['aktif', 'cuti']);
 
-    if (memberError) {
-        throw new Error(`Gagal mengambil data member: ${memberError.message}`);
-    }
-    
-    if (!members || members.length === 0) {
-        throw new Error('Tidak ada member aktif atau cuti untuk dibuatkan tagihan.');
-    }
+    if (memberError) throw new Error(`Gagal ambil data member: ${memberError.message}`);
 
-    const payloadToInsert = members.map((m) => {
-        let nominalTagihan = 0;
-        if (m.status_member === 'cuti') {
-            nominalTagihan = 50000; 
-        } else {
-            nominalTagihan = HARGA_PAKET[m.tipe_membership] || 0;
-        }
+    // 2. Ambil tagihan yang SUDAH ADA di bulan/tahun ini
+    const { data: existingPayments } = await supabase
+        .from('payments')
+        .select('member_id, status')
+        .eq('month', month)
+        .eq('year', year);
 
-        return {
-            member_id: m.id,
-            month: month,
-            year: year,
-            nominal_tagihan: nominalTagihan,
-            nominal_bayar: 0,
-            status: 'belum' as const,
-        };
-    });
+    // Kita buat Set untuk ID member yang sudah LUNAS atau CICIL (Jangan diganggu!)
+    const protectedMemberIds = new Set(
+        existingPayments
+            ?.filter(p => p.status === 'lunas' || p.status === 'cicil')
+            .map(p => p.member_id)
+    );
 
+    // 3. Mapping Payload (The Interceptor Logic)
+    const payloadToInsert = members
+        .filter(m => !protectedMemberIds.has(m.id)) // Filter: Hanya proses yang BELUM bayar
+        .map((m) => {
+            let nominalFinal = 0;
+
+            // Hitung harga berdasarkan kondisi TERBARU di tabel members
+            if (m.status_member === 'cuti') {
+                nominalFinal = 50000;
+            } else {
+                nominalFinal = m.biaya_custom ?? (HARGA_PAKET[m.tipe_membership] || 0);
+            }
+
+            return {
+                member_id: m.id,
+                month: month,
+                year: year,
+                nominal_tagihan: nominalFinal,
+                nominal_bayar: 0,
+                status: 'belum' as const,
+            };
+        });
+
+    if (payloadToInsert.length === 0) return { success: true, count: 0 };
+
+    // 4. UPSERT (Update on Conflict)
+    // Karena kita pakai 'upsert' dan tidak pakai 'ignoreDuplicates', 
+    // nominal_tagihan yang lama akan DITIMPA dengan nominal_tagihan yang baru.
     const { error: insertError } = await supabase
         .from('payments')
         .upsert(payloadToInsert, { 
-            onConflict: 'member_id,month,year', 
-            ignoreDuplicates: true 
+            onConflict: 'member_id,month,year' 
         });
 
-    if (insertError) throw new Error(`Gagal generate tagihan: ${insertError.message}`);
+    // ==========================================================
+    // LOGIC DELETE (CLEANUP) - KHUSUS MEMBER NON-AKTIF
+    // ==========================================================
+    
+    // Ambil semua ID member yang barusan kita proses (Aktif & Cuti)
+    const activeAndCutiIds = members.map(m => m.id);
+
+    if (activeAndCutiIds.length > 0) {
+        const { error: deleteError } = await supabase
+        .from('payments')
+        .delete()
+        .eq('month', month)
+        .eq('year', year)
+        .eq('status', 'belum') // AMAN: Hanya hapus yang belum bayar
+        .not('member_id', 'in', `(${activeAndCutiIds.join(',')})`); 
+        // ^ Artiannya: Hapus yang ID-nya GAK ADA di daftar Aktif/Cuti
+
+        if (deleteError) {
+        console.error("Gagal cleanup member non-aktif:", deleteError);
+        }
+    }
+
+    if (insertError) throw new Error(`Gagal sinkronisasi tagihan: ${insertError.message}`);
     
     return { success: true, count: payloadToInsert.length };
 }

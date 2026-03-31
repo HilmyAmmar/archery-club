@@ -119,17 +119,28 @@ export function useMembers() {
     const url = editingId ? `/api/members/${editingId}` : '/api/members';
     const method = editingId ? 'PUT' : 'POST';
 
+    // --- 1. LOGIC SANITASI DATA ---
+    // Mengonversi string kosong ("") menjadi null agar PostgreSQL tidak error
+    const payload = Object.keys(formData).reduce((acc: any, key) => {
+      const value = (formData as any)[key];
+      acc[key] = value === "" ? null : value;
+      return acc;
+    }, {});
+
     try {
       const response = await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload), // <--- Gunakan payload yang sudah disanitasi
       });
 
       const textResponse = await response.text(); 
       let result;
-      try { result = JSON.parse(textResponse); } 
-      catch { throw new Error(`Gagal memproses respon server: ${textResponse}`); }
+      try { 
+        result = JSON.parse(textResponse); 
+      } catch { 
+        throw new Error(`Gagal memproses respon server: ${textResponse}`); 
+      }
 
       if (!response.ok) throw new Error(result.message || 'Gagal menyimpan data');
 
@@ -149,7 +160,7 @@ export function useMembers() {
       setIsLoading(false);
     }
   };
-
+  
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     setIsLoading(true);

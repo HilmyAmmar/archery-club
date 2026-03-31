@@ -100,6 +100,7 @@ export default function AdminLayout({
         
         <button 
           onClick={handleLogout}
+          suppressHydrationWarning
           className="flex items-center gap-3 px-4 py-2 w-full text-left text-sm font-medium text-slate-400 hover:text-white transition-colors"
         >
           <LogOut className="w-5 h-5" />

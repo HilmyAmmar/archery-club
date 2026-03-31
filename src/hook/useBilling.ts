@@ -15,7 +15,7 @@ export interface BillingRecord {
   members?: {
     nama_lengkap: string;
     tipe_membership: string;
-    no_hp_wali: string; // <--- TAMBAHKAN INI
+    no_hp_wali: string;
     nama_wali: string;   
   };
 }
@@ -113,7 +113,7 @@ export function useBillings() {
           tanggal_bayar: updatedData.tanggal_bayar,
           keterangan: updatedData.keterangan,
           nominal_tagihan: updatedData.tagihan,
-          bukti_transaksi: updatedData.bukti_transaksi // <--- INI DITAMBAHKAN AGAR TERKIRIM KE API
+          bukti_transaksi: updatedData.bukti_transaksi
         }),
       });
       
@@ -137,12 +137,16 @@ export function useBillings() {
     setSelectedBill(null);
   };
 
-  // --- LOGIC TOMBOL PINTAR ---
+  // ==========================================
+  // --- LOGIC TOMBOL PINTAR (FINAL) ---
+  // ==========================================
+
   // 1. hasData: Apakah sudah ada tagihan sama sekali di bulan ini?
   const hasData = billings.length > 0;
-  
-  // 2. isSyncNeeded: Apakah ada member aktif yang BELUM dapet tagihan?
-  const isSyncNeeded = hasData && billings.length < totalActiveMembers;
+
+  // 2. isMissingMembers: Apakah ada member aktif baru yang belum ter-generate tagihannya?
+  // Hanya true jika data sudah ada, TAPI baris tagihan lebih sedikit dari total member
+  const isMissingMembers = hasData && (billings.length < totalActiveMembers);
 
   const stats = useMemo(() => {
     return billings.reduce(
@@ -182,7 +186,7 @@ export function useBillings() {
     handleGenerateBilling,
     handleSavePayment,
     hasData,
-    isSyncNeeded,
+    isMissingMembers, // <--- KITA EXPORT INI
     totalActiveMembers
   };
 }
