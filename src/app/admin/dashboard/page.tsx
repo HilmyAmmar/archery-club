@@ -3,8 +3,8 @@
 import AdminLayout from '@/components/admin/adminLayout';
 import { 
   Users, Wallet, ArrowUpRight, ArrowDownRight, 
-  Clock, CheckCircle2, ChevronRight, LayoutDashboard,
-  Calendar, Loader2, ArrowRightLeft, 
+  CheckCircle2, ChevronRight,
+  Calendar, ArrowRightLeft, 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [greeting, setGreeting] = useState('');
   const [adminName, setAdminName] = useState('Admin');
+  const [dateInfo, setDateInfo] = useState({ day: '', monthYear: '' });
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -32,6 +33,12 @@ export default function Dashboard() {
         console.error("Gagal parse user data");
       }
     }
+
+    const now = new Date();
+    setDateInfo({
+      day: now.getDate().toString(),
+      monthYear: new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(now)
+    });
 
     const fetchDashboard = async () => {
       try {
@@ -55,17 +62,6 @@ export default function Dashboard() {
     }).format(num);
   };
 
-  if (isLoading) {
-    return (
-      <AdminLayout title="Dashboard" subtitle="Ringkasan aktivitas klub FAST.">
-        <div className="h-[60vh] flex flex-col items-center justify-center text-slate-400 gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          <p className="font-medium text-sm">Menyiapkan ringkasan...</p>
-        </div>
-      </AdminLayout>
-    );
-  }
-
   // ==========================================================================
   // LOGIC SINKRONISASI SALDO (INITIAL + MUTASI DB)
   // ==========================================================================
@@ -84,9 +80,16 @@ export default function Dashboard() {
         <div className="relative overflow-hidden bg-blue-600 rounded-[32px] p-8 text-white shadow-xl shadow-blue-200">
           <div className="relative z-10">
             <h1 className="text-3xl font-black mb-2">{greeting}, {adminName}! 👋</h1>
-            <p className="text-blue-100 font-medium max-w-md">
-              Klub panahan FAST terpantau aman. Kamu punya {data?.iuranProgress.total - data?.iuranProgress.lunas} member yang belum bayar iuran bulan ini.
-            </p>
+            {isLoading ? (
+              <div className="flex flex-col gap-2 mt-4">
+                <div className="h-4 w-3/4 bg-blue-400/50 rounded animate-pulse"></div>
+                <div className="h-4 w-1/2 bg-blue-400/50 rounded animate-pulse"></div>
+              </div>
+            ) : (
+              <p className="text-blue-100 font-medium max-w-md">
+                Klub panahan FAST terpantau aman. Kamu punya {data?.iuranProgress?.total - data?.iuranProgress?.lunas || 0} member yang belum bayar iuran bulan ini.
+              </p>
+            )}
           </div>
           <div className="absolute -right-10 -top-10 w-64 h-64 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
           <div className="absolute right-20 -bottom-20 w-40 h-40 bg-blue-400 rounded-full opacity-30 blur-2xl"></div>
@@ -100,6 +103,7 @@ export default function Dashboard() {
             icon={<Wallet />} 
             color="blue"
             link="/admin/reports"
+            isLoading={isLoading}
             subValue={
               <div className="flex flex-col gap-1 mt-1 border-t border-blue-100 pt-2">
                 <div className="flex justify-between items-center text-[10px] font-bold">
@@ -115,18 +119,20 @@ export default function Dashboard() {
           />
           <StatCard 
             title="Total Anggota" 
-            value={`${data?.totalMember} Member`} 
+            value={`${data?.totalMember || 0} Member`} 
             icon={<Users />} 
             color="emerald"
             link="/admin/members"
+            isLoading={isLoading}
             subValue={<span className="text-[10px] font-bold text-slate-400 uppercase">Status: Aktif & Cuti</span>}
           />
           <StatCard 
             title="Iuran Terbayar" 
-            value={`${data?.iuranProgress.lunas}/${data?.iuranProgress.total}`} 
+            value={`${data?.iuranProgress?.lunas || 0}/${data?.iuranProgress?.total || 0}`} 
             icon={<CheckCircle2 />} 
             color="amber"
             link="/admin/billing"
+            isLoading={isLoading}
             subValue={<span className="text-[10px] font-bold text-slate-400 uppercase">Progres Kelunasan Bulan Ini</span>}
           />
         </div>
@@ -146,10 +152,24 @@ export default function Dashboard() {
             
             <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
               <div className="divide-y divide-slate-50">
-                {data?.recentTransactions.length === 0 ? (
+                {isLoading ? (
+                  // SKELETON TRANSACTIONS
+                  [1, 2, 3].map((i) => (
+                    <div key={i} className="p-5 flex items-center justify-between">
+                      <div className="flex items-center gap-4 w-full">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse shrink-0"></div>
+                        <div className="w-full flex flex-col gap-2">
+                          <div className="h-4 w-1/3 bg-slate-100 rounded animate-pulse"></div>
+                          <div className="h-3 w-1/4 bg-slate-100 rounded animate-pulse"></div>
+                        </div>
+                      </div>
+                      <div className="h-5 w-20 bg-slate-100 rounded animate-pulse shrink-0"></div>
+                    </div>
+                  ))
+                ) : data?.recentTransactions?.length === 0 ? (
                   <div className="p-10 text-center text-slate-400 font-medium text-sm">Belum ada transaksi tercatat.</div>
                 ) : (
-                  data?.recentTransactions.map((tx: any) => (
+                  data?.recentTransactions?.map((tx: any) => (
                     <div key={tx.id} className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${tx.tipe === 'pemasukan' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
@@ -183,30 +203,45 @@ export default function Dashboard() {
             <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex-1">
               <div className="flex flex-col items-center text-center py-6">
                 <div className="text-6xl font-black text-blue-600 mb-2">
-                  {new Date().getDate()}
+                  {dateInfo.day || '-'}
                 </div>
                 <div className="text-xl font-bold text-slate-800 uppercase tracking-widest">
-                  {new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(new Date())}
+                  {dateInfo.monthYear || 'Memuat...'}
                 </div>
                 <div className="mt-6 w-full pt-6 border-t border-slate-100 flex flex-col gap-5 text-left">
-                   <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-rose-500 mt-1.5 shrink-0"></div>
-                      <p className="text-sm font-medium text-slate-600">
-                        Masih ada <b>{data?.iuranProgress.total - data?.iuranProgress.lunas} member</b> yang belum menyelesaikan iuran bulan ini.
-                      </p>
-                   </div>
-                   <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 shrink-0"></div>
-                      <p className="text-sm font-medium text-slate-600">
-                        Total iuran lunas bulan ini: <b>{formatRupiah(data?.totalNominalIuranLunas || 0)}</b>.
-                      </p>
-                   </div>
-                   <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
-                      <p className="text-sm font-medium text-slate-600">
-                        Jangan lupa input pengeluaran atau pemasukan hari ini agar saldo tetap akurat.
-                      </p>
-                   </div>
+                  {isLoading ? (
+                    // SKELETON INFO ITEMS
+                    [1, 2, 3].map((i) => (
+                      <div key={i} className="flex items-start gap-3 w-full">
+                        <div className="w-2 h-2 rounded-full bg-slate-200 mt-1.5 shrink-0 animate-pulse"></div>
+                        <div className="flex flex-col gap-2 w-full mt-1">
+                          <div className="h-3 w-full bg-slate-100 rounded animate-pulse"></div>
+                          <div className="h-3 w-3/4 bg-slate-100 rounded animate-pulse"></div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 rounded-full bg-rose-500 mt-1.5 shrink-0"></div>
+                        <p className="text-sm font-medium text-slate-600">
+                          Masih ada <b>{data?.iuranProgress?.total - data?.iuranProgress?.lunas || 0} member</b> yang belum menyelesaikan iuran bulan ini.
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 shrink-0"></div>
+                        <p className="text-sm font-medium text-slate-600">
+                          Total iuran lunas bulan ini: <b>{formatRupiah(data?.totalNominalIuranLunas || 0)}</b>.
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+                        <p className="text-sm font-medium text-slate-600">
+                          Jangan lupa input pengeluaran atau pemasukan hari ini agar saldo tetap akurat.
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -218,7 +253,9 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ title, value, icon, color, link, subValue }: any) {
+// --- SUB-COMPONENT CARDS ---
+// Tambah prop `isLoading` ke fungsi
+function StatCard({ title, value, icon, color, link, subValue, isLoading }: any) {
   const colorMap: any = {
     blue: "bg-blue-50 text-blue-600 border-blue-100",
     emerald: "bg-emerald-50 text-emerald-600 border-emerald-100",
@@ -232,8 +269,19 @@ function StatCard({ title, value, icon, color, link, subValue }: any) {
       </div>
       <div>
         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">{title}</p>
-        <p className="text-2xl font-black text-slate-800 mt-1">{value}</p>
-        {subValue && <div className="mt-1">{subValue}</div>}
+        
+        {/* Conditional Rendering Loading vs Value */}
+        {isLoading ? (
+          <div className="h-8 w-1/2 bg-slate-100 rounded animate-pulse mt-1 mb-1"></div>
+        ) : (
+          <p className="text-2xl font-black text-slate-800 mt-1">{value}</p>
+        )}
+
+        {isLoading ? (
+          <div className="h-4 w-3/4 bg-slate-100 rounded animate-pulse mt-2"></div>
+        ) : (
+          subValue && <div className="mt-1">{subValue}</div>
+        )}
       </div>
     </Link>
   );
