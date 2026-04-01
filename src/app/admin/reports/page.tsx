@@ -47,7 +47,7 @@ export default function FinancialReport() {
   const currMasuk = Number(currentMonth?.pemasukan || 0);
   const currKeluar = Number(currentMonth?.pengeluaran || 0);
   const currTarget = Number(currentMonth?.target_iuran || 0);
-  const piutangBulanIni = currTarget > currMasuk ? currTarget - currMasuk : 0;
+  const piutangBulanIni = Number(currentMonth?.piutang_iuran || 0);
 
   // Tetap hitung total histori dari seluruh data yang dikirim API (monthly array)
   const totalPemasukanDB = (monthly || []).reduce((acc: number, curr: any) => acc + Number(curr.pemasukan), 0);

@@ -228,12 +228,12 @@ export default function Dashboard() {
                           Masih ada <b>{data?.iuranProgress?.total - data?.iuranProgress?.lunas || 0} member</b> yang belum menyelesaikan iuran bulan ini.
                         </p>
                       </div>
-                      <div className="flex items-start gap-3">
+                      {/* <div className="flex items-start gap-3">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 shrink-0"></div>
                         <p className="text-sm font-medium text-slate-600">
                           Total iuran lunas bulan ini: <b>{formatRupiah(data?.totalNominalIuranLunas || 0)}</b>.
                         </p>
-                      </div>
+                      </div> */}
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
                         <p className="text-sm font-medium text-slate-600">
