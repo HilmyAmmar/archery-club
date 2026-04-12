@@ -22,7 +22,7 @@ const navItems = [
   { name: 'Kas Harian', href: '/admin/cash', icon: Wallet },
   { name: 'Laporan Keuangan', href: '/admin/reports', icon: BarChart3 },
   // Tambahin rute log di sini
-  { name: 'Riwayat Sistem', href: '/admin/logs', icon: Activity }, 
+  // { name: 'Riwayat Sistem', href: '/admin/logs', icon: Activity }, 
 ];
 
 export default function AdminLayout({ 
