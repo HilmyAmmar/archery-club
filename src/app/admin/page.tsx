@@ -33,6 +33,10 @@ export default function AdminLogin() {
         localStorage.setItem('user', JSON.stringify(data.user));
       }
 
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+
       router.push('/admin/dashboard');
       router.refresh();
 

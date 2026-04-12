@@ -65,3 +65,15 @@ export async function deleteManualTransaction(id: string) {
   if (error) throw new Error(`Gagal menghapus transaksi: ${error.message}`);
   return true;
 }
+
+// 5. Ambil 1 Transaksi (Buat diintip nominalnya sebelum dihapus buat Log)
+export async function getTransactionById(id: string) {
+  const { data, error } = await supabase
+    .from('kas_harian')
+    .select('nominal, tipe, kategori')
+    .eq('id', id)
+    .single();
+
+  if (error) return null; // Kalo gak ketemu biarin aja
+  return data;
+}

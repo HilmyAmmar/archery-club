@@ -39,7 +39,10 @@ export function useBillings() {
   // --- 1. Fungsi Cek Jumlah Member Aktif ---
   const checkTotalActiveMembers = useCallback(async () => {
     try {
-        const res = await fetch('/api/billings/count'); 
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/billings/count', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        }); 
         const json = await res.json();
         
         if (json.success) {
@@ -54,7 +57,10 @@ export function useBillings() {
   const fetchBillings = useCallback(async () => {
     setIsFetching(true);
     try {
-      const res = await fetch(`/api/billings?month=${selectedMonth}&year=${selectedYear}`);
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/billings?month=${selectedMonth}&year=${selectedYear}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
       const json = await res.json();
       
       if (json.success) {
@@ -78,9 +84,13 @@ export function useBillings() {
   const handleGenerateBilling = async () => {
     setIsGenerating(true);
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch('/api/billings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ month: Number(selectedMonth), year: Number(selectedYear) }),
       });
       const json = await res.json();
@@ -104,9 +114,13 @@ export function useBillings() {
   const handleSavePayment = async (updatedData: any) => {
     setIsUpdating(true);
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch('/api/billings', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           id: updatedData.id,
           nominal_bayar: updatedData.nominal_bayar,
@@ -141,11 +155,7 @@ export function useBillings() {
   // --- LOGIC TOMBOL PINTAR (FINAL) ---
   // ==========================================
 
-  // 1. hasData: Apakah sudah ada tagihan sama sekali di bulan ini?
   const hasData = billings.length > 0;
-
-  // 2. isMissingMembers: Apakah ada member aktif baru yang belum ter-generate tagihannya?
-  // Hanya true jika data sudah ada, TAPI baris tagihan lebih sedikit dari total member
   const isMissingMembers = hasData && (billings.length < totalActiveMembers);
 
   const stats = useMemo(() => {
@@ -186,7 +196,7 @@ export function useBillings() {
     handleGenerateBilling,
     handleSavePayment,
     hasData,
-    isMissingMembers, // <--- KITA EXPORT INI
+    isMissingMembers, 
     totalActiveMembers
   };
 }

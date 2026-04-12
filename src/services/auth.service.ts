@@ -6,39 +6,6 @@ const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'secret-key-for-jwt'
 );
 
-export async function registerAdmin(username: string, password: string) {
-    try {
-        const saltRounds = 10;
-
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const { data, error } = await supabase
-            .from('admins')
-            .insert(
-                [
-                    {
-                        username: username,
-                        password_hash: hashedPassword,
-                        role: 'superadmin'
-                    }
-                ]
-            )
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Error registering admin:', error);
-            throw new Error('Failed to register admin');
-            return null;
-        }
-
-        return data;
-    } catch (error) {
-        console.error('Error hashing password:', error);
-        throw new Error('Failed to register admin');
-    }
-}
-
 export async function loginAdmin(username: string, password: string) {
     try {
         const { data, error } = await supabase

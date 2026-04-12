@@ -16,6 +16,7 @@ const KATEGORI_PEMASUKAN = [
   'Penjualan Merchandise & Alat',
   'Sponsor & Donasi',
   'Pemasukan Event / Lomba',
+  'Trial Member',
   'Lain-lain'
 ];
 

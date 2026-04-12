@@ -119,8 +119,6 @@ export function useMembers() {
     const url = editingId ? `/api/members/${editingId}` : '/api/members';
     const method = editingId ? 'PUT' : 'POST';
 
-    // --- 1. LOGIC SANITASI DATA ---
-    // Mengonversi string kosong ("") menjadi null agar PostgreSQL tidak error
     const payload = Object.keys(formData).reduce((acc: any, key) => {
       const value = (formData as any)[key];
       acc[key] = value === "" ? null : value;
@@ -128,10 +126,15 @@ export function useMembers() {
     }, {});
 
     try {
+      const token = localStorage.getItem('token');
+
       const response = await fetch(url, {
         method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload), // <--- Gunakan payload yang sudah disanitasi
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload), 
       });
 
       const textResponse = await response.text(); 
@@ -166,7 +169,13 @@ export function useMembers() {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`/api/members/${deleteTarget.id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/members/${deleteTarget.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!response.ok) throw new Error('Gagal menghapus member');
       
       fetchMembers();

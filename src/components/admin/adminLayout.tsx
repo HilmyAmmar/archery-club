@@ -11,8 +11,8 @@ import {
   BarChart3, 
   LogOut, 
   Menu, 
-  X, 
-  Target 
+  X,
+  Activity // <-- Tambahan icon buat log
 } from 'lucide-react';
 
 const navItems = [
@@ -21,6 +21,8 @@ const navItems = [
   { name: 'Iuran Bulanan', href: '/admin/billing', icon: CreditCard },
   { name: 'Kas Harian', href: '/admin/cash', icon: Wallet },
   { name: 'Laporan Keuangan', href: '/admin/reports', icon: BarChart3 },
+  // Tambahin rute log di sini
+  { name: 'Riwayat Sistem', href: '/admin/logs', icon: Activity }, 
 ];
 
 export default function AdminLayout({ 
@@ -39,7 +41,6 @@ export default function AdminLayout({
   const router = useRouter(); 
   const [adminName, setAdminName] = useState('Admin');
   const [role, setRole] = useState('');
-
 
   // --- Fungsi Logout Baru ---
   const handleLogout = async () => {
@@ -90,11 +91,12 @@ export default function AdminLayout({
       <div className="p-4 border-t border-slate-800">
         <div className="flex items-center gap-3 px-4 py-3 mb-2">
           <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shrink-0">
-            S
+            {/* Tampilkan inisial huruf pertama dari nama admin */}
+            {adminName ? adminName.charAt(0).toUpperCase() : 'A'}
           </div>
           <div className="flex flex-col text-left">
             <span className="text-sm font-bold text-white">{adminName}</span>
-            <span className="text-xs text-blue-400 font-medium">{role}</span>
+            <span className="text-xs text-blue-400 font-medium uppercase">{role}</span>
           </div>
         </div>
         
@@ -155,7 +157,6 @@ export default function AdminLayout({
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         <div className="md:hidden flex items-center justify-between bg-white p-4 shadow-sm border-b border-slate-100 z-10">
           <div className="flex items-center gap-3">
-            {/* Ganti Target Icon jadi Img Logo FAST */}
             <img src="/favicon.ico" alt="FAST Logo" className="w-8 h-8 object-contain shrink-0" />
             <div className="flex flex-col">
               <span className="font-black text-lg leading-none tracking-wide text-slate-800">FAST</span>

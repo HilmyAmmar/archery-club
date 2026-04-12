@@ -96,3 +96,21 @@ export async function deleteMemberService(id: string) {
 
   return true;
 }
+
+/**
+ * FUNGSI 5: Ambil Detail Satu Member berdasarkan ID
+ */
+export async function getMemberByIdService(id: string) {
+  const { data, error } = await supabase
+    .from('members')
+    .select('*') 
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    throw new Error(`Member tidak ditemukan: ${error.message}`);
+  }
+
+  return data;
+}
+

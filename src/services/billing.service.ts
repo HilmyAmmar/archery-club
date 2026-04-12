@@ -113,8 +113,6 @@ export async function generateMassBillingService(month: number, year: number) {
     // ==========================================================
     // LOGIC DELETE (CLEANUP) - KHUSUS MEMBER NON-AKTIF
     // ==========================================================
-    
-    // Ambil semua ID member yang barusan kita proses (Aktif & Cuti)
     const activeAndCutiIds = members.map(m => m.id);
 
     if (activeAndCutiIds.length > 0) {
@@ -123,9 +121,8 @@ export async function generateMassBillingService(month: number, year: number) {
         .delete()
         .eq('month', month)
         .eq('year', year)
-        .eq('status', 'belum') // AMAN: Hanya hapus yang belum bayar
+        .eq('status', 'belum') 
         .not('member_id', 'in', `(${activeAndCutiIds.join(',')})`); 
-        // ^ Artiannya: Hapus yang ID-nya GAK ADA di daftar Aktif/Cuti
 
         if (deleteError) {
         console.error("Gagal cleanup member non-aktif:", deleteError);
@@ -141,7 +138,6 @@ export async function generateMassBillingService(month: number, year: number) {
  * 3. Update Pembayaran Member & Sinkronisasi Kas Otomatis (RPC)
  */
 export async function updatePaymentService(paymentId: string, payload: Partial<PaymentRecord>) {
-    // 1. Kita butuh nominal_tagihan untuk menentukan status lunas/cicil
     let tagihan: number = payload.nominal_tagihan ?? 0;
 
     if (!tagihan) {
@@ -155,7 +151,6 @@ export async function updatePaymentService(paymentId: string, payload: Partial<P
 
     const bayar = Number(payload.nominal_bayar || 0);
     
-    // 2. Tentukan Status (Logic tetap di Server)
     let statusFinal: 'lunas' | 'cicil' | 'belum' = 'belum';
     if (bayar >= tagihan) {
         statusFinal = 'lunas';
@@ -165,8 +160,6 @@ export async function updatePaymentService(paymentId: string, payload: Partial<P
 
     const cleanDate = payload.tanggal_bayar ? payload.tanggal_bayar.substring(0, 10) : null;
 
-    // 3. PANGGIL RPC (Remote Procedure Call)
-    // Ini yang bikin iuran dan kas harian sinkron dalam satu transaksi
     const { data, error } = await supabase.rpc('process_payment_and_ledger', {
         p_payment_id: paymentId,
         p_nominal_bayar: bayar,
@@ -181,7 +174,6 @@ export async function updatePaymentService(paymentId: string, payload: Partial<P
         throw new Error(`Gagal sinkronisasi pembayaran: ${error.message}`);
     }
 
-    // Return data manual agar UI FE bisa langsung update state tanpa refresh
     return { 
         ...payload, 
         id: paymentId, 

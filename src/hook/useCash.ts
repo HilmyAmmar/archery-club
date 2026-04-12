@@ -9,7 +9,7 @@ export interface CashTransaction {
   keterangan: string;
   bukti_transaksi_url: string | null;
   payment_id: string | null;
-  metode_pembayaran: 'tunai' | 'transfer'; // <--- TAMBAHKAN INI
+  metode_pembayaran: 'tunai' | 'transfer'; 
   created_at: string;
 }
 
@@ -22,7 +22,13 @@ export function useCash() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/cash');
+      // 1. Ambil token buat jaga-jaga kalau GET nya diproteksi juga
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/cash', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
       const json = await res.json();
       
       if (!res.ok) throw new Error(json.message || 'Gagal mengambil data kas');
@@ -39,9 +45,14 @@ export function useCash() {
   }, [fetchTransactions]);
 
   const addTransaction = async (payload: Partial<CashTransaction>) => {
+    // 2. Pasang token buat POST
+    const token = localStorage.getItem('token');
     const res = await fetch('/api/cash', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(payload),
     });
     
@@ -53,9 +64,14 @@ export function useCash() {
   };
 
   const updateTransaction = async (id: string, payload: Partial<CashTransaction>) => {
+    // 3. Pasang token buat PUT
+    const token = localStorage.getItem('token');
     const res = await fetch(`/api/cash/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(payload),
     });
     
@@ -67,8 +83,13 @@ export function useCash() {
   };
 
   const deleteTransaction = async (id: string) => {
+    // 4. Pasang token buat DELETE
+    const token = localStorage.getItem('token');
     const res = await fetch(`/api/cash/${id}`, { 
-      method: 'DELETE' 
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
     
     const json = await res.json();

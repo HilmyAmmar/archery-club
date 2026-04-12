@@ -16,7 +16,8 @@ export async function POST(request: Request) {
 
         const response = NextResponse.json({ 
             message: 'Login Berhasil', 
-            user: result.user 
+            user: result.user ,
+            token: result.token
         });
 
         response.cookies.set({

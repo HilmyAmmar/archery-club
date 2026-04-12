@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllMembersService, createMemberService } from '@/services/member.service';
+import { insertActivityLog } from '@/app/lib/logger'; 
+import { getAdminNameFromRequest } from '@/app/lib/auth';
 
 export async function GET() {
   try {
@@ -31,6 +33,15 @@ export async function POST(request: Request) {
     }
 
     const newMember = await createMemberService(body);
+
+    const adminName = await getAdminNameFromRequest(request);
+    
+    await insertActivityLog(
+        adminName, 
+        'TAMBAH', 
+        'MEMBER', 
+        `Menambahkan member baru bernama ${body.nama_lengkap} (Paket: ${body.tipe_membership})`
+    );
 
     return NextResponse.json({
       success: true,
