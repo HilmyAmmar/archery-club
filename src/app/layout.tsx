@@ -29,12 +29,12 @@ export const metadata: Metadata = {
   },
   description: "FAST Kodamar Archery Club adalah pusat pelatihan panahan profesional di Jakarta Utara (Kelapa Gading & sekitarnya). Kami menawarkan program latihan memanah intensif yang aman dan fun untuk anak-anak, kelas pemula dewasa, hingga pembinaan atlet prestasi. Dengan pelatih bersertifikat nasional dan fasilitas lengkap di Komplek Kodamar, kami siap membantu Anda mengasah fokus, disiplin, dan teknik panahan yang tepat. Daftar sekarang untuk pengalaman olahraga sunnah dan prestasi terbaik!",
   keywords: [
-    "panahan jakarta", 
-    "archery club jakarta", 
-    "FAST Kodamar", 
-    "belajar memanah", 
-    "klub panahan jakarta utara", 
-    "tempat latihan panahan", 
+    "panahan jakarta",
+    "archery club jakarta",
+    "FAST Kodamar",
+    "belajar memanah",
+    "klub panahan jakarta utara",
+    "tempat latihan panahan",
     "ekstrakurikuler panahan",
     "pelatihan panahan profesional",
     "program panahan anak-anak",
@@ -55,6 +55,9 @@ export const metadata: Metadata = {
     "panahan untuk pemula",
     "panahan untuk atlet prestasi",
   ],
+  verification: {
+    google: "gu06ND8s7CEmJ3PXuJ4kDwgXuo-nm6TY8CxM-p2K810",
+  },
   authors: [{ name: "FAST Kodamar" }],
   creator: "FAST Kodamar",
   publisher: "FAST Kodamar",
@@ -70,7 +73,7 @@ export const metadata: Metadata = {
     siteName: "FAST Kodamar",
     images: [
       {
-        url: "/bg-hero.jpg", 
+        url: "/bg-hero.jpg",
         width: 1200,
         height: 630,
         alt: "Latihan Panahan FAST Kodamar",
