@@ -46,6 +46,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, initia
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (initialData && isOpen) {
@@ -108,6 +109,28 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, initia
   const handleRemoveImage = () => {
     setFormData(prev => ({ ...prev, bukti_transaksi_url: '' }));
     setImagePreview(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const fakeEvent = {
+        target: { files: e.dataTransfer.files }
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      await handleUploadImage(fakeEvent);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -231,16 +254,25 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, initia
 
               <div className="md:col-span-2">
                 <label className="text-sm font-bold flex items-center gap-2 mb-2 text-slate-700"><UploadCloud className="w-4 h-4 text-slate-400" /> Bukti Transaksi (Opsional)</label>
-                <div className="flex flex-col sm:flex-row items-center gap-4 p-4 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-                  <button type="button" onClick={() => imagePreview && setShowLightbox(true)} disabled={!imagePreview} className="w-24 h-24 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shadow-sm shrink-0 transition-all hover:border-blue-300">
-                    {uploading ? <Loader2 className="w-6 h-6 animate-spin text-blue-600" /> : imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <UploadCloud className="w-8 h-8 text-slate-300" />}
+                <div 
+                  className={`flex flex-col sm:flex-row items-center gap-4 p-4 border-2 border-dashed rounded-2xl transition-all ${
+                    isDragging ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50'
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <button type="button" onClick={() => imagePreview && setShowLightbox(true)} disabled={!imagePreview} className={`w-24 h-24 rounded-xl bg-white border flex items-center justify-center overflow-hidden shadow-sm shrink-0 transition-all ${isDragging ? 'border-blue-300' : 'border-slate-200 hover:border-blue-300'}`}>
+                    {uploading ? <Loader2 className="w-6 h-6 animate-spin text-blue-600" /> : imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <UploadCloud className={`w-8 h-8 ${isDragging ? 'text-blue-400' : 'text-slate-300'}`} />}
                   </button>
                   <div className="flex-1 text-center sm:text-left">
-                    <p className="text-sm font-bold">Pilih Bukti Transaksi</p>
+                    <p className="text-sm font-bold text-slate-800">
+                      {isDragging ? 'Lepaskan gambar di sini...' : 'Pilih atau Tarik Bukti Transaksi'}
+                    </p>
                     <p className="text-xs text-slate-500 mb-3 font-medium">Format JPG, PNG (Maks. 5MB)</p>
                     <input type="file" id="bukti_transaksi_manual" accept="image/*" onChange={handleUploadImage} className="hidden" />
                     <div className="flex gap-2 justify-center sm:justify-start">
-                      <label htmlFor="bukti_transaksi_manual" className="cursor-pointer px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold hover:bg-blue-50 transition-all shadow-sm">
+                      <label htmlFor="bukti_transaksi_manual" className="cursor-pointer px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold hover:bg-blue-50 transition-all shadow-sm text-slate-700">
                         {imagePreview ? 'Ganti Gambar' : 'Pilih Gambar'}
                       </label>
                       {imagePreview && <button type="button" onClick={handleRemoveImage} className="px-4 py-2 bg-white border border-rose-200 text-rose-600 rounded-lg text-xs font-bold hover:bg-rose-50 transition-colors">Hapus</button>}
