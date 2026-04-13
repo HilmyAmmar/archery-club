@@ -12,6 +12,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: '#1a3680',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.fastkodamar.com'),
   alternates: {
@@ -99,6 +105,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SportsClub",
+              "name": "FAST Kodamar Archery Club",
+              "image": "https://www.fastkodamar.com/bg-hero.jpg",
+              "description": "Klub Panahan profesional di wilayah Jakarta Utara. Kami menyediakan program anak-anak, pemula dewasa, hingga atlet berprestasi.",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Komplek Kodamar TNI AL",
+                "addressLocality": "Jakarta Utara",
+                "addressRegion": "DKI Jakarta",
+                "addressCountry": "ID"
+              },
+              "telephone": "+6281188037673",
+              "url": "https://www.fastkodamar.com"
+            })
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased suppressHydrationWarning`}
       >

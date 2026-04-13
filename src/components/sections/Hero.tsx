@@ -1,6 +1,7 @@
 // src/components/sections/Hero.tsx
 'use client'; 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function Hero() {
   const ADMIN_WHATSAPP = '6281188037673';
@@ -23,7 +24,13 @@ export default function Hero() {
     <section id="home" className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1a3680]">
       
       {/* 1. Base Image */}
-      <div className="absolute inset-0 bg-[url('/bg-hero.jpg')] bg-cover bg-[center_top_10%] md:bg-[center_top_20%]" />
+      <Image 
+        src="/bg-hero.jpg"
+        alt="Latihan Panahan Profesional FAST Kodamar"
+        fill
+        priority
+        className="object-cover object-[center_top_10%] md:object-[center_top_20%]"
+      />
       
       {/* 2. Blue Filter Overlay */}
       <div className="absolute inset-0 bg-[#1a3680] opacity-65 mix-blend-multiply" />
@@ -86,6 +93,7 @@ export default function Hero() {
       <div 
         className={`absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 z-30 transition-all duration-500 ease-in-out
         ${isScrolled ? 'opacity-0 translate-y-10 pointer-events-none' : 'opacity-100 animate-bounce'}`}
+        aria-hidden="true"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
           <path d="M6 9l6 6 6-6"/>

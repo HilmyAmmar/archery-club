@@ -2,6 +2,7 @@
 'use client';
 
 import { galeriImages } from '@/data/galeryData';
+import Image from 'next/image';
 
 export default function Galeri() {
   const row1 = [...galeriImages.slice(0, 6), ...galeriImages.slice(0, 6)];
@@ -38,8 +39,14 @@ export default function Galeri() {
         {/* ROW 1 */}
         <div className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused]">
           {row1.map((imgUrl, index) => (
-            <div key={`r1-${index}`} className="w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">
-              <img src={imgUrl} alt="FAST Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+            <div key={`r1-${index}`} className="relative w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">
+              <Image 
+                src={imgUrl} 
+                alt={`Kegiatan Panahan FAST Kodamar - Galeri ${index + 1}`} 
+                fill
+                sizes="(max-width: 768px) 260px, 380px"
+                className="object-cover transition-transform duration-700 group-hover:scale-110" 
+              />
             </div>
           ))}
         </div>
@@ -47,8 +54,14 @@ export default function Galeri() {
         {/* ROW 2 */}
         <div className="flex w-max animate-infinite-scroll-reverse hover:[animation-play-state:paused]">
           {row2.map((imgUrl, index) => (
-            <div key={`r2-${index}`} className="w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">
-              <img src={imgUrl} alt="FAST Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+            <div key={`r2-${index}`} className="relative w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">
+              <Image 
+                src={imgUrl} 
+                alt={`Aktivitas Archery Club FAST - Photo ${index + 1}`} 
+                fill
+                sizes="(max-width: 768px) 260px, 380px"
+                className="object-cover transition-transform duration-700 group-hover:scale-110" 
+              />
             </div>
           ))}
         </div>

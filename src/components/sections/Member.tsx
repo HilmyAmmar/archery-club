@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { membersData } from '@/data/memberData';
+import Image from 'next/image';
 
 // --- SUB-KOMPONEN UNTUK GALERI FOTO ---
 function MemberGallery({ images, isCenter }: { images: string[], isCenter: boolean }) {
@@ -22,12 +23,15 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
     <div className="relative w-full h-[220px] shrink-0 bg-[#1a234f] flex items-center justify-center group overflow-hidden">
       
       {images.map((img, idx) => (
-        <div 
+        <Image 
           key={idx}
-          className={`absolute inset-0 w-full h-full transition-opacity duration-500 bg-cover bg-top ${
+          src={img}
+          alt={`Galeri Member`}
+          fill
+          sizes="(max-width: 768px) 320px, 340px"
+          className={`object-cover object-top transition-opacity duration-500 ${
             idx === imgIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
-          style={{ backgroundImage: `url(${img})` }}
         />
       ))}
       
@@ -46,10 +50,10 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
 
       {isCenter && images.length > 1 && (
         <>
-          <button onClick={prevImg} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={prevImg} aria-label="Gambar Sebelumnya" className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <button onClick={nextImg} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={nextImg} aria-label="Gambar Selanjutnya" className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>
 
@@ -210,6 +214,7 @@ export default function Member() {
         <div className="flex items-center justify-center gap-6 mt-4 relative z-30">
           <button 
             onClick={handlePrev}
+            aria-label="Member Sebelumnya"
             disabled={activeIndex === 0} 
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
               activeIndex === 0 
@@ -224,6 +229,7 @@ export default function Member() {
             {carouselData.map((_, index) => (
               <button 
                 key={index}
+                aria-label={`Slide member ${index + 1}`}
                 onClick={() => setActiveIndex(index)}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   activeIndex === index ? 'w-8 bg-[#eab308]' : 'w-2 bg-white/20 hover:bg-white/40'
@@ -234,6 +240,7 @@ export default function Member() {
 
           <button 
             onClick={handleNext}
+            aria-label="Member Selanjutnya"
             disabled={activeIndex === carouselData.length - 1}
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
               activeIndex === carouselData.length - 1 

@@ -1,4 +1,5 @@
 import { coachesData } from "@/data/coachData";
+import Image from "next/image";
 
 const coaches = coachesData; 
 
@@ -30,10 +31,13 @@ export default function Coach() {
                 
                 {/* Foto Coach */}
                 <div className="w-40 h-40 md:w-48 md:h-48 shrink-0 rounded-[1.5rem] overflow-hidden relative shadow-md border-4 border-white">
-                  <div 
-                    className="w-full h-full bg-cover bg-top"
-                    style={{ backgroundImage: `url(${coach.image})` }}
-                  ></div>
+                  <Image 
+                    src={coach.image}
+                    alt={`Foto Pelatih Panahan ${coach.name}`}
+                    fill
+                    sizes="(max-width: 768px) 160px, 192px"
+                    className="object-cover object-top"
+                  />
                 </div>
 
                 {/* Info & Quote */}
@@ -71,8 +75,14 @@ export default function Coach() {
                   {coach.certificates.map((cert) => (
                     <div key={cert.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-row md:flex-col">
                       {/* Image Placeholder Mini */}
-                      <div className="w-28 md:w-full h-auto md:h-36 relative shrink-0 border-r md:border-r-0 md:border-b border-gray-100">
-                        <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${cert.img})` }}></div>
+                      <div className="w-28 md:w-full min-h-[100px] h-auto md:h-36 relative shrink-0 border-r md:border-r-0 md:border-b border-gray-100">
+                        <Image 
+                          src={cert.img} 
+                          alt={`Sertifikat ${cert.title}`} 
+                          fill 
+                          sizes="(max-width: 768px) 112px, 33vw"
+                          className="object-cover object-center" 
+                        />
                         <div className="absolute inset-0 bg-blue-900/5 group-hover:bg-transparent transition-colors"></div>
                       </div>
                       
