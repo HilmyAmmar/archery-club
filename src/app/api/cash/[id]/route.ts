@@ -18,25 +18,25 @@ export async function PUT(
     }
 
     const body = await request.json();
-    
+
     const updatedData = await updateManualTransaction(id, body);
 
     const adminName = await getAdminNameFromRequest(request);
-    
+
     const nominalLog = updatedData?.nominal || body.nominal || 0;
     const kategoriLog = updatedData?.kategori || body.kategori || 'Tidak diketahui';
 
-    const formatRupiah = new Intl.NumberFormat('id-ID', { 
-        style: 'currency', 
-        currency: 'IDR',
-        minimumFractionDigits: 0
+    const formatRupiah = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
     }).format(nominalLog);
 
     await insertActivityLog(
-        adminName, 
-        'EDIT', 
-        'KAS', 
-        `Mengubah transaksi kas manual menjadi ${formatRupiah} (Kategori: ${kategoriLog})`
+      adminName,
+      'EDIT',
+      'KAS',
+      `Mengubah transaksi kas manual menjadi ${formatRupiah} (Kategori: ${kategoriLog})`
     );
 
     return NextResponse.json({
@@ -46,9 +46,9 @@ export async function PUT(
     }, { status: 200 });
 
   } catch (error: any) {
-    return NextResponse.json({ 
-      success: false, 
-      message: error.message || 'Internal Server Error' 
+    return NextResponse.json({
+      success: false,
+      message: error.message || 'Internal Server Error'
     }, { status: 500 });
   }
 }
@@ -70,12 +70,12 @@ export async function DELETE(
     await deleteManualTransaction(id);
 
     const adminName = await getAdminNameFromRequest(request);
-    
+
     await insertActivityLog(
-        adminName, 
-        'HAPUS', 
-        'KAS', 
-        `Menghapus transaksi kas manual dengan ID: ${id}`
+      adminName,
+      'HAPUS',
+      'KAS',
+      `Menghapus transaksi kas manual dengan ID: ${id}`
     );
 
     return NextResponse.json({
@@ -84,9 +84,9 @@ export async function DELETE(
     }, { status: 200 });
 
   } catch (error: any) {
-    return NextResponse.json({ 
-      success: false, 
-      message: error.message || 'Internal Server Error' 
+    return NextResponse.json({
+      success: false,
+      message: error.message || 'Internal Server Error'
     }, { status: 500 });
   }
 }

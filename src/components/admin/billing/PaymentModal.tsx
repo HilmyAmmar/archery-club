@@ -47,6 +47,19 @@ export default function PaymentModal({ isOpen, onClose, billingData, onSave, isU
 
   if (!isOpen || !billingData) return null;
 
+  const deleteOldImageFromStorage = async (url: string) => {
+    if (!url) return;
+    try {
+      const pathParts = url.split('/transaction_proofs/');
+      if (pathParts.length > 1) {
+        const filePath = decodeURIComponent(pathParts[1]);
+        await supabaseClient.storage.from('transaction_proofs').remove([filePath]);
+      }
+    } catch (err) {
+      console.error("Gagal menghapus gambar lama:", err);
+    }
+  };
+
   const handleUploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
@@ -64,6 +77,12 @@ export default function PaymentModal({ isOpen, onClose, billingData, onSave, isU
       if (uploadError) throw uploadError;
 
       const { data } = supabaseClient.storage.from('transaction_proofs').getPublicUrl(filePath);
+
+      // Mencegah Storage Leak: Hapus gambar yang sudah diupload jika user ganti gambar lain
+      if (formData.bukti_transaksi && formData.bukti_transaksi !== billingData.bukti_transaksi) {
+        await deleteOldImageFromStorage(formData.bukti_transaksi);
+      }
+
       setFormData(prev => ({ ...prev, bukti_transaksi: data.publicUrl }));
       setImagePreview(data.publicUrl);
     } catch (error: any) {
@@ -73,7 +92,10 @@ export default function PaymentModal({ isOpen, onClose, billingData, onSave, isU
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = async () => {
+    if (formData.bukti_transaksi && formData.bukti_transaksi !== billingData.bukti_transaksi) {
+      await deleteOldImageFromStorage(formData.bukti_transaksi);
+    }
     setFormData(prev => ({ ...prev, bukti_transaksi: '' }));
     setImagePreview(null);
   };

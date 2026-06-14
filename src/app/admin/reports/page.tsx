@@ -11,6 +11,9 @@ import {
 } from 'recharts';
 import { useReport } from '@/hook/useReport';
 import { TOTAL_INITIAL_BALANCE } from '@/app/lib/constants';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // Warna untuk Pie Chart Kategori
 const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899', '#8b5cf6'];
@@ -61,13 +64,87 @@ export default function FinancialReport() {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
   };
   
+  const handleExportExcel = () => {
+    if (!monthly || monthly.length === 0) return alert('Tidak ada data untuk diekspor');
+    
+    // Mapping data agar header kolom Excel rapi
+    const excelData = monthly.map((m: any) => ({
+      'Bulan': m.nama_bulan,
+      'Tahun': m.tahun,
+      'Pemasukan (Rp)': Number(m.pemasukan) || 0,
+      'Pengeluaran (Rp)': Number(m.pengeluaran) || 0,
+      'Target Iuran (Rp)': Number(m.target_iuran) || 0,
+      'Piutang Iuran (Rp)': Number(m.piutang_iuran) || 0,
+      'Saldo Bersih Bulan Ini (Rp)': (Number(m.pemasukan) || 0) - (Number(m.pengeluaran) || 0)
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    
+    // Mengatur kelebaran (width) masing-masing kolom
+    worksheet['!cols'] = [
+      { wch: 15 }, { wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 25 }
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Keuangan");
+
+    XLSX.writeFile(workbook, `Laporan_Keuangan_FAST_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  const handleDownloadPDF = () => {
+    if (!monthly || monthly.length === 0) return alert('Tidak ada data untuk diunduh');
+
+    const doc = new jsPDF();
+
+    // Header Laporan
+    doc.setFontSize(18);
+    doc.setTextColor(15, 23, 42); 
+    doc.text('Laporan Keuangan FAST Archery', 14, 22);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Dicetak pada: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, 14, 29);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(15, 23, 42);
+    doc.text(`Total Saldo Akhir: ${formatRupiah(totalSaldoSaatIni)}`, 14, 40);
+
+    // Generate Tabel
+    const tableColumn = ["Bulan", "Tahun", "Pemasukan", "Pengeluaran", "Target Iuran", "Piutang"];
+    const tableRows = monthly.map((m: any) => [
+      m.nama_bulan,
+      m.tahun,
+      formatRupiah(Number(m.pemasukan) || 0),
+      formatRupiah(Number(m.pengeluaran) || 0),
+      formatRupiah(Number(m.target_iuran) || 0),
+      formatRupiah(Number(m.piutang_iuran) || 0),
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 46,
+      theme: 'grid',
+      headStyles: { fillColor: [37, 99, 235] }, // Warna biru primary tailwind
+      styles: { fontSize: 9, cellPadding: 4 },
+      columnStyles: {
+        2: { halign: 'right' },
+        3: { halign: 'right' },
+        4: { halign: 'right' },
+        5: { halign: 'right' },
+      }
+    });
+
+    doc.save(`Laporan_Keuangan_FAST_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   const actionButton = (
     <div className="flex gap-2">
-      <button className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
+      <button onClick={handleExportExcel} className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
         <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
         Export Excel
       </button>
-      <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-blue-200">
+      <button onClick={handleDownloadPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-blue-200">
         <Download className="w-4 h-4" />
         Download PDF
       </button>

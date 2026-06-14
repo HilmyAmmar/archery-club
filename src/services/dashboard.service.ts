@@ -26,10 +26,18 @@ export async function getDashboardDataService() {
   // 3. Ambil Semua Data Kas buat hitung Saldo Akhir
   const { data: cashData } = await supabase
     .from('kas_harian')
-    .select('nominal, tipe, kategori');
+    .select('nominal, tipe, kategori, metode_pembayaran');
   
   const sumIn = cashData?.filter(t => t.tipe === 'pemasukan').reduce((acc, curr) => acc + Number(curr.nominal), 0) || 0;
   const sumOut = cashData?.filter(t => t.tipe === 'pengeluaran' && t.kategori !== 'Koreksi Iuran').reduce((acc, curr) => acc + Number(curr.nominal), 0) || 0;
+
+  const saldoRekening = cashData
+    ?.filter(t => t.metode_pembayaran === 'transfer')
+    .reduce((acc, curr) => curr.tipe === 'pemasukan' ? acc + Number(curr.nominal) : acc - Number(curr.nominal), 0) || 0;
+
+  const saldoTunai = cashData
+    ?.filter(t => t.metode_pembayaran === 'tunai')
+    .reduce((acc, curr) => curr.tipe === 'pemasukan' ? acc + Number(curr.nominal) : acc - Number(curr.nominal), 0) || 0;
 
   // 4. Ambil Status Iuran Bulan Ini (Service Billing)
   // Pastikan lu udah klik "Terbitkan Tagihan" untuk bulan & tahun ini di UI Iuran
@@ -43,17 +51,6 @@ export async function getDashboardDataService() {
 
   const lunasCount = payments?.filter(p => p.status === 'lunas').length || 0;
   const totalTagihan = payments?.length || 0;
-
-  // Di dashboard.service.ts, pastiin lu ngitung ini:
-const { data: totalData } = await supabase.from('kas_harian').select('nominal, tipe, metode_pembayaran');
-
-const saldoRekening = totalData
-  ?.filter(t => t.metode_pembayaran === 'transfer')
-  .reduce((acc, curr) => curr.tipe === 'pemasukan' ? acc + curr.nominal : acc - curr.nominal, 0) || 0;
-
-const saldoTunai = totalData
-  ?.filter(t => t.metode_pembayaran === 'tunai')
-  .reduce((acc, curr) => curr.tipe === 'pemasukan' ? acc + curr.nominal : acc - curr.nominal, 0) || 0;
 
   return {
     totalMember: memberCount || 0,

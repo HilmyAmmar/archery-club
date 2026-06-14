@@ -79,6 +79,20 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, initia
   const currentCategories = formData.tipe === 'pemasukan' ? KATEGORI_PEMASUKAN : KATEGORI_PENGELUARAN;
   const isCustomCategory = initialData && formData.kategori && !currentCategories.includes(formData.kategori);
 
+  const deleteOldImageFromStorage = async (url: string) => {
+    if (!url) return;
+    try {
+      // Ekstrak file path dari Public URL Supabase
+      const pathParts = url.split('/transaction_proofs/');
+      if (pathParts.length > 1) {
+        const filePath = decodeURIComponent(pathParts[1]);
+        await supabaseClient.storage.from('transaction_proofs').remove([filePath]);
+      }
+    } catch (err) {
+      console.error("Gagal menghapus gambar lama:", err);
+    }
+  };
+
   const handleUploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
@@ -97,6 +111,11 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, initia
 
       const { data } = supabaseClient.storage.from('transaction_proofs').getPublicUrl(filePath);
       
+      // Mencegah Storage Leak: Hapus gambar yang sudah diupload jika user ganti gambar lain
+      if (formData.bukti_transaksi_url && formData.bukti_transaksi_url !== initialData?.bukti_transaksi_url) {
+        await deleteOldImageFromStorage(formData.bukti_transaksi_url);
+      }
+
       setFormData(prev => ({ ...prev, bukti_transaksi_url: data.publicUrl }));
       setImagePreview(data.publicUrl);
     } catch (error: any) {
@@ -106,7 +125,11 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, initia
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = async () => {
+    // Hapus dari bucket jika gambar bukan dari data database asli
+    if (formData.bukti_transaksi_url && formData.bukti_transaksi_url !== initialData?.bukti_transaksi_url) {
+      await deleteOldImageFromStorage(formData.bukti_transaksi_url);
+    }
     setFormData(prev => ({ ...prev, bukti_transaksi_url: '' }));
     setImagePreview(null);
   };
