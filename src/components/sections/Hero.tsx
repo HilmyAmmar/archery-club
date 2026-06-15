@@ -29,7 +29,7 @@ export default function Hero() {
         alt="Latihan Panahan Profesional FAST Kodamar"
         fill
         priority
-        className="object-cover object-[center_top_10%] md:object-[center_top_20%]"
+        className="object-cover object-top md:object-[center_top_5%]"
       />
       
       {/* 2. Blue Filter Overlay */}
