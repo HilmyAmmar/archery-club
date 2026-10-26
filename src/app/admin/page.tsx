@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 import { useLanguage } from '@/i18n/LanguageProvider';
 import LanguageSwitcher from '@/i18n/LanguageSwitcher';
@@ -13,6 +13,11 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false); 
+
+  // Versi lama menyimpan token di localStorage (bisa dicuri lewat XSS). Sesi kini hanya di cookie httpOnly.
+  useEffect(() => {
+    localStorage.removeItem('token');
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,10 +39,6 @@ export default function AdminLogin() {
 
       if (data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
-      }
-
-      if (data.token) {
-        localStorage.setItem('token', data.token);
       }
 
       router.push('/admin/dashboard');
@@ -83,7 +84,8 @@ export default function AdminLogin() {
                 type="text" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                placeholder={t.admin.login.username}
+                autoComplete="username"
                 disabled={isLoading}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-[#2563eb] focus:bg-white/10 transition-all shadow-inner disabled:opacity-50"
                 required
@@ -97,6 +99,7 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••"
+                autoComplete="current-password"
                 disabled={isLoading}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-[#2563eb] focus:bg-white/10 transition-all shadow-inner disabled:opacity-50"
                 required

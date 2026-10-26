@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { apiFetch } from '@/app/lib/api-client';
 import { useLanguage } from '@/i18n/LanguageProvider';
 
 // 1. TAMBAH BUKTI TRANSAKSI DI INTERFACE
@@ -41,10 +42,7 @@ export function useBillings() {
   // --- 1. Fungsi Cek Jumlah Member Aktif ---
   const checkTotalActiveMembers = useCallback(async () => {
     try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/billings/count', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        }); 
+        const res = await apiFetch('/api/billings/count'); 
         const json = await res.json();
         
         if (json.success) {
@@ -59,10 +57,7 @@ export function useBillings() {
   const fetchBillings = useCallback(async () => {
     setIsFetching(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/billings?month=${selectedMonth}&year=${selectedYear}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await apiFetch(`/api/billings?month=${selectedMonth}&year=${selectedYear}`);
       const json = await res.json();
       
       if (json.success) {
@@ -86,12 +81,10 @@ export function useBillings() {
   const handleGenerateBilling = async () => {
     setIsGenerating(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/billings', {
+      const res = await apiFetch('/api/billings', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ month: Number(selectedMonth), year: Number(selectedYear) }),
       });
@@ -116,12 +109,10 @@ export function useBillings() {
   const handleSavePayment = async (updatedData: any) => {
     setIsUpdating(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/billings', {
+      const res = await apiFetch('/api/billings', {
         method: 'PUT',
         headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           id: updatedData.id,

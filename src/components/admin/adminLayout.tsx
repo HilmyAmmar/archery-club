@@ -50,6 +50,8 @@ export default function AdminLayout({
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
+      localStorage.removeItem('user');
+      localStorage.removeItem('token'); // sisa dari versi lama
       router.push('/admin');
       router.refresh(); 
     } catch (error) {

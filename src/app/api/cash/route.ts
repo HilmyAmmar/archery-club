@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import { getCashTransactions, createManualTransaction } from '@/services/cash.service';
 import { insertActivityLog } from '@/app/lib/logger';
-import { getAdminNameFromRequest } from '@/app/lib/auth';
+import { requireAdmin } from '@/app/lib/auth';
 
 // ============================================================================
 // METHOD GET: Ambil Data Kas
 // ============================================================================
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const data = await getCashTransactions();
     return NextResponse.json({ success: true, data });
@@ -19,6 +22,9 @@ export async function GET() {
 // METHOD POST: Tambah Transaksi Kas Manual
 // ============================================================================
 export async function POST(request: Request) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const body = await request.json();
 
@@ -45,7 +51,7 @@ export async function POST(request: Request) {
     }
 
     const data = await createManualTransaction(body);
-    const adminName = await getAdminNameFromRequest(request);
+    const adminName = auth.admin.name;
     const formatRupiah = new Intl.NumberFormat('id-ID', { 
         style: 'currency', 
         currency: 'IDR',

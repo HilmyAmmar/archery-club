@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/app/lib/auth';
 import { supabase } from "@/app/lib/supabase"; 
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const { count, error } = await supabase
       .from('members')

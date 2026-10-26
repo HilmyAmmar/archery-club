@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/app/lib/api-client';
 import { INITIAL_BANK, INITIAL_TUNAI } from '@/app/lib/constants';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { localeFor, labelOf } from '@/i18n/helpers';
@@ -43,7 +44,7 @@ export default function Dashboard() {
 
     const fetchDashboard = async () => {
       try {
-        const res = await fetch('/api/dashboard');
+        const res = await apiFetch('/api/dashboard');
         const json = await res.json();
         if (json.success) setData(json.data);
       } catch (err) {

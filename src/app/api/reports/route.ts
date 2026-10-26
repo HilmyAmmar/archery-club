@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/app/lib/auth';
 import { getMonthlyReportService, getExpenseCategoryService } from '@/services/report.service';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const [monthly, categories] = await Promise.all([
       getMonthlyReportService(),

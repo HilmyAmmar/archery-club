@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '@/app/lib/api-client';
 import { useLanguage } from '@/i18n/LanguageProvider';
 
 export interface CashTransaction {
@@ -24,13 +25,7 @@ export function useCash() {
     setIsLoading(true);
     setError(null);
     try {
-      // 1. Ambil token buat jaga-jaga kalau GET nya diproteksi juga
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/cash', {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-      });
+      const res = await apiFetch('/api/cash');
       const json = await res.json();
       
       if (!res.ok) throw new Error(json.message || t.admin.cash.fetchFailed);
@@ -47,13 +42,10 @@ export function useCash() {
   }, [fetchTransactions]);
 
   const addTransaction = async (payload: Partial<CashTransaction>) => {
-    // 2. Pasang token buat POST
-    const token = localStorage.getItem('token');
-    const res = await fetch('/api/cash', {
+    const res = await apiFetch('/api/cash', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(payload),
     });
@@ -66,13 +58,10 @@ export function useCash() {
   };
 
   const updateTransaction = async (id: string, payload: Partial<CashTransaction>) => {
-    // 3. Pasang token buat PUT
-    const token = localStorage.getItem('token');
-    const res = await fetch(`/api/cash/${id}`, {
+    const res = await apiFetch(`/api/cash/${id}`, {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(payload),
     });
@@ -85,13 +74,8 @@ export function useCash() {
   };
 
   const deleteTransaction = async (id: string) => {
-    // 4. Pasang token buat DELETE
-    const token = localStorage.getItem('token');
-    const res = await fetch(`/api/cash/${id}`, { 
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+    const res = await apiFetch(`/api/cash/${id}`, { 
+      method: 'DELETE'
     });
     
     const json = await res.json();

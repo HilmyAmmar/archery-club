@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiFetch } from '@/app/lib/api-client';
 import { useLanguage } from '@/i18n/LanguageProvider';
 
 export interface Member {
@@ -65,7 +66,7 @@ export function useMembers() {
   const fetchMembers = async () => {
     setIsFetching(true);
     try {
-      const res = await fetch('/api/members');
+      const res = await apiFetch('/api/members');
       const data = await res.json();
       if (data.success) setMembers(data.data as Member[]);
     } catch (error) {
@@ -128,13 +129,11 @@ export function useMembers() {
     }, {});
 
     try {
-      const token = localStorage.getItem('token');
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method: method,
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(payload), 
       });
@@ -171,12 +170,8 @@ export function useMembers() {
     setIsLoading(true);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/members/${deleteTarget.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiFetch(`/api/members/${deleteTarget.id}`, {
+        method: 'DELETE'
       });
       if (!response.ok) throw new Error(t.admin.members.deleteFailedThrow);
       

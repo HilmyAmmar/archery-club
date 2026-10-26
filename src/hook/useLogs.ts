@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '@/app/lib/api-client';
 
 export function useLogs() {
     const [logs, setLogs] = useState<any[]>([]);
@@ -8,7 +9,7 @@ export function useLogs() {
     const fetchLogs = useCallback(async () => {
         setIsLoading(true);
         try {
-            const res = await fetch('/api/logs');
+            const res = await apiFetch('/api/logs');
             const json = await res.json();
             if (!res.ok || !json.success) throw new Error(json.message || 'Gagal mengambil log');
             setLogs(json.data);

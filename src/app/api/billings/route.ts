@@ -6,10 +6,13 @@ import {
 } from '@/services/billing.service';
 // 1. IMPORT HELPER LOG & AUTH
 import { insertActivityLog } from '@/app/lib/logger';
-import { getAdminNameFromRequest } from '@/app/lib/auth';
+import { requireAdmin } from '@/app/lib/auth';
 
 // 1. GET: Ambil Semua Data Iuran (Filter per Bulan & Tahun)
 export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
     try {
         const { searchParams } = new URL(request.url);
         const month = Number(searchParams.get('month'));
@@ -28,6 +31,9 @@ export async function GET(request: Request) {
 
 // 2. POST: Generate Tagihan Massal (Awal Bulan)
 export async function POST(request: Request) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
     try {
         const body = await request.json();
         const { month, year } = body;
@@ -41,7 +47,7 @@ export async function POST(request: Request) {
         // ==========================================================
         // LOGGING GENERATE TAGIHAN
         // ==========================================================
-        const adminName = await getAdminNameFromRequest(request);
+        const adminName = auth.admin.name;
         const namaBulan = new Date(year, month - 1).toLocaleString('id-ID', { month: 'long' });
         
         await insertActivityLog(
@@ -59,6 +65,9 @@ export async function POST(request: Request) {
 
 // 3. PUT: Update Pembayaran Member (Auto-Status Logic)
 export async function PUT(request: Request) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const body = await request.json();
     const { id, ...payload } = body;
@@ -73,7 +82,7 @@ export async function PUT(request: Request) {
     // ==========================================================
     // LOGGING UPDATE PEMBAYARAN
     // ==========================================================
-    const adminName = await getAdminNameFromRequest(request);
+    const adminName = auth.admin.name;
     
     const formatRupiah = new Intl.NumberFormat('id-ID', { 
         style: 'currency', 

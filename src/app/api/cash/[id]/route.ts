@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { updateManualTransaction, deleteManualTransaction } from '@/services/cash.service';
 import { insertActivityLog } from '@/app/lib/logger';
-import { getAdminNameFromRequest } from '@/app/lib/auth';
+import { requireAdmin } from '@/app/lib/auth';
 
 // ============================================================================
 // METHOD PUT: Mengubah data transaksi manual (EDIT)
@@ -10,6 +10,9 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const { id } = await params;
 
@@ -21,7 +24,7 @@ export async function PUT(
 
     const updatedData = await updateManualTransaction(id, body);
 
-    const adminName = await getAdminNameFromRequest(request);
+    const adminName = auth.admin.name;
 
     const nominalLog = updatedData?.nominal || body.nominal || 0;
     const kategoriLog = updatedData?.kategori || body.kategori || 'Tidak diketahui';
@@ -60,6 +63,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const { id } = await params;
 
@@ -69,7 +75,7 @@ export async function DELETE(
 
     await deleteManualTransaction(id);
 
-    const adminName = await getAdminNameFromRequest(request);
+    const adminName = auth.admin.name;
 
     await insertActivityLog(
       adminName,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '@/app/lib/api-client';
 
 export function useReport() {
   const [data, setData] = useState<any>({ monthly: [], categories: [] });
@@ -8,7 +9,7 @@ export function useReport() {
   const fetchReports = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/reports');
+      const res = await apiFetch('/api/reports');
       const json = await res.json();
       if (!res.ok) throw new Error(json.message);
       setData(json.data);

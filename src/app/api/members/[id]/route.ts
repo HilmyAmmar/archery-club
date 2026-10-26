@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { updateMemberService, deleteMemberService, getMemberByIdService } from '@/services/member.service';
 // 1. IMPORT HELPER LOG & AUTH
 import { insertActivityLog } from '@/app/lib/logger';
-import { getAdminNameFromRequest } from '@/app/lib/auth';
+import { requireAdmin } from '@/app/lib/auth';
 
 // ============================================================================
 // METHOD GET: Ambil Detail 1 Member
@@ -11,6 +11,9 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const { id } = await params;
 
@@ -41,6 +44,9 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> } 
 ) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const { id } = await params;
 
@@ -54,7 +60,7 @@ export async function PUT(
     // ==========================================================
     // 2. TEMBAK LOG DI SINI (SETELAH BERHASIL UPDATE)
     // ==========================================================
-    const adminName = await getAdminNameFromRequest(request);
+    const adminName = auth.admin.name;
     await insertActivityLog(
         adminName, 
         'EDIT', 
@@ -83,6 +89,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> } 
 ) {
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+
   try {
     const { id } = await params;
 
@@ -98,7 +107,7 @@ export async function DELETE(
     await deleteMemberService(id);
 
     // 3. TEMBAK LOG DENGAN NAMA YANG UDAH DIAMBIL
-    const adminName = await getAdminNameFromRequest(request);
+    const adminName = auth.admin.name;
     await insertActivityLog(
         adminName, 
         'HAPUS', 
