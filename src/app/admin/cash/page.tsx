@@ -10,12 +10,16 @@ import { useState } from 'react';
 import { useCash } from '@/hook/useCash';
 import AddTransactionModal from '@/components/admin/cash/AddTransactionModal'; 
 import { INITIAL_BANK, INITIAL_TUNAI } from '@/app/lib/constants';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { labelOf } from '@/i18n/helpers';
+import Rich from '@/i18n/rich';
 
 export default function Cash() {
   const { 
     transactions, isLoading, error, 
     addTransaction, updateTransaction, deleteTransaction 
   } = useCash();
+  const { t } = useLanguage();
   
   // --- STATE MANAGEMENT MODAL & SEARCH ---
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -93,7 +97,7 @@ export default function Cash() {
       await deleteTransaction(deleteTarget.id);
       setDeleteTarget(null);
     } catch (err) {
-      alert("Gagal menghapus transaksi");
+      alert(t.admin.cash.deleteFailed);
     } finally {
       setIsProcessing(false);
     }
@@ -107,14 +111,14 @@ export default function Cash() {
       className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-blue-200 active:scale-95"
     >
       <PlusCircle className="w-4 h-4" />
-      Catat Transaksi
+      {t.admin.cash.record}
     </button>
   );
 
   return (
     <AdminLayout 
-      title="Buku Kas" 
-      subtitle="Catat dan pantau arus kas masuk dan keluar klub."
+      title={t.admin.cash.title} 
+      subtitle={t.admin.cash.subtitle}
       action={actionButton}
     >
       <div className="flex flex-col gap-6 animate-in fade-in duration-500 relative z-10 text-slate-800">
@@ -126,8 +130,8 @@ export default function Cash() {
               <CalendarDays className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-800">Filter Periode</h2>
-              <p className="text-xs font-medium text-slate-500">Tentukan rentang tanggal riwayat kas</p>
+              <h2 className="text-sm font-bold text-slate-800">{t.admin.cash.periodFilter}</h2>
+              <p className="text-xs font-medium text-slate-500">{t.admin.cash.periodHint}</p>
             </div>
           </div>
           
@@ -147,7 +151,7 @@ export default function Cash() {
               disabled={isLoading}
             />
             
-            <span className="text-slate-400 font-bold text-sm px-1">s/d</span>
+            <span className="text-slate-400 font-bold text-sm px-1">{t.admin.cash.to}</span>
             
             {/* END DATE */}
             <input 
@@ -173,7 +177,7 @@ export default function Cash() {
           <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm flex flex-col gap-4">
             <TrendingUp className="w-10 h-10 p-2.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100" />
             <div>
-              <p className="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">Pemasukan Periode Ini</p>
+              <p className="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">{t.admin.cash.incomePeriod}</p>
               {isLoading ? (
                 <div className="h-9 w-32 bg-slate-100 animate-pulse rounded-lg"></div>
               ) : (
@@ -186,7 +190,7 @@ export default function Cash() {
           <div className="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm flex flex-col gap-4">
             <TrendingDown className="w-10 h-10 p-2.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100" />
             <div>
-              <p className="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">Pengeluaran Periode Ini</p>
+              <p className="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">{t.admin.cash.expensePeriod}</p>
               {isLoading ? (
                 <div className="h-9 w-32 bg-slate-100 animate-pulse rounded-lg"></div>
               ) : (
@@ -198,7 +202,7 @@ export default function Cash() {
           {/* TOTAL SALDO KAS */}
           <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-200 flex flex-col gap-4 relative overflow-hidden text-white">
             <div className="relative z-10">
-              <p className="text-blue-100 text-[11px] font-bold mb-1 uppercase tracking-widest">Total Saldo Kas</p>
+              <p className="text-blue-100 text-[11px] font-bold mb-1 uppercase tracking-widest">{t.admin.cash.totalBalance}</p>
               {isLoading ? (
                 <div className="h-9 w-48 bg-blue-500 animate-pulse rounded-lg"></div>
               ) : (
@@ -207,7 +211,7 @@ export default function Cash() {
               
               <div className="mt-4 pt-4 border-t border-blue-500 flex flex-col gap-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="font-bold text-blue-200 uppercase tracking-tighter">Bank:</span>
+                  <span className="font-bold text-blue-200 uppercase tracking-tighter">{t.admin.cash.bank}</span>
                   {isLoading ? (
                     <div className="h-3 w-24 bg-blue-500 animate-pulse rounded"></div>
                   ) : (
@@ -215,7 +219,7 @@ export default function Cash() {
                   )}
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="font-bold text-blue-200 uppercase tracking-tighter">Tunai:</span>
+                  <span className="font-bold text-blue-200 uppercase tracking-tighter">{t.admin.cash.cash}</span>
                   {isLoading ? (
                     <div className="h-3 w-24 bg-blue-500 animate-pulse rounded"></div>
                   ) : (
@@ -229,7 +233,7 @@ export default function Cash() {
 
         {error && (
           <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium text-sm">
-            Oops! Gagal memuat data kas: {error}
+            {t.admin.cash.loadFailed(String(error))}
           </div>
         )}
 
@@ -237,7 +241,7 @@ export default function Cash() {
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col mt-2">
           <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
             <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2 shrink-0">
-              <ArrowRightLeft className="w-5 h-5 text-blue-600" /> Riwayat Transaksi
+              <ArrowRightLeft className="w-5 h-5 text-blue-600" /> {t.admin.cash.history}
             </h3>
             
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
@@ -246,9 +250,9 @@ export default function Cash() {
                 onChange={(e) => setTipeFilter(e.target.value)}
                 className={filterSelectClass}
               >
-                <option value="all">Semua Tipe</option>
-                <option value="pemasukan">Pemasukan (IN)</option>
-                <option value="pengeluaran">Pengeluaran (OUT)</option>
+                <option value="all">{t.admin.cash.allTypes}</option>
+                <option value="pemasukan">{t.admin.cash.incomeOption}</option>
+                <option value="pengeluaran">{t.admin.cash.expenseOption}</option>
               </select>
 
               <div className="relative w-full sm:w-64">
@@ -257,7 +261,7 @@ export default function Cash() {
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari keterangan..." 
+                  placeholder={t.admin.cash.searchPlaceholder} 
                   className="pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full transition-all bg-white font-medium" 
                 />
               </div>
@@ -268,11 +272,11 @@ export default function Cash() {
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr className="bg-white border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                  <th className="p-5 w-48">Tanggal</th>
-                  <th className="p-5">Kategori & Keterangan</th>
-                  <th className="p-5 text-right">Nominal</th>
-                  <th className="p-5 text-center">Bukti</th>
-                  <th className="p-5 text-right">Aksi</th>
+                  <th className="p-5 w-48">{t.admin.cash.colDate}</th>
+                  <th className="p-5">{t.admin.cash.colCategory}</th>
+                  <th className="p-5 text-right">{t.admin.cash.colAmount}</th>
+                  <th className="p-5 text-center">{t.admin.cash.colProof}</th>
+                  <th className="p-5 text-right">{t.admin.cash.colActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -280,7 +284,7 @@ export default function Cash() {
                   <tr>
                     <td colSpan={5} className="p-12 text-center text-slate-400">
                       <Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-600 mb-2" />
-                      <p className="font-medium text-sm">Memuat data kas...</p>
+                      <p className="font-medium text-sm">{t.admin.cash.loading}</p>
                     </td>
                   </tr>
                 ) : displayedTransactions.length === 0 ? (
@@ -289,7 +293,7 @@ export default function Cash() {
                       <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                         <Search className="w-8 h-8 text-slate-300" />
                       </div>
-                      <p className="font-medium text-slate-600">Tidak ada transaksi pada periode ini.</p>
+                      <p className="font-medium text-slate-600">{t.admin.cash.empty}</p>
                     </td>
                   </tr>
                 ) : (
@@ -305,16 +309,16 @@ export default function Cash() {
                       <td className="p-5">
                         <div className="flex flex-col gap-1">
                           <span className="font-bold text-slate-800 flex items-center gap-2">
-                            {trx.kategori}
+                            {labelOf(t.admin.categoryLabels, trx.kategori)}
                             {trx.tipe === 'pemasukan' 
-                              ? <span className="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-md">IN</span>
-                              : <span className="px-2 py-0.5 text-[10px] bg-rose-100 text-rose-700 rounded-md">OUT</span>
+                              ? <span className="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-md">{t.admin.cash.badgeIn}</span>
+                              : <span className="px-2 py-0.5 text-[10px] bg-rose-100 text-rose-700 rounded-md">{t.admin.cash.badgeOut}</span>
                             }
                             <span className={`px-2 py-0.5 text-[10px] font-black rounded-md border ${trx.metode_pembayaran === 'tunai' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
-                              {trx.metode_pembayaran === 'tunai' ? 'TUNAI' : 'BANK'}
+                              {trx.metode_pembayaran === 'tunai' ? t.admin.cash.badgeCash : t.admin.cash.badgeBank}
                             </span>
                             {trx.payment_id && (
-                              <span className="px-2 py-0.5 text-[10px] bg-blue-100 text-blue-700 rounded-md font-bold">IURAN</span>
+                              <span className="px-2 py-0.5 text-[10px] bg-blue-100 text-blue-700 rounded-md font-bold">{t.admin.cash.badgeDues}</span>
                             )}
                           </span>
                           <span className="text-xs font-medium text-slate-500 truncate max-w-xs">{trx.keterangan}</span>
@@ -333,7 +337,7 @@ export default function Cash() {
                             onClick={() => setPreviewImage(trx.bukti_transaksi_url)}
                             className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 cursor-pointer hover:bg-blue-100 transition-colors"
                           >
-                            <FileText className="w-3 h-3" /> Lihat
+                            <FileText className="w-3 h-3" /> {t.admin.cash.view}
                           </button>
                         ) : (
                           <span className="text-xs font-medium text-slate-400">-</span>
@@ -347,20 +351,20 @@ export default function Cash() {
                               <button 
                                 onClick={() => openEditModal(trx)}
                                 className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                                title="Edit Transaksi"
+                                title={t.admin.cash.editTitle}
                               >
                                 <Edit2 className="w-4 h-4" />
                               </button>
                               <button 
                                 onClick={() => setDeleteTarget(trx)}
                                 className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                                title="Hapus Transaksi"
+                                title={t.admin.cash.deleteTitle}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </>
                           ) : (
-                            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-wider">Auto</span>
+                            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-wider">{t.admin.cash.auto}</span>
                           )}
                         </div>
                       </td>
@@ -394,9 +398,9 @@ export default function Cash() {
                 <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertTriangle className="w-8 h-8 text-rose-600" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">Hapus Transaksi?</h3>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">{t.admin.cash.deleteHeading}</h3>
                 <p className="text-slate-500 text-sm">
-                  Yakin mau hapus transaksi <strong>{deleteTarget.kategori}</strong> senilai <strong>Rp {Number(deleteTarget.nominal).toLocaleString('id-ID')}</strong>?
+                  <Rich text={t.admin.cash.deleteBody(labelOf(t.admin.categoryLabels, deleteTarget.kategori), Number(deleteTarget.nominal).toLocaleString('id-ID'))} boldClassName="font-bold" />
                 </p>
               </div>
               <div className="p-4 bg-slate-50 flex items-center justify-center gap-3">
@@ -405,15 +409,15 @@ export default function Cash() {
                   disabled={isProcessing}
                   className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50"
                 >
-                  Batal
+                  {t.admin.common.cancel}
                 </button>
-                <button 
+                <button
                   onClick={handleConfirmDelete}
                   disabled={isProcessing}
                   className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
                 >
                   {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                  Ya, Hapus!
+                  {t.admin.common.yesDelete}
                 </button>
               </div>
             </div>
@@ -429,7 +433,7 @@ export default function Cash() {
             <div className="relative max-w-4xl max-h-[90vh] animate-in zoom-in-95 duration-300">
               <img 
                 src={previewImage} 
-                alt="Bukti Transaksi"
+                alt={t.admin.cash.proofAlt}
                 className="rounded-2xl shadow-2xl border-4 border-white/20 max-h-[85vh] object-contain bg-slate-900" 
                 onClick={(e) => e.stopPropagation()}
               />

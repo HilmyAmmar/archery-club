@@ -61,6 +61,67 @@ export const allPrestasiData = [
   "Juara Umum Liga Kendal Seri 1 2026, Jateng."
 ];
 
+// --- ENGLISH VERSION OF THE ARCHIVE (urutan & jumlah harus sama dengan allPrestasiData) ---
+export const allPrestasiDataEn = [
+  "Overall Champion, SMESCO Open 2016, organized by the Ministry of Cooperatives & SMEs at Grand Smesco Hill, Cisarua, Puncak, Bogor.",
+  "Overall Champion, Bekasi Mayor's Cup 2016.",
+  "Overall Champion, Bascot Open 2017, Mako Brimob Depok.",
+  "Overall Champion, UI National Open 2018 (1,100 participants).",
+  "Overall Champion, Ganesha Indoor National Open 2017, Bandung.",
+  "Overall Champion, DKI Jakarta Governor's Cup at FAST National Open 2018 (1,150 participants).",
+  "Overall Champion, President's Cup at Bogor Open 2018.",
+  "Overall Champion, Ramadhan Archery Competition III - 2018, Bandung.",
+  "Overall Champion, Danpaskhas Open 2017 in Jakarta.",
+  "Overall Champion, Dandim 0503 Open 2018, East Jakarta.",
+  "Overall Champion, Kemenpora Cup - Cikal Open 2018 in Tangerang.",
+  "Overall Champion, Kebumen Regent Open 2017, Central Java.",
+  "Overall Champion, Braders Archery Competition 2017, Jakarta.",
+  "DKI Pelatda coach for the National Round division at the Aceh 2017 Senior National Archery Championship, winning 3 gold medals.",
+  "DKI Pelatda coach for the National Round division at the Jakarta 2018 National Championship. The National Round division won 1 gold, 7 silver, 3 bronze.",
+  "Overall Champion, Marine Commander's Cup 2019 in Cilandak, South Jakarta.",
+  "Overall Champion, West Java Police Chief's Cup 2019 in Sentul, West Java.",
+  "Overall Champion, Pangdam Jaya Cup 2019 in Jakarta.",
+  "Overall Champion, AAU Governor's Cup 2019 in Yogyakarta.",
+  "Overall Champion, TNI Commander's Cup 2019 at TNI Headquarters, Cilangkap, Jakarta.",
+  "Overall Champion, Malaysia Open 2019 in Perak, Malaysia.",
+  "Overall Champion, President's Cup at Bogor Open 2019.",
+  "Overall Champion, South Tangerang Mayor's Cup 2019.",
+  "Overall Champion, National Level Championship FAST OPEN 2 2019 in Jakarta.",
+  "Overall Champion, HDAC Open - Air Force Paskhas Commander's Cup 2020 in Bogor.",
+  "DKI Pelatda coach for the National Round division at PRA PON 2019, achieving 1st & 2nd place in the Men's National Round division.",
+  "Overall Champion, Marine Commander's Cup II 2020 in Cilandak, Jakarta.",
+  "PON Papua 2021: 2 FAST athletes won 2 gold & 2 bronze medals.",
+  "Overall Champion, Riau Islands Governor's Cup 2021 in Batam.",
+  "Overall Champion, Bogor Regent's Cup - ASCI 2021 in Sentul, West Java.",
+  "Overall Champion, King's III, 2022 in Jakarta.",
+  "Overall Champion, Muflih Championship 2022 in Jakarta.",
+  "Overall Champion, Jakarta Series 1 2022.",
+  "FAST athletes representing DKI at the 2022 Senior National Archery Championship in Palangkaraya, National Round division, winning 5 gold, 11 silver, 8 bronze.",
+  "Overall Champion, Jakarta Series 3 - Armada 1 Commander's Cup, 2022 in Jakarta.",
+  "Overall Champion, Jakarta Series 4 - DKI Jakarta Governor's Cup 2022.",
+  "Overall Champion, Kaajendam IV Diponegoro, January 2023 in Purwokerto, Central Java.",
+  "Overall Champion, Jakarta Series 1 - May 2023.",
+  "Overall Champion, President's Cup for the third time at Bogor Open, July 2023.",
+  "Overall Champion, PB Perpani Chairman's Cup at HUB Archery Championship, August 2023 in Cibubur.",
+  "Overall Champion, Junior Grand Prix Stage 1, 2024.",
+  "Overall Champion, Junior Grand Prix Stage 2, 2024.",
+  "Overall Champion, Ramadhan Competition, Bandung 2024.",
+  "Overall Champion, Kemenpora Cup, Ciracas, Jakarta 2024.",
+  "Overall Champion, President's Cup for the fourth time, Bogor 2024.",
+  "Overall Champion, Student Open, Cibubur 2024.",
+  "2nd Overall, North Jakarta Open, 2024.",
+  "Overall Champion, Junior Grand Prix Stage 3, 2024.",
+  "Overall Champion, Banyumas Open, 2024.",
+  "Overall Champion, KASAU CUP, Lembang, April 2025.",
+  "Overall Champion, Jakarta Series Open, Ciracas, May 2025.",
+  "Overall Champion, Student Open 2025, Cibubur, June 2025.",
+  "3rd Overall at the Junior National Championship, June 2025, Kudus. 13 FAST athletes representing DKI won 10 gold, 1 silver, 6 bronze.",
+  "Overall Champion, Jakarta Series 2, Jakarta 2025.",
+  "Overall Champion, Segar Archery Open 2025, West Jakarta.",
+  "Overall Champion, Nalaria Archery Open, January 2026, Depok, West Java.",
+  "Overall Champion, Kendal League Series 1 2026, Central Java."
+];
+
 // --- DATA LIPUTAN MEDIA ---
 export interface Liputan {
   id: number;
@@ -69,6 +130,11 @@ export interface Liputan {
   title: string;
   desc: string;
   link: string;
+  en: {
+    date: string;
+    title: string;
+    desc: string;
+  };
 }
 
 export const liputanData: Liputan[] = [
@@ -78,7 +144,12 @@ export const liputanData: Liputan[] = [
     date: '28 Apr 2025',
     title: 'Berlangsung di Lembang, FAST Kodamar Archery Sabet Juara Umum Kasau Cup 2025',
     desc: 'FAST Kodamar Archery tampil gemilang dengan menyabet gelar Juara Umum dalam Kejuaraan Panahan Kasau Cup 2025 kategori umum yang digelar di Lembang. Klub ini memborong total 39 medali.',
-    link: 'https://www.delikasia.com/headline-news/berlangsung-di-lembang-fast-kodamar-archery-sabet-juara-umum-kasau-cup-2025'
+    link: 'https://www.delikasia.com/headline-news/berlangsung-di-lembang-fast-kodamar-archery-sabet-juara-umum-kasau-cup-2025',
+    en: {
+      date: '28 Apr 2025',
+      title: 'In Lembang, FAST Kodamar Archery Claims Overall Champion at Kasau Cup 2025',
+      desc: 'FAST Kodamar Archery delivered a brilliant performance, taking the Overall Champion title at the Kasau Cup 2025 Archery Championship, open category, held in Lembang. The club collected a total of 39 medals.'
+    }
   },
   {
     id: 2,
@@ -86,7 +157,12 @@ export const liputanData: Liputan[] = [
     date: '10 Okt 2021',
     title: 'Aurel, Yuki & Zaki Raih Emas Panahan Nasional Putra Tim',
     desc: 'Selamat kepada kontingen DKI Aurel Rahmanda Dastra, Yuki Widiyanto & Zaki Malique Iyadin yang berhasil meraih medali emas dari cabang olahraga Panahan – Nasional Putra Tim pada PON XX Papua.',
-    link: 'https://berita.dispora.id/news/detail/3951'
+    link: 'https://berita.dispora.id/news/detail/3951',
+    en: {
+      date: '10 Oct 2021',
+      title: 'Aurel, Yuki & Zaki Win Gold in National Men’s Team Archery',
+      desc: 'Congratulations to the DKI contingent Aurel Rahmanda Dastra, Yuki Widiyanto & Zaki Malique Iyadin, who won the gold medal in Archery – National Men’s Team at PON XX Papua.'
+    }
   },
   {
     id: 3,
@@ -94,7 +170,12 @@ export const liputanData: Liputan[] = [
     date: '10 Okt 2021',
     title: 'Azaria & Yuki Raih Perunggu Panahan Nasional Mix Tim',
     desc: 'Selamat kepada kontingen DKI Azaria Kinaura Anagatria & Yuki Widiyanto yang berhasil meraih medali perunggu dari cabang olahraga Panahan – Nasional Mix Tim pada ajang PON XX Papua.',
-    link: 'https://berita.dispora.id/news/detail/3952'
+    link: 'https://berita.dispora.id/news/detail/3952',
+    en: {
+      date: '10 Oct 2021',
+      title: 'Azaria & Yuki Win Bronze in National Mixed Team Archery',
+      desc: 'Congratulations to the DKI contingent Azaria Kinaura Anagatria & Yuki Widiyanto, who won the bronze medal in Archery – National Mixed Team at PON XX Papua.'
+    }
   },
   {
     id: 4,
@@ -102,7 +183,12 @@ export const liputanData: Liputan[] = [
     date: 'ASEAN Para Games 2025',
     title: 'Kholidin Sukses Raih Emas di Men’s Individual Recurve Open',
     desc: 'Prestasi membanggakan diraih oleh atlet para archery Indonesia. Kholidin berhasil memperoleh poin tertinggi di babak final setelah berhadapan dengan atlet Indonesia lainnya.',
-    link: 'https://www.instagram.com/p/DT189UBgf1r/?igsh=enh1MzA4ZGdjcml5'
+    link: 'https://www.instagram.com/p/DT189UBgf1r/?igsh=enh1MzA4ZGdjcml5',
+    en: {
+      date: 'ASEAN Para Games 2025',
+      title: 'Kholidin Successfully Wins Gold in Men’s Individual Recurve Open',
+      desc: 'A proud achievement by an Indonesian para archery athlete. Kholidin scored the highest points in the final after facing fellow Indonesian athletes.'
+    }
   },
   {
     id: 5,
@@ -110,7 +196,12 @@ export const liputanData: Liputan[] = [
     date: 'Highlight Internasional',
     title: 'Bidikan Kholidin Tajam dan Membanggakan Merah Putih',
     desc: 'Momen luar biasa dari Kholidin. Lewat bidikannya yang tajam, ia kembali berhasil membawa nama Indonesia dan membanggakan bendera Merah Putih di kancah internasional.',
-    link: 'https://www.instagram.com/p/DGUYj11yvsx/?igsh=MWxxMWRyZjEydHV0bA%3D%3D'
+    link: 'https://www.instagram.com/p/DGUYj11yvsx/?igsh=MWxxMWRyZjEydHV0bA%3D%3D',
+    en: {
+      date: 'International Highlight',
+      title: 'Kholidin’s Sharp Aim Makes the Red and White Proud',
+      desc: 'An outstanding moment from Kholidin. With his sharp aim, he once again carried Indonesia’s name and made the Red and White flag proud on the international stage.'
+    }
   },
   {
     id: 6,
@@ -118,7 +209,12 @@ export const liputanData: Liputan[] = [
     date: '12 Okt 2021',
     title: 'Kontingen PON XX DKI Senang Terus Dapat Apresiasi Gubernur',
     desc: 'Atlet panahan FAST yang mewakili DKI Jakarta merasa bangga dan termotivasi atas perhatian langsung Gubernur Anies Baswedan yang mengunjungi venue pertandingan di PON XX Papua.',
-    link: 'https://m.beritajakarta.id/read/92849/kontingen-pon-xx-dki-senang-terus-dapat-perhatian-dan-apresiasi-gubernur'
+    link: 'https://m.beritajakarta.id/read/92849/kontingen-pon-xx-dki-senang-terus-dapat-perhatian-dan-apresiasi-gubernur',
+    en: {
+      date: '12 Oct 2021',
+      title: 'DKI PON XX Contingent Delighted by Continued Governor Appreciation',
+      desc: 'FAST archery athletes representing DKI Jakarta felt proud and motivated by the direct attention of Governor Anies Baswedan, who visited the competition venue at PON XX Papua.'
+    }
   },
   {
     id: 7,
@@ -126,6 +222,11 @@ export const liputanData: Liputan[] = [
     date: '10 Okt 2021',
     title: 'Tiga Medali Emas Didapatkan Panahan DKI dari PON XX',
     desc: 'Dominasi total diperlihatkan tim panahan DKI Jakarta. Melalui bidikan akurat atlet-atlet terbaiknya, mereka berhasil menyapu bersih tiga medali emas di nomor Nasional Beregu Putra.',
-    link: 'https://www.giwangkara.com/olahraga/pr-851394038/tiga-medali-emas-didapatkan-panahan-dki-dari-pon-xx'
+    link: 'https://www.giwangkara.com/olahraga/pr-851394038/tiga-medali-emas-didapatkan-panahan-dki-dari-pon-xx',
+    en: {
+      date: '10 Oct 2021',
+      title: 'Archery Brings Three Gold Medals to DKI at PON XX',
+      desc: 'Total dominance by the DKI Jakarta archery team. With accurate shots from their best athletes, they swept all three gold medals in the National Men’s Team event.'
+    }
   }
 ];

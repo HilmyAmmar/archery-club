@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 export interface CashTransaction {
   id: string;
@@ -14,6 +15,7 @@ export interface CashTransaction {
 }
 
 export function useCash() {
+  const { t } = useLanguage();
   const [transactions, setTransactions] = useState<CashTransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +33,7 @@ export function useCash() {
       });
       const json = await res.json();
       
-      if (!res.ok) throw new Error(json.message || 'Gagal mengambil data kas');
+      if (!res.ok) throw new Error(json.message || t.admin.cash.fetchFailed);
       setTransactions(json.data || []);
     } catch (err: any) {
       setError(err.message);
@@ -57,7 +59,7 @@ export function useCash() {
     });
     
     const json = await res.json();
-    if (!res.ok) throw new Error(json.message || 'Gagal menyimpan transaksi');
+    if (!res.ok) throw new Error(json.message || t.admin.cash.saveFailed);
 
     await fetchTransactions();
     return json.data;
@@ -76,7 +78,7 @@ export function useCash() {
     });
     
     const json = await res.json();
-    if (!res.ok) throw new Error(json.message || 'Gagal update transaksi');
+    if (!res.ok) throw new Error(json.message || t.admin.cash.updateFailed);
     
     await fetchTransactions();
     return json.data;
@@ -93,7 +95,7 @@ export function useCash() {
     });
     
     const json = await res.json();
-    if (!res.ok) throw new Error(json.message || 'Gagal menghapus transaksi');
+    if (!res.ok) throw new Error(json.message || t.admin.cash.deleteFailed);
     
     await fetchTransactions();
   };

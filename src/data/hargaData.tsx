@@ -7,6 +7,12 @@ export interface Harga {
   features: string[];
   btnText: string;
   pkgCode: string;
+  en: {
+    name: string;
+    period: string;
+    features: string[];
+    btnText: string;
+  };
 }
 
 export const hargaData: Harga[] = [
@@ -24,6 +30,17 @@ export const hargaData: Harga[] = [
       ],
       btnText: 'Daftar Week End',
       pkgCode: 'Week End',
+      en: {
+        name: 'WEEKEND',
+        period: 'per month',
+        features: [
+          'Schedule: Saturday & Sunday',
+          'Training hours: 07.00 - 12.00',
+          'Standard field facilities',
+          'Basic training program',
+        ],
+        btnText: 'Register Weekend',
+      },
     },
     {
       id: 2,
@@ -39,6 +56,17 @@ export const hargaData: Harga[] = [
       ],
       btnText: 'Daftar Reguler',
       pkgCode: 'Reguler',
+      en: {
+        name: 'REGULAR',
+        period: 'per month',
+        features: [
+          'Schedule: 3x a week (Wednesday, Saturday, Sunday)',
+          'Wednesday: 13.00 - 17.00',
+          'Weekend: 07.00 - 12.00',
+          'Structured training program',
+        ],
+        btnText: 'Register Regular',
+      },
     },
     {
       id: 3,
@@ -54,5 +82,16 @@ export const hargaData: Harga[] = [
       ],
       btnText: 'Daftar Prestasi',
       pkgCode: 'Prestasi',
+      en: {
+        name: 'ACHIEVEMENT',
+        period: 'per month',
+        features: [
+          'Training schedule: Flexible (every day)',
+          'Flexible training hours',
+          'Focus on developing competitive athletes',
+          'Priority access to facilities & field',
+        ],
+        btnText: 'Register Achievement',
+      },
     },
 ];

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 // 1. TAMBAH BUKTI TRANSAKSI DI INTERFACE
 export interface BillingRecord {
@@ -21,6 +22,7 @@ export interface BillingRecord {
 }
 
 export function useBillings() {
+  const { t } = useLanguage();
   const today = new Date();
   const [selectedMonth, setSelectedMonth] = useState(String(today.getMonth() + 1));
   const [selectedYear, setSelectedYear] = useState(String(today.getFullYear()));
@@ -103,7 +105,7 @@ export function useBillings() {
         return false;
       }
     } catch (error) {
-      alert('Terjadi kesalahan sistem.');
+      alert(t.admin.common.systemError);
       return false;
     } finally {
       setIsGenerating(false);

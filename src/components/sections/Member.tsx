@@ -4,9 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { membersData } from '@/data/memberData';
 import Image from 'next/image';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { translateAchievement } from '@/i18n/achievements';
 
 // --- SUB-KOMPONEN UNTUK GALERI FOTO ---
 function MemberGallery({ images, isCenter }: { images: string[], isCenter: boolean }) {
+  const { t } = useLanguage();
   const [imgIndex, setImgIndex] = useState(0);
 
   const nextImg = (e: React.MouseEvent) => {
@@ -26,7 +29,7 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
         <Image 
           key={idx}
           src={img}
-          alt={`Galeri Member`}
+          alt={t.members.galleryAlt}
           fill
           sizes="(max-width: 768px) 320px, 340px"
           className={`object-cover object-top transition-opacity duration-500 ${
@@ -50,10 +53,10 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
 
       {isCenter && images.length > 1 && (
         <>
-          <button onClick={prevImg} aria-label="Gambar Sebelumnya" className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={prevImg} aria-label={t.members.prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <button onClick={nextImg} aria-label="Gambar Selanjutnya" className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={nextImg} aria-label={t.members.nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full z-30 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>
 
@@ -70,6 +73,7 @@ function MemberGallery({ images, isCenter }: { images: string[], isCenter: boole
 
 // --- KOMPONEN UTAMA MEMBER ---
 export default function Member() {
+  const { lang, t } = useLanguage();
   
   const heroNames = ['Kholidin', 'Yuki Widiyanto', 'Zaki Malique Iyadin'];
   
@@ -121,15 +125,15 @@ export default function Member() {
           <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
-          Hall of Fame
+          {t.members.badge}
         </div>
 
         <h2 className="text-4xl md:text-[3.5rem] font-black text-white tracking-tight mb-4">
-          Member <span className="text-[#eab308]">Berprestasi</span>
+          {t.members.title1} <span className="text-[#eab308]">{t.members.title2}</span>
         </h2>
 
         <p className="text-blue-100/70 text-sm md:text-base max-w-xl font-medium mb-16 leading-relaxed">
-          Para juara yang telah mengharumkan nama FAST di berbagai kejuaraan tingkat nasional dan internasional.
+          {t.members.intro}
         </p>
 
         {/* --- Carousel Grid --- */}
@@ -163,14 +167,14 @@ export default function Member() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                       </div>
-                      <h3 className="text-2xl font-black text-white mb-3">Atlet Berprestasi Lainnya</h3>
-                      <p className="text-blue-100/70 text-sm font-medium mb-8">Jelajahi seluruh rekam jejak juara dari keluarga besar FAST.</p>
+                      <h3 className="text-2xl font-black text-white mb-3">{t.members.ctaTitle}</h3>
+                      <p className="text-blue-100/70 text-sm font-medium mb-8">{t.members.ctaText}</p>
                       
                       <a 
                         href="/atlet" 
                         className="bg-[#eab308] hover:bg-yellow-400 text-[#000b3d] px-8 py-3.5 rounded-xl font-bold transition-all hover:scale-105 shadow-lg shadow-yellow-500/20 w-full"
                       >
-                        Eksplor Galeri Member
+                        {t.members.ctaButton}
                       </a>
                     </div>
                   ) : (
@@ -178,7 +182,7 @@ export default function Member() {
                       <svg className="w-12 h-12 text-white/50 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                       </svg>
-                      <h3 className="text-lg font-bold text-white/80">Lihat Semua Member</h3>
+                      <h3 className="text-lg font-bold text-white/80">{t.members.viewAll}</h3>
                     </div>
                   )
                 ) : (
@@ -197,7 +201,7 @@ export default function Member() {
                               <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582c.277.11.464.395.464.716v4.3c0 1.944-1.121 3.655-2.822 4.457l-.596.28v1.842a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1.842l-.596-.28A5.002 5.002 0 015 10.92V6.621c0-.321.187-.606.464-.716L9 4.323V3a1 1 0 011-1zm-1 3.323L5.954 6.54l3.046 1.218 3.046-1.218L9 5.323z" clipRule="evenodd" />
                             </svg>
                             <span className={`text-[13px] font-semibold leading-relaxed transition-colors duration-500 ${isCenter ? 'text-white/90' : 'text-white/50'}`}>
-                              {achieve}
+                              {translateAchievement(achieve, lang)}
                             </span>
                           </div>
                         ))}
@@ -214,7 +218,7 @@ export default function Member() {
         <div className="flex items-center justify-center gap-6 mt-4 relative z-30">
           <button 
             onClick={handlePrev}
-            aria-label="Member Sebelumnya"
+            aria-label={t.members.prevMember}
             disabled={activeIndex === 0} 
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
               activeIndex === 0 
@@ -229,7 +233,7 @@ export default function Member() {
             {carouselData.map((_, index) => (
               <button 
                 key={index}
-                aria-label={`Slide member ${index + 1}`}
+                aria-label={`${t.members.slide} ${index + 1}`}
                 onClick={() => setActiveIndex(index)}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   activeIndex === index ? 'w-8 bg-[#eab308]' : 'w-2 bg-white/20 hover:bg-white/40'
@@ -240,7 +244,7 @@ export default function Member() {
 
           <button 
             onClick={handleNext}
-            aria-label="Member Selanjutnya"
+            aria-label={t.members.nextMember}
             disabled={activeIndex === carouselData.length - 1}
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
               activeIndex === carouselData.length - 1 

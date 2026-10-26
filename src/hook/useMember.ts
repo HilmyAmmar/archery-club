@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 export interface Member {
   id: string;
@@ -33,6 +34,7 @@ interface MemberFormData {
 }
 
 export function useMembers() {
+  const { t } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -142,12 +144,12 @@ export function useMembers() {
       try { 
         result = JSON.parse(textResponse); 
       } catch { 
-        throw new Error(`Gagal memproses respon server: ${textResponse}`); 
+        throw new Error(t.admin.members.parseFailed(textResponse)); 
       }
 
-      if (!response.ok) throw new Error(result.message || 'Gagal menyimpan data');
+      if (!response.ok) throw new Error(result.message || t.admin.members.saveFailed);
 
-      setSuccessMsg(editingId ? 'Data berhasil diperbarui!' : 'Member berhasil ditambahkan!');
+      setSuccessMsg(editingId ? t.admin.members.updated : t.admin.members.created);
       fetchMembers(); 
 
       setTimeout(() => {
@@ -158,7 +160,7 @@ export function useMembers() {
       }, 1500);
 
     } catch (error: any) {
-      setErrorMsg(error.message || 'Terjadi kesalahan sistem');
+      setErrorMsg(error.message || t.admin.members.systemError);
     } finally {
       setIsLoading(false);
     }
@@ -176,13 +178,13 @@ export function useMembers() {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (!response.ok) throw new Error('Gagal menghapus member');
+      if (!response.ok) throw new Error(t.admin.members.deleteFailedThrow);
       
       fetchMembers();
       setDeleteTarget(null);
     } catch (error) {
       console.error(error);
-      alert('Gagal menghapus data. Silakan coba lagi.');
+      alert(t.admin.members.deleteFailedAlert);
     } finally {
       setIsLoading(false);
     }

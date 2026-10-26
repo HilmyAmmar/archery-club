@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar'; 
 import Footer from '@/components/Footer';
 import { membersData } from '@/data/memberData';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { translateAchievement } from '@/i18n/achievements';
 
 function MemberGallery({ images }: { images: string[] }) {
   const [imgIndex, setImgIndex] = useState(0);
@@ -54,12 +56,13 @@ function MemberGallery({ images }: { images: string[] }) {
 }
 
 export default function AtletPage() {
+  const { lang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredMembers = membersData.filter((member) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     return member.name.toLowerCase().includes(lowerCaseQuery) || 
-           member.achievements.some(achieve => achieve.toLowerCase().includes(lowerCaseQuery));
+           member.achievements.some(achieve => translateAchievement(achieve, lang).toLowerCase().includes(lowerCaseQuery));
   });
 
   return (
@@ -82,17 +85,17 @@ export default function AtletPage() {
                 <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Kembali ke Beranda
+                {t.athletes.back}
               </Link>
               
               <div className="border border-[#eab308]/30 bg-[#eab308]/10 text-[#eab308] px-4 py-1.5 rounded-full text-[10px] font-bold tracking-[0.2em] mb-4 uppercase">
-                Hall of Fame
+                {t.athletes.badge}
               </div>
               <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3 drop-shadow-md">
-                Daftar <span className="text-[#eab308]">Atlet Fast</span>
+                {t.athletes.title1} <span className="text-[#eab308]">{t.athletes.title2}</span>
               </h1>
               <p className="text-white/80 text-sm md:text-base font-medium max-w-xl">
-                Seluruh rekam jejak atlet kebanggaan FAST yang telah mengharumkan nama klub.
+                {t.athletes.intro}
               </p>
             </div>
 
@@ -110,7 +113,7 @@ export default function AtletPage() {
               </div>
               <input 
                 type="text" 
-                placeholder="Cari nama atau event..." 
+                placeholder={t.athletes.searchPlaceholder} 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#eab308] focus:bg-black/20 transition-all backdrop-blur-sm relative z-0"
@@ -137,7 +140,7 @@ export default function AtletPage() {
                           <svg className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[#eab308]" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582c.277.11.464.395.464.716v4.3c0 1.944-1.121 3.655-2.822 4.457l-.596.28v1.842a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1.842l-.596-.28A5.002 5.002 0 015 10.92V6.621c0-.321.187-.606.464-.716L9 4.323V3a1 1 0 011-1zm-1 3.323L5.954 6.54l3.046 1.218 3.046-1.218L9 5.323z" clipRule="evenodd" />
                           </svg>
-                          <span className="text-[13px] font-medium text-white/80 leading-relaxed">{achieve}</span>
+                          <span className="text-[13px] font-medium text-white/80 leading-relaxed">{translateAchievement(achieve, lang)}</span>
                         </div>
                       ))}
                     </div>
@@ -147,7 +150,7 @@ export default function AtletPage() {
             </div>
           ) : (
             <div className="text-center py-20 bg-white/5 backdrop-blur-md rounded-[2rem] border border-dashed border-white/20">
-              <p className="text-white/60 font-medium">Hasil tidak ditemukan.</p>
+              <p className="text-white/60 font-medium">{t.athletes.noResults}</p>
             </div>
           )}
         </div>

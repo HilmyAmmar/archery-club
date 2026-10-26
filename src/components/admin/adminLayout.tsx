@@ -14,16 +14,18 @@ import {
   X,
   Activity // <-- Tambahan icon buat log
 } from 'lucide-react';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import LanguageSwitcher from '@/i18n/LanguageSwitcher';
 
 const navItems = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'Data Member', href: '/admin/members', icon: Users },
-  { name: 'Iuran Bulanan', href: '/admin/billing', icon: CreditCard },
-  { name: 'Kas Harian', href: '/admin/cash', icon: Wallet },
-  { name: 'Laporan Keuangan', href: '/admin/reports', icon: BarChart3 },
+  { key: 'dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { key: 'members', path: '/members', icon: Users },
+  { key: 'billing', path: '/billing', icon: CreditCard },
+  { key: 'cash', path: '/cash', icon: Wallet },
+  { key: 'reports', path: '/reports', icon: BarChart3 },
   // Tambahin rute log di sini
-  // { name: 'Riwayat Sistem', href: '/admin/logs', icon: Activity }, 
-];
+  // { key: 'logs', path: '/logs', icon: Activity }, 
+] as const;
 
 export default function AdminLayout({ 
   children, 
@@ -40,6 +42,7 @@ export default function AdminLayout({
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
   const pathname = usePathname();
   const router = useRouter(); 
+  const { t } = useLanguage();
   const [adminName, setAdminName] = useState('Admin');
   const [role, setRole] = useState('');
 
@@ -50,7 +53,7 @@ export default function AdminLayout({
       router.push('/admin');
       router.refresh(); 
     } catch (error) {
-      console.error('Gagal logout:', error);
+      console.error(t.admin.layout.logoutFailed, error);
     }
   };
 
@@ -61,20 +64,22 @@ export default function AdminLayout({
         {!isCollapsed && (
           <div className="flex flex-col">
             <span className="font-black text-xl leading-none tracking-wide text-white">FAST</span>
-            <span className="text-blue-400 text-xs font-medium">Admin Portal</span>
+            <span className="text-blue-400 text-xs font-medium">{t.admin.layout.portal}</span>
           </div>
         )}
       </div>
 
       <nav className="flex-1 px-4 flex flex-col gap-1 mt-4">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const href = `/admin${item.path}`;
+          const name = t.admin.layout.nav[item.key];
+          const isActive = pathname === href;
           const Icon = item.icon;
           return (
             <Link
-              key={item.name}
-              href={item.href}
-              title={isCollapsed ? item.name : undefined}
+              key={item.key}
+              href={href}
+              title={isCollapsed ? name : undefined}
               onClick={() => setIsMobileOpen(false)}
               className={`flex items-center gap-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${isCollapsed ? 'justify-center px-0' : 'px-4'} ${
                 isActive 
@@ -83,7 +88,7 @@ export default function AdminLayout({
               }`}
             >
               <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-              {!isCollapsed && item.name}
+              {!isCollapsed && name}
               {!isCollapsed && isActive && (
                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               )}
@@ -106,14 +111,18 @@ export default function AdminLayout({
           )}
         </div>
         
+        <div className={`mb-2 flex ${isCollapsed ? 'justify-center' : 'px-4'}`}>
+          <LanguageSwitcher />
+        </div>
+
         <button 
           onClick={handleLogout}
           suppressHydrationWarning
-          title={isCollapsed ? 'Keluar' : undefined}
+          title={isCollapsed ? t.admin.layout.logout : undefined}
           className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 w-full text-left text-sm font-medium text-slate-400 hover:text-white transition-colors`}
         >
           <LogOut className="w-5 h-5" />
-          {!isCollapsed && 'Keluar'}
+          {!isCollapsed && t.admin.layout.logout}
         </button>
       </div>
     </div>
@@ -167,9 +176,10 @@ export default function AdminLayout({
             <img src="/favicon.ico" alt="FAST Logo" className="w-8 h-8 object-contain shrink-0" />
             <div className="flex flex-col">
               <span className="font-black text-lg leading-none tracking-wide text-slate-800">FAST</span>
-              <span className="text-blue-600 text-[10px] font-bold uppercase tracking-wider">Admin Portal</span>
+              <span className="text-blue-600 text-[10px] font-bold uppercase tracking-wider">{t.admin.layout.portal}</span>
             </div>
           </div>
+          <LanguageSwitcher tone="light" className="ml-auto mr-2" />
           <button 
             onClick={() => setIsMobileOpen(true)}
             className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"

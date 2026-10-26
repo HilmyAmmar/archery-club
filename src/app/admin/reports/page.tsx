@@ -11,6 +11,8 @@ import {
 } from 'recharts';
 import { useReport } from '@/hook/useReport';
 import { TOTAL_INITIAL_BALANCE } from '@/app/lib/constants';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { labelOf, localeFor, monthNameFor } from '@/i18n/helpers';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -20,17 +22,18 @@ const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899', '#8b5
 
 export default function FinancialReport() {
   const { monthly, categories, isLoading, error } = useReport();
+  const { lang, t } = useLanguage();
   
   // --- 1. PROSES DATA BULANAN (GRAFIK BAR) ---
   const chartData = [...(monthly || [])].reverse().map(item => ({
-    name: item.nama_bulan,
+    name: monthNameFor(lang, item.nama_bulan),
     pemasukan: Number(item.pemasukan) || 0,
     pengeluaran: Number(item.pengeluaran) || 0,
   }));
 
   // --- 2. PROSES DATA KATEGORI (PIE CHART) ---
   const expenseBreakdown = (categories || []).map((item: any, index: number) => ({
-    name: item.name,
+    name: labelOf(t.admin.categoryLabels, item.name),
     value: Number(item.value) || 0,
     color: PIE_COLORS[index % PIE_COLORS.length]
   }));
@@ -51,6 +54,7 @@ export default function FinancialReport() {
   const currKeluar = Number(currentMonth?.pengeluaran || 0);
   const currTarget = Number(currentMonth?.target_iuran || 0);
   const piutangBulanIni = Number(currentMonth?.piutang_iuran || 0);
+  const monthLabel = currentMonth ? monthNameFor(lang, currentMonth.nama_bulan) : t.admin.reports.thisMonth;
 
   // Tetap hitung total histori dari seluruh data yang dikirim API (monthly array)
   const totalPemasukanDB = (monthly || []).reduce((acc: number, curr: any) => acc + Number(curr.pemasukan), 0);
@@ -65,17 +69,17 @@ export default function FinancialReport() {
   };
   
   const handleExportExcel = () => {
-    if (!monthly || monthly.length === 0) return alert('Tidak ada data untuk diekspor');
+    if (!monthly || monthly.length === 0) return alert(t.admin.reports.noDataExport);
     
     // Mapping data agar header kolom Excel rapi
     const excelData = monthly.map((m: any) => ({
-      'Bulan': m.nama_bulan,
-      'Tahun': m.tahun,
-      'Pemasukan (Rp)': Number(m.pemasukan) || 0,
-      'Pengeluaran (Rp)': Number(m.pengeluaran) || 0,
-      'Target Iuran (Rp)': Number(m.target_iuran) || 0,
-      'Piutang Iuran (Rp)': Number(m.piutang_iuran) || 0,
-      'Saldo Bersih Bulan Ini (Rp)': (Number(m.pemasukan) || 0) - (Number(m.pengeluaran) || 0)
+      [t.admin.reports.colMonth]: monthNameFor(lang, m.nama_bulan),
+      [t.admin.reports.colYear]: m.tahun,
+      [t.admin.reports.colIncome]: Number(m.pemasukan) || 0,
+      [t.admin.reports.colExpense]: Number(m.pengeluaran) || 0,
+      [t.admin.reports.colTarget]: Number(m.target_iuran) || 0,
+      [t.admin.reports.colReceivable]: Number(m.piutang_iuran) || 0,
+      [t.admin.reports.colNet]: (Number(m.pemasukan) || 0) - (Number(m.pengeluaran) || 0)
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -86,33 +90,33 @@ export default function FinancialReport() {
     ];
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Keuangan");
+    XLSX.utils.book_append_sheet(workbook, worksheet, t.admin.reports.sheetName);
 
     XLSX.writeFile(workbook, `Laporan_Keuangan_FAST_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   const handleDownloadPDF = () => {
-    if (!monthly || monthly.length === 0) return alert('Tidak ada data untuk diunduh');
+    if (!monthly || monthly.length === 0) return alert(t.admin.reports.noDataDownload);
 
     const doc = new jsPDF();
 
     // Header Laporan
     doc.setFontSize(18);
     doc.setTextColor(15, 23, 42); 
-    doc.text('Laporan Keuangan FAST Archery', 14, 22);
+    doc.text(t.admin.reports.pdfTitle, 14, 22);
     
     doc.setFontSize(10);
     doc.setTextColor(100, 116, 139);
-    doc.text(`Dicetak pada: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, 14, 29);
+    doc.text(t.admin.reports.pdfPrinted(new Date().toLocaleDateString(localeFor(lang), { day: 'numeric', month: 'long', year: 'numeric' })), 14, 29);
     
     doc.setFontSize(12);
     doc.setTextColor(15, 23, 42);
-    doc.text(`Total Saldo Akhir: ${formatRupiah(totalSaldoSaatIni)}`, 14, 40);
+    doc.text(t.admin.reports.pdfBalance(formatRupiah(totalSaldoSaatIni)), 14, 40);
 
     // Generate Tabel
-    const tableColumn = ["Bulan", "Tahun", "Pemasukan", "Pengeluaran", "Target Iuran", "Piutang"];
+    const tableColumn = t.admin.reports.pdfHead;
     const tableRows = monthly.map((m: any) => [
-      m.nama_bulan,
+      monthNameFor(lang, m.nama_bulan),
       m.tahun,
       formatRupiah(Number(m.pemasukan) || 0),
       formatRupiah(Number(m.pengeluaran) || 0),
@@ -142,19 +146,19 @@ export default function FinancialReport() {
     <div className="flex gap-2">
       <button onClick={handleExportExcel} className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
         <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-        Export Excel
+        {t.admin.reports.exportExcel}
       </button>
       <button onClick={handleDownloadPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-blue-200">
         <Download className="w-4 h-4" />
-        Download PDF
+        {t.admin.reports.downloadPdf}
       </button>
     </div>
   );
 
   return (
     <AdminLayout 
-      title="Laporan Keuangan" 
-      subtitle="Analisis performa dan kesehatan finansial klub FAST."
+      title={t.admin.reports.title} 
+      subtitle={t.admin.reports.subtitle}
       action={actionButton}
     >
       <div className="flex flex-col gap-6 animate-in fade-in duration-500 pb-10">
@@ -162,42 +166,42 @@ export default function FinancialReport() {
         {/* --- ERROR MESSAGE --- */}
         {error && (
           <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium text-sm">
-            Oops! Gagal memuat laporan: {error}
+            {t.admin.reports.loadFailed(String(error))}
           </div>
         )}
 
         {/* --- 1. EXECUTIVE SUMMARY CARDS --- */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <StatCard 
-            title="Total Saldo Kas" 
+            title={t.admin.reports.totalBalance} 
             value={formatRupiah(totalSaldoSaatIni)} 
             icon={<Wallet />} 
             color="blue" 
-            subtitle="Akumulasi Seluruh Dana"
+            subtitle={t.admin.reports.totalBalanceHint}
             isLoading={isLoading}
           />
           <StatCard 
-            title={`Pemasukan (${currentMonth?.nama_bulan || 'Bulan Ini'})`} 
+            title={t.admin.reports.income(monthLabel)} 
             value={formatRupiah(currMasuk)} 
             icon={<TrendingUp />} 
             color="emerald" 
-            subtitle="Total Masuk Periode Ini"
+            subtitle={t.admin.reports.incomeHint}
             isLoading={isLoading}
           />
           <StatCard 
-            title={`Pengeluaran (${currentMonth?.nama_bulan || 'Bulan Ini'})`} 
+            title={t.admin.reports.expense(monthLabel)} 
             value={formatRupiah(currKeluar)} 
             icon={<TrendingDown />} 
             color="rose" 
-            subtitle="Total Keluar Periode Ini"
+            subtitle={t.admin.reports.expenseHint}
             isLoading={isLoading}
           />
           <StatCard 
-            title={`Piutang (${currentMonth?.nama_bulan || 'Bulan Ini'})`} 
+            title={t.admin.reports.receivable(monthLabel)} 
             value={formatRupiah(piutangBulanIni)} 
             icon={<PieChart />} 
             color="amber" 
-            subtitle="Estimasi Iuran Belum Masuk"
+            subtitle={t.admin.reports.receivableHint}
             isLoading={isLoading}
           />
         </div>
@@ -208,8 +212,8 @@ export default function FinancialReport() {
           <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-slate-800 text-lg">Tren Arus Kas</h3>
-                <p className="text-xs text-slate-500 font-medium">Perbandingan pemasukan & pengeluaran bulanan</p>
+                <h3 className="font-bold text-slate-800 text-lg">{t.admin.reports.trendTitle}</h3>
+                <p className="text-xs text-slate-500 font-medium">{t.admin.reports.trendSubtitle}</p>
               </div>
             </div>
             
@@ -227,8 +231,8 @@ export default function FinancialReport() {
               ) : chartData.length === 0 ? (
                 <EmptyState 
                   icon={<BarChart3 className="w-10 h-10 text-slate-300" />}
-                  title="Belum Ada Histori Keuangan"
-                  desc="Grafik tren akan muncul setelah ada pemasukan atau pengeluaran."
+                  title={t.admin.reports.noHistory}
+                  desc={t.admin.reports.noHistoryHint}
                 />
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -247,7 +251,7 @@ export default function FinancialReport() {
                       width={80} 
                       tick={{fill: '#64748b', fontSize: 12}} 
                       tickFormatter={(value) => value >= 1000000 
-                        ? `Rp ${(value/1000000).toFixed(1)}jt` 
+                        ? `Rp ${(value/1000000).toFixed(1)}${t.admin.reports.million}` 
                         : `Rp ${value/1000}k`
                       } 
                     />
@@ -262,8 +266,8 @@ export default function FinancialReport() {
                       iconType="circle" 
                       wrapperStyle={{paddingBottom: '20px', fontSize: '12px', fontWeight: 700}} 
                     />
-                    <Bar dataKey="pemasukan" name="Pemasukan" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
-                    <Bar dataKey="pengeluaran" name="Pengeluaran" fill="#f43f5e" radius={[4, 4, 0, 0]} barSize={30} />
+                    <Bar dataKey="pemasukan" name={t.admin.reports.seriesIncome} fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
+                    <Bar dataKey="pengeluaran" name={t.admin.reports.seriesExpense} fill="#f43f5e" radius={[4, 4, 0, 0]} barSize={30} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -273,8 +277,8 @@ export default function FinancialReport() {
           {/* --- 3. PIE CHART BREAKDOWN PENGELUARAN --- */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-6">
             <div>
-              <h3 className="font-bold text-slate-800 text-lg">Alokasi Biaya</h3>
-              <p className="text-xs text-slate-500 font-medium">Distribusi pengeluaran bulan ini</p>
+              <h3 className="font-bold text-slate-800 text-lg">{t.admin.reports.allocationTitle}</h3>
+              <p className="text-xs text-slate-500 font-medium">{t.admin.reports.allocationSubtitle}</p>
             </div>
 
             <div className="h-[220px] w-full relative">
@@ -286,8 +290,8 @@ export default function FinancialReport() {
               ) : expenseBreakdown.length === 0 ? (
                 <EmptyState 
                   icon={<PieChartIcon className="w-10 h-10 text-slate-300" />}
-                  title="Belum Ada Pengeluaran"
-                  desc="Catat kas keluar untuk melihat breakdown biaya."
+                  title={t.admin.reports.noExpense}
+                  desc={t.admin.reports.noExpenseHint}
                 />
               ) : (
                 <>
@@ -310,11 +314,11 @@ export default function FinancialReport() {
                   <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
                     <span className="text-xl font-black text-slate-800">
                       {totalPengeluaranBulanIni >= 1000000 
-                        ? `${(totalPengeluaranBulanIni / 1000000).toFixed(1)}jt` 
+                        ? `${(totalPengeluaranBulanIni / 1000000).toFixed(1)}${t.admin.reports.million}` 
                         : `${(totalPengeluaranBulanIni / 1000).toFixed(0)}k`
                       }
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Keluar</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t.admin.reports.totalOut}</span>
                   </div>
                 </>
               )}

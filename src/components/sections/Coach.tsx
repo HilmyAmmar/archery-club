@@ -1,9 +1,15 @@
+"use client";
+
 import { coachesData } from "@/data/coachData";
 import Image from "next/image";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 const coaches = coachesData; 
 
 export default function Coach() {
+  const { lang, t } = useLanguage();
+  const isEn = lang === 'en';
+
   return (
     <section id="coach" className="relative flex flex-col items-center pt-28 pb-40 px-4 bg-[#f8fafc]">
       
@@ -14,11 +20,11 @@ export default function Coach() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          Tim Pelatih
+          {t.coach.badge}
         </div>
 
         <h2 className="text-4xl md:text-[3.5rem] font-black text-[#000b3d] tracking-tight mb-16 text-center">
-          Dibimbing Pelatih <span className="text-blue-600">Pelatda Panahan DKI</span>
+          {t.coach.title1} <span className="text-blue-600">{t.coach.title2}</span>
         </h2>
 
         {/* --- Looping Data Coach --- */}
@@ -33,7 +39,7 @@ export default function Coach() {
                 <div className="w-40 h-40 md:w-48 md:h-48 shrink-0 rounded-[1.5rem] overflow-hidden relative shadow-md border-4 border-white">
                   <Image 
                     src={coach.image}
-                    alt={`Foto Pelatih Panahan ${coach.name}`}
+                    alt={`${t.coach.photoAlt} ${coach.name}`}
                     fill
                     sizes="(max-width: 768px) 160px, 192px"
                     className="object-cover object-top"
@@ -43,7 +49,7 @@ export default function Coach() {
                 {/* Info & Quote */}
                 <div className="flex flex-col text-center md:text-left pt-2">
                   <span className="text-blue-600 font-bold text-[11px] tracking-[0.2em] uppercase mb-1">
-                    {coach.role}
+                    {isEn ? coach.en.role : coach.role}
                   </span>
                   <h3 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight mb-5">
                     {coach.name}
@@ -53,7 +59,7 @@ export default function Coach() {
                   <div className="flex items-start gap-4 bg-white/60 p-5 rounded-2xl border border-blue-100/50">
                     <svg className="w-8 h-8 text-blue-300 shrink-0 rotate-180 mt-1" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
                     <p className="text-gray-600 text-sm md:text-[15px] font-medium italic leading-relaxed">
-                      {coach.quote}
+                      {isEn ? coach.en.quote : coach.quote}
                     </p>
                   </div>
                 </div>
@@ -67,7 +73,7 @@ export default function Coach() {
               <div className="p-6 md:p-10 bg-[#fbfcfd]">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
-                  <h4 className="text-base font-black text-gray-800 tracking-wide">Sertifikat & Lisensi</h4>
+                  <h4 className="text-base font-black text-gray-800 tracking-wide">{t.coach.certificates}</h4>
                 </div>
 
                 {/* Grid ini yang bikin 8 sertifikat otomatis rapi menyusun ke bawah */}
@@ -78,7 +84,7 @@ export default function Coach() {
                       <div className="w-28 md:w-full min-h-[100px] h-auto md:h-36 relative shrink-0 border-r md:border-r-0 md:border-b border-gray-100">
                         <Image 
                           src={cert.img} 
-                          alt={`Sertifikat ${cert.title}`} 
+                          alt={`${t.coach.certificateAlt} ${isEn ? cert.en.title : cert.title}`} 
                           fill 
                           sizes="(max-width: 768px) 112px, 33vw"
                           className="object-cover object-center" 
@@ -89,9 +95,9 @@ export default function Coach() {
                       {/* Info Sertifikat */}
                       <div className="p-4 flex flex-col justify-center">
                         <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold text-white mb-2 self-start ${cert.color}`}>
-                          {cert.badge}
+                          {isEn ? cert.en.badge : cert.badge}
                         </span>
-                        <h5 className="text-gray-900 font-black text-[13px] leading-snug mb-1 line-clamp-2">{cert.title}</h5>
+                        <h5 className="text-gray-900 font-black text-[13px] leading-snug mb-1 line-clamp-2">{isEn ? cert.en.title : cert.title}</h5>
                         <p className="text-gray-500 text-[11px] font-semibold line-clamp-1">{cert.issuer}</p>
                       </div>
                     </div>

@@ -5,6 +5,9 @@ import { PlusCircle, CheckCircle2, Clock, CreditCard, Search, CalendarDays, Chev
 import { useState } from 'react';
 import { useBillings, BillingRecord } from '@/hook/useBilling';
 import PaymentModal from '@/components/admin/billing/PaymentModal';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { labelOf, monthList } from '@/i18n/helpers';
+import Rich from '@/i18n/rich';
 
 // --- KOMPONEN MODAL KONFIRMASI GENERATE ---
 function ConfirmGenerateModal({ 
@@ -12,6 +15,7 @@ function ConfirmGenerateModal({
 }: { 
   isOpen: boolean, onClose: () => void, onConfirm: () => void, periode: string, isGenerating: boolean, count: number, hasData: boolean, isMissingMembers: boolean 
 }) {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   // --- KONDISIONAL KONTEN MODAL ---
@@ -23,23 +27,23 @@ function ConfirmGenerateModal({
 
   if (!hasData) {
     // KONDISI 1: Belum ada tagihan sama sekali (GENERATE BARU)
-    title = "Buat Tagihan Massal?";
-    description = <>Apakah Anda yakin ingin menerbitkan tagihan massal untuk periode <span className="font-bold text-slate-800">{periode}</span>? Sistem akan membuat data tagihan secara otomatis untuk <span className="font-bold text-slate-800">{count} anggota aktif</span>.</>;
-    buttonText = "Ya, Terbitkan!";
+    title = t.admin.billing.newTitle;
+    description = <Rich text={t.admin.billing.newBody(periode, count)} boldClassName="font-bold text-slate-800" />;
+    buttonText = t.admin.billing.newButton;
     IconComponent = FilePlus;
     colorTheme = { iconText: "text-blue-600", iconBg: "bg-blue-50 border-blue-100/50", buttonBg: "bg-blue-600 hover:bg-blue-700 shadow-blue-200" };
   } else if (isMissingMembers) {
     // KONDISI 2: Ada member baru masuk di tengah bulan (SYNC MEMBER BARU)
-    title = "Sinkronkan Anggota Baru?";
-    description = <>Terdapat <span className="font-bold text-slate-800">{count} anggota aktif baru</span> yang belum memiliki tagihan pada periode <span className="font-bold text-slate-800">{periode}</span>. Terbitkan tagihan untuk mereka sekarang?</>;
-    buttonText = "Sinkronkan Anggota";
+    title = t.admin.billing.missingTitle;
+    description = <Rich text={t.admin.billing.missingBody(count, periode)} boldClassName="font-bold text-slate-800" />;
+    buttonText = t.admin.billing.missingButton;
     IconComponent = Users;
     colorTheme = { iconText: "text-amber-500", iconBg: "bg-amber-50 border-amber-100/50", buttonBg: "bg-amber-500 hover:bg-amber-600 shadow-amber-200" };
   } else {
     // KONDISI 3: Data sudah lengkap, hanya update nominal harga (RE-SYNC NOMINAL)
-    title = "Sinkronkan Ulang Data?";
-    description = <>Sistem akan memeriksa perubahan profil pada <span className="font-bold text-slate-800">{count} anggota</span> di periode <span className="font-bold text-slate-800">{periode}</span> dan menyesuaikan nominal tagihan secara otomatis bagi yang berstatus <span className="font-bold text-slate-800">Belum Lunas</span>.</>;
-    buttonText = "Sinkronkan Ulang";
+    title = t.admin.billing.resyncTitle;
+    description = <Rich text={t.admin.billing.resyncBody(count, periode)} boldClassName="font-bold text-slate-800" />;
+    buttonText = t.admin.billing.resyncButton;
     IconComponent = RefreshCw;
     colorTheme = { iconText: "text-indigo-500", iconBg: "bg-indigo-50 border-indigo-100/50", buttonBg: "bg-indigo-500 hover:bg-indigo-600 shadow-indigo-200" };
   }
@@ -58,11 +62,11 @@ function ConfirmGenerateModal({
         </p>
         
         <div className="flex items-center w-full gap-3">
-          <button onClick={onClose} disabled={isGenerating} className="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-all">Batal</button>
+          <button onClick={onClose} disabled={isGenerating} className="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-all">{t.admin.common.cancel}</button>
           
           <button onClick={onConfirm} disabled={isGenerating} className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold text-white shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 ${colorTheme.buttonBg}`}>
             {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <IconComponent className="w-4 h-4" />}
-            {isGenerating ? 'Memproses...' : buttonText}
+            {isGenerating ? t.admin.common.processing : buttonText}
           </button>
         </div>
 
@@ -87,6 +91,7 @@ export default function Billing() {
     isMissingMembers,      
     totalActiveMembers 
   } = useBillings();
+  const { lang, t } = useLanguage();
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   
@@ -112,17 +117,13 @@ export default function Billing() {
 
     const statusText = bill.status === 'lunas' ? 'LUNAS' : 'BELUM LUNAS';
 
-    const message = `Yth. Bapak/Ibu Orang Tua/Wali dari *${bill.members?.nama_lengkap}*,
-
-Berikut kami sampaikan rincian tagihan iuran bulanan FAST:
-
-• Periode: *${bulanStr} ${bill.year}*
-• Total Tagihan: *Rp ${bill.nominal_tagihan.toLocaleString('id-ID')}*
-• Status: *${statusText}*
-
-Jika status masih belum lunas, mohon kesediaannya untuk menyelesaikan pembayaran. Setelah melakukan transfer, harap segera mengirimkan foto bukti transaksi ke pesan WhatsApp ini agar dapat kami proses ke dalam sistem.
-
-Terima kasih atas perhatian dan kerja samanya.`;
+    const message = t.admin.billing.whatsappMessage({
+      name: bill.members?.nama_lengkap,
+      month: bulanStr,
+      year: bill.year,
+      total: bill.nominal_tagihan.toLocaleString('id-ID'),
+      status: statusText,
+    });
 
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   };
@@ -161,13 +162,13 @@ Terima kasih atas perhatian dan kerja samanya.`;
       )}
       
       <span>
-        {isGenerating 
-          ? 'Memproses...' 
-          : !hasData 
-            ? `Terbitkan Tagihan ${selectedMonth}/${selectedYear}`
-            : isMissingMembers 
-              ? `Sinkronkan (+${totalActiveMembers - billings.length} Anggota)` 
-              : 'Sinkronkan Ulang Data' // <--- Nah ini baru bener munculnya!
+        {isGenerating
+          ? t.admin.common.processing
+          : !hasData
+            ? t.admin.billing.issueBills(selectedMonth, selectedYear)
+            : isMissingMembers
+              ? t.admin.billing.syncMembers(totalActiveMembers - billings.length)
+              : t.admin.billing.resync
         }
       </span>
     </button>
@@ -175,8 +176,8 @@ Terima kasih atas perhatian dan kerja samanya.`;
 
   return (
     <AdminLayout 
-      title="Iuran Bulanan" 
-      subtitle="Kelola dan pantau pembayaran anggota per periode."
+      title={t.admin.billing.title} 
+      subtitle={t.admin.billing.subtitle}
       action={actionButton}
     >
       <div className="flex flex-col gap-6 animate-in fade-in duration-500 relative z-10">
@@ -188,25 +189,16 @@ Terima kasih atas perhatian dan kerja samanya.`;
               <CalendarDays className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-800">Periode Aktif</h2>
-              <p className="text-xs font-medium text-slate-500">Pilih bulan tagihan yang ingin dilihat</p>
+              <h2 className="text-sm font-bold text-slate-800">{t.admin.billing.activePeriod}</h2>
+              <p className="text-xs font-medium text-slate-500">{t.admin.billing.activePeriodHint}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className={filterSelectClass} disabled={isFetching}>
-              <option value="1">Januari</option>
-              <option value="2">Februari</option>
-              <option value="3">Maret</option>
-              <option value="4">April</option>
-              <option value="5">Mei</option>
-              <option value="6">Juni</option>
-              <option value="7">Juli</option>
-              <option value="8">Agustus</option>
-              <option value="9">September</option>
-              <option value="10">Oktober</option>
-              <option value="11">November</option>
-              <option value="12">Desember</option>
+              {monthList(lang).map((name, i) => (
+                <option key={i} value={String(i + 1)}>{name}</option>
+              ))}
             </select>
             <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className={filterSelectClass} disabled={isFetching}>
               <option value="2023">2023</option>
@@ -225,7 +217,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
             <div className="relative z-10">
-              <p className="text-slate-500 text-sm font-semibold mb-1">Lunas</p>
+              <p className="text-slate-500 text-sm font-semibold mb-1">{t.admin.billing.paid}</p>
               {isFetching ? <div className="h-8 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">{stats.lunas}</p>}
             </div>
           </div>
@@ -236,7 +228,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
               <Clock className="w-5 h-5 text-rose-600" />
             </div>
             <div className="relative z-10">
-              <p className="text-slate-500 text-sm font-semibold mb-1">Belum Bayar</p>
+              <p className="text-slate-500 text-sm font-semibold mb-1">{t.admin.billing.unpaid}</p>
               {isFetching ? <div className="h-8 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">{stats.belum}</p>}
             </div>
           </div>
@@ -247,7 +239,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
               <CreditCard className="w-5 h-5 text-amber-500" />
             </div>
             <div className="relative z-10">
-              <p className="text-slate-500 text-sm font-semibold mb-1">Menyicil</p>
+              <p className="text-slate-500 text-sm font-semibold mb-1">{t.admin.billing.installment}</p>
               {isFetching ? <div className="h-8 w-12 bg-slate-200 rounded animate-pulse"></div> : <p className="text-3xl font-black text-slate-800">{stats.cicil}</p>}
             </div>
           </div>
@@ -258,7 +250,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
           
           <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
             <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
-              <Receipt className="w-5 h-5 text-blue-600" /> Status Iuran {selectedMonth}/{selectedYear}
+              <Receipt className="w-5 h-5 text-blue-600" /> {t.admin.billing.statusTitle(selectedMonth, selectedYear)}
             </h3>
             
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
@@ -268,10 +260,10 @@ Terima kasih atas perhatian dan kerja samanya.`;
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className={filterSelectClass}
               >
-                <option value="all">Semua Status</option>
-                <option value="lunas">Lunas</option>
-                <option value="belum">Belum Bayar</option>
-                <option value="cicil">Menyicil</option>
+                <option value="all">{t.admin.billing.allStatuses}</option>
+                <option value="lunas">{t.admin.billing.paid}</option>
+                <option value="belum">{t.admin.billing.unpaid}</option>
+                <option value="cicil">{t.admin.billing.installment}</option>
               </select>
 
               <div className="relative w-full sm:w-64">
@@ -280,7 +272,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari nama anggota..." 
+                  placeholder={t.admin.billing.searchPlaceholder} 
                   className="pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full transition-all bg-white font-medium" 
                 />
               </div>
@@ -291,12 +283,12 @@ Terima kasih atas perhatian dan kerja samanya.`;
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr className="bg-white border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                  <th className="p-5 w-1/4">Member</th>
-                  <th className="p-5">Tagihan</th>
-                  <th className="p-5">Dibayar</th>
-                  <th className="p-5">Tgl Bayar</th>
-                  <th className="p-5">Status</th>
-                  <th className="p-5 text-right">Aksi</th>
+                  <th className="p-5 w-1/4">{t.admin.billing.colMember}</th>
+                  <th className="p-5">{t.admin.billing.colBill}</th>
+                  <th className="p-5">{t.admin.billing.colPaid}</th>
+                  <th className="p-5">{t.admin.billing.colPaidDate}</th>
+                  <th className="p-5">{t.admin.billing.colStatus}</th>
+                  <th className="p-5 text-right">{t.admin.billing.colActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -304,7 +296,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                   <tr>
                     <td colSpan={6} className="p-12 text-center text-slate-400">
                       <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3 text-blue-500" />
-                      <p className="font-medium">Memuat data tagihan...</p>
+                      <p className="font-medium">{t.admin.billing.loading}</p>
                     </td>
                   </tr>
                 ) : displayedBillings.length === 0 ? (
@@ -313,7 +305,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                       <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                         <Users className="w-8 h-8 text-slate-300" />
                       </div>
-                      <p className="font-medium text-slate-600">Tidak ada tagihan yang sesuai filter.</p>
+                      <p className="font-medium text-slate-600">{t.admin.billing.noMatch}</p>
                     </td>
                   </tr>
                 ) : (
@@ -322,7 +314,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                       <td className="p-5">
                         <div className="flex flex-col">
                           <span className="font-bold text-slate-800">{bill.members?.nama_lengkap}</span>
-                          <span className="text-xs font-semibold text-slate-400 mt-0.5">{bill.members?.tipe_membership}</span>
+                          <span className="text-xs font-semibold text-slate-400 mt-0.5">{labelOf(t.admin.packageLabels, bill.members?.tipe_membership)}</span>
                         </div>
                       </td>
                       <td className="p-5">
@@ -347,7 +339,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                             bill.status === 'cicil' ? 'bg-amber-500' : 
                             'bg-rose-500'
                           }`}></span>
-                          {bill.status.toUpperCase()}
+                          {labelOf(t.admin.statusLabels, bill.status)}
                         </span>
                       </td>
                       <td className="p-5 text-right">
@@ -360,7 +352,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-100 shadow-sm group/wa"
-                              title="Kirim Invoice WA"
+                              title={t.admin.billing.sendInvoice}
                             >
                               <MessageCircle className="w-4 h-4 transition-transform group-hover/wa:scale-110" />
                             </a>
@@ -368,7 +360,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                             <button 
                               disabled
                               className="p-2.5 bg-slate-50 text-slate-300 rounded-lg border border-slate-100 cursor-not-allowed"
-                              title="Nomor WA wali belum terdaftar"
+                              title={t.admin.billing.noGuardianPhone}
                             >
                               <MessageCircle className="w-4 h-4" />
                             </button>
@@ -378,7 +370,7 @@ Terima kasih atas perhatian dan kerja samanya.`;
                             onClick={() => openModal(bill)}
                             className="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-xs font-bold rounded-lg transition-all shadow-sm"
                           >
-                            {bill.status === 'lunas' ? 'Edit/Detail' : 'Bayar'}
+                            {bill.status === 'lunas' ? t.admin.billing.editDetail : t.admin.billing.pay}
                           </button>
                         </div>
                       </td>

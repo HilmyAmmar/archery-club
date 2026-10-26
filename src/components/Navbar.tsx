@@ -4,11 +4,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation'; 
+import { usePathname } from 'next/navigation';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import LanguageSwitcher from '@/i18n/LanguageSwitcher';
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   const isHome = pathname === '/';
 
@@ -26,11 +30,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: isHome ? '#home' : '/#home' },
-    { name: 'Prestasi', href: isHome ? '#prestasi' : '/#prestasi' },
-    { name: 'Coach', href: isHome ? '#coach' : '/#coach' },
-    { name: 'Member', href: isHome ? '#member' : '/#member' },
-    { name: 'Galeri', href: isHome ? '#galeri' : '/#galeri' },
+    { key: 'home', name: t.nav.home, href: isHome ? '#home' : '/#home' },
+    { key: 'achievements', name: t.nav.achievements, href: isHome ? '#prestasi' : '/#prestasi' },
+    { key: 'coach', name: t.nav.coach, href: isHome ? '#coach' : '/#coach' },
+    { key: 'members', name: t.nav.members, href: isHome ? '#member' : '/#member' },
+    { key: 'gallery', name: t.nav.gallery, href: isHome ? '#galeri' : '/#galeri' },
   ];
 
   return (
@@ -68,7 +72,7 @@ export default function Navbar() {
             <div className="flex gap-6">
               {navLinks.map((link) => (
                 <Link
-                  key={link.name}
+                  key={link.key}
                   href={link.href}
                   className="text-gray-300 hover:text-white text-[13px] font-bold tracking-wide transition-all hover:translate-y-[-1px]"
                 >
@@ -76,19 +80,22 @@ export default function Navbar() {
                 </Link>
               ))}
             </div>
+
+            <LanguageSwitcher />
             
             <Link 
               href={isHome ? '#pricing' : '/#pricing'} 
               className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-2 rounded-lg text-[13px] font-black shadow-lg shadow-orange-600/20 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all"
             >
-              Daftar Sekarang
+              {t.nav.register}
             </Link>
           </div>
 
           {/* --- Mobile Menu Button --- */}
-          <div className="md:hidden flex items-center relative z-50">
+          <div className="md:hidden flex items-center gap-2 relative z-50">
+            <LanguageSwitcher />
             <button 
-              aria-label="Toggle mobile menu"
+              aria-label={t.nav.toggleMenu}
               className="text-white p-2 focus:outline-none"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
@@ -110,13 +117,13 @@ export default function Navbar() {
       {/* --- Mobile Menu Dropdown --- */}
       <div 
         className={`md:hidden absolute top-full left-0 w-full bg-[#000b3d]/95 backdrop-blur-md border-t border-white/10 overflow-hidden transition-all duration-300 ease-in-out shadow-2xl ${
-          isMobileMenuOpen ? 'max-h-[400px] opacity-100 py-6' : 'max-h-0 opacity-0 py-0'
+          isMobileMenuOpen ? 'max-h-[420px] opacity-100 py-6' : 'max-h-0 opacity-0 py-0'
         }`}
       >
         <div className="flex flex-col items-center gap-5 px-6">
           {navLinks.map((link) => (
             <Link
-              key={link.name}
+              key={link.key}
               href={link.href}
               onClick={() => setIsMobileMenuOpen(false)} 
               className="text-gray-300 hover:text-white text-base font-bold tracking-wide transition-all w-full text-center py-2 border-b border-white/5"
@@ -129,7 +136,7 @@ export default function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
             className="w-full text-center bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-3.5 rounded-xl text-sm font-black shadow-lg shadow-orange-600/20 mt-2"
           >
-            Daftar Sekarang
+            {t.nav.register}
           </Link>
         </div>
       </div>

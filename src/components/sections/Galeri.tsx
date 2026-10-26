@@ -3,8 +3,11 @@
 
 import { galeriImages } from '@/data/galeryData';
 import Image from 'next/image';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 export default function Galeri() {
+  const { t } = useLanguage();
+
   const row1 = [...galeriImages.slice(0, 6), ...galeriImages.slice(0, 6)];
   const row2 = [...galeriImages.slice(6, 12), ...galeriImages.slice(6, 12)];
 
@@ -17,15 +20,15 @@ export default function Galeri() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          Galeri Aktivitas
+          {t.gallery.badge}
         </div>
 
         <h2 className="text-4xl md:text-[3.5rem] font-black text-gray-900 tracking-tight mb-5">
-          Keseruan <span className="text-[#1a3680]">Bersama FAST</span>
+          {t.gallery.title1} <span className="text-[#1a3680]">{t.gallery.title2}</span>
         </h2>
 
         <p className="text-gray-600 text-sm md:text-base max-w-2xl font-medium leading-relaxed">
-          Dari latihan rutin, kejuaraan bergengsi, hingga momen kebersamaan — semuanya ada di FAST.
+          {t.gallery.intro}
         </p>
       </div>
 
@@ -42,7 +45,7 @@ export default function Galeri() {
             <div key={`r1-${index}`} className="relative w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">
               <Image 
                 src={imgUrl} 
-                alt={`Kegiatan Panahan FAST Kodamar - Galeri ${index + 1}`} 
+                alt={`${t.gallery.altRow1} ${index + 1}`} 
                 fill
                 sizes="(max-width: 768px) 260px, 380px"
                 className="object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -57,7 +60,7 @@ export default function Galeri() {
             <div key={`r2-${index}`} className="relative w-[260px] md:w-[380px] h-[180px] md:h-[240px] shrink-0 mx-3 group cursor-pointer overflow-hidden rounded-[2rem] shadow-sm border border-gray-200/50 bg-gray-200">
               <Image 
                 src={imgUrl} 
-                alt={`Aktivitas Archery Club FAST - Photo ${index + 1}`} 
+                alt={`${t.gallery.altRow2} ${index + 1}`} 
                 fill
                 sizes="(max-width: 768px) 260px, 380px"
                 className="object-cover transition-transform duration-700 group-hover:scale-110" 

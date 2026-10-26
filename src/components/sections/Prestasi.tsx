@@ -1,7 +1,13 @@
 // src/components/sections/Prestasi.tsx
-import { allPrestasiData, liputanData } from '@/data/prestasiData';
+'use client';
+
+import { allPrestasiData, allPrestasiDataEn, liputanData } from '@/data/prestasiData';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 export default function Prestasi() {
+  const { lang, t } = useLanguage();
+  const archive = lang === 'en' ? allPrestasiDataEn : allPrestasiData;
+
   return (
     <section 
       id="prestasi" 
@@ -15,15 +21,15 @@ export default function Prestasi() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M19 3v4M5 3a2 2 0 002 2h10a2 2 0 002-2M5 3h14M9 21h6M12 17v4M7 13h10V9A5 5 0 007 9v4z" />
           </svg>
-          PRESTASI & KEJUARAAN
+          {t.achievements.badge}
         </div>
 
         {/* --- Intro Text --- */}
         <h2 className="text-4xl md:text-[3.5rem] font-black text-white tracking-tight mb-4 drop-shadow-md">
-          Rekam Jejak <span className="text-white drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]">Sang Juara</span>
+          {t.achievements.title1} <span className="text-white drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]">{t.achievements.title2}</span>
         </h2>
         <p className="text-white/90 text-sm md:text-base max-w-2xl font-medium mb-12 leading-relaxed drop-shadow-sm">
-          Menorehkan lebih dari 50+ gelar Juara Umum di berbagai ajang kompetisi dari tingkat regional hingga internasional sejak 2016.
+          {t.achievements.intro}
         </p>
 
         {/* --- SCROLLABLE FULL ARCHIVE LIST --- */}
@@ -33,12 +39,12 @@ export default function Prestasi() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
             <h3 className="text-xl md:text-2xl font-black text-white tracking-wide">
-              Arsip Prestasi Lengkap (2016 - 2026)
+              {t.achievements.archiveTitle}
             </h3>
           </div>
           
           <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-3 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black/10 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/40 transition-all">
-            {allPrestasiData.map((text, idx) => (
+            {archive.map((text, idx) => (
               <div key={idx} className="flex items-start gap-3 bg-black/10 hover:bg-black/20 transition-colors p-4 rounded-xl border border-white/5">
                 <span className="text-[#facc15] font-black text-sm mt-0.5 min-w-[24px]">{idx + 1}.</span>
                 <p className="text-white/80 text-sm md:text-[15px] font-medium leading-relaxed">{text}</p>
@@ -51,7 +57,7 @@ export default function Prestasi() {
         <div className="w-full flex items-center justify-start text-left mb-10 px-2 max-w-5xl mx-auto">
           <div className="w-1.5 h-8 bg-white rounded-full mr-4 shadow-[0_0_20px_rgba(255,255,255,0.7)]"></div>
           <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-            Liputan Media
+            {t.achievements.mediaTitle}
           </h3>
         </div>
 
@@ -67,18 +73,18 @@ export default function Prestasi() {
               </div>
 
               <div className="flex flex-col flex-grow">
-                <span className="text-white/60 text-[11px] font-bold mb-2 uppercase tracking-wider">{item.date}</span>
+                <span className="text-white/60 text-[11px] font-bold mb-2 uppercase tracking-wider">{lang === 'en' ? item.en.date : item.date}</span>
                 
                 <h4 className="text-white font-black text-xl mb-3 leading-[1.2] tracking-tight">
-                  {item.title}
+                  {lang === 'en' ? item.en.title : item.title}
                 </h4>
                 
                 <p className="text-white/80 text-sm mb-6 leading-relaxed font-medium line-clamp-4 flex-grow">
-                  {item.desc}
+                  {lang === 'en' ? item.en.desc : item.desc}
                 </p>
                 
                 <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-white text-[13px] font-black flex items-center gap-1.5 hover:text-white/80 transition-colors mt-auto group self-start">
-                  Baca selengkapnya 
+                  {t.achievements.readMore}
                   <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
